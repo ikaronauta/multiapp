@@ -7,13 +7,14 @@ export const api = axios.create({
   baseURL: "https://684f24f7d099.ngrok-free.app/api",
   headers: {
     "Content-Type": "application/json",
+    "ngrok-skip-browser-warning": "true",
   },
 });
 
 // 👉 INTERCEPTOR DE REQUEST: agrega token si existe
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
-  
+
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -31,6 +32,8 @@ api.interceptors.response.use(
 
       // Redirige inmediatamente al login
       window.location.href = "/login";
+
+      return;
     }
 
     return Promise.reject(error);
