@@ -15,27 +15,42 @@ import SpinnerLouder from "../../components/SpinnerLouder";
 
 export default function CreateUser() {
   const [businesses, setBusinesses] = useState([]);
-  const [iconComponentModalAlert, setIconComponentModalAlert] = useState(<TriangleAlert className="text-red-600" size={24} />);
+  const [roles, setRoles] = useState([]);
+  const [user, setUser] = useState(() => getUserFromToken());
+
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadingUser, setLoadingUser] = useState(true);
-  const [messageAlert1, setMessageAlert1] = useState("");
-  const [messageAlert2, setMessageAlert2] = useState("");
-  const [roles, setRoles] = useState([]);
-  const [selectedBusiness, setSelectedBusiness] = useState(user.businessId);
+
+  const [selectedBusiness, setSelectedBusiness] = useState("");
   const [selectedRole, setSelectedRole] = useState("");
+
+  const [userName, setUserName] = useState("");
+  const [userLastName, setUserLastName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
+  const [userConfirmEmail, setUserConfirmEmail] = useState("");
+  const [userPassword, setUserPassword] = useState("");
+  const [userConfirmPassword, setUserConfirmPassword] = useState("");
+
   const [showAlert, setShowAlert] = useState(false);
   const [showAlertSubmit, setShowAlertSubmit] = useState(false);
   const [titleAlert, setTitleAlert] = useState("Atención.");
-  const [user, setUser] = useState(() => getUserFromToken());
-  const [userConfirmEmail, setUserConfirmEmail] = useState("");
-  const [userConfirmPassword, setUserConfirmPassword] = useState("");
-  const [userEmail, setUserEmail] = useState("");
-  const [userLastName, setUserLastName] = useState("");
-  const [userName, setUserName] = useState("");
-  const [userPassword, setUserPassword] = useState("");
+  const [messageAlert1, setMessageAlert1] = useState("");
+  const [messageAlert2, setMessageAlert2] = useState("");
+  const [iconComponentModalAlert, setIconComponentModalAlert] = useState(
+    <TriangleAlert className="text-red-600" size={24} />
+  );
 
+   // Inicializa selectedBusiness cuando user está disponible
   useEffect(() => {
+  if (user?.businessId) {
+    setSelectedBusiness(user.businessId);
+  }
+}, [user]);
+
+ // Carga negocios si es System
+  useEffect(() => {
+
     if (!user) {
       setLoadingUser(false);
       return;
@@ -43,7 +58,7 @@ export default function CreateUser() {
 
     if (user.businessId === 1) {
       setIsSuperAdmin(true);
-
+      
       getBusinessData()
         .then((data) => {
           if (data.data) {
@@ -66,6 +81,7 @@ export default function CreateUser() {
     }
   }, [user]);
 
+  // Carga roles
   useEffect(() => {
     getRolesData()
       .then((data) => {
@@ -126,13 +142,16 @@ export default function CreateUser() {
       const response = await newUser(dataUser);
 
       if (!response.ok) {
+        const errorMsg = response.message ?? "Error inesperado";
         setShowAlertSubmit(false);
         setShowAlert(true);
         setTitleAlert("Error al agregar el Usuario.");
-        setMessageAlert1(response.message);
+        setMessageAlert1(errorMsg);
+        console.error("Error adding user:", errorMsg);
         return;
       }
 
+       // Limpieza de inputs
       setShowAlertSubmit(false);
       setShowAlert(true);
       setTitleAlert("Usuario agregado.");
@@ -149,7 +168,7 @@ export default function CreateUser() {
     } catch (error) {
       setShowAlertSubmit(false);
       setTitleAlert("Error al agregar Usuario.");
-      setMessageAlert1(response.message);
+      setMessageAlert1(error.message ?? "Error inesperado");
       console.error("Error adding user:", error);
     }
   };

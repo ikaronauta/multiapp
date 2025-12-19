@@ -39,6 +39,8 @@ export const isTokenValid = () => {
 };
 
 export const canAccess = (itemSection, user) => {
+  if (!user) return false; 
+
   if (user.businessId === 1) return true;
 
   if (!itemSection.allowedRoleIds) return true;
@@ -47,6 +49,8 @@ export const canAccess = (itemSection, user) => {
 };
 
 export const canAccessSection = (section, user) => {
+  if (!user) return false;
+  
   const countAccessibleItems = section.items.reduce((count, item) => {
     if (canAccess(item, user)) {
       return count + 1;
