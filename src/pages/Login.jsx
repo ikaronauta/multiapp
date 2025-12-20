@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 import { loginAdapter as loginApi } from "../adapters/auth/authAdapter";
+import { TOKEN_KEY } from "../utils/constants";
 
 import Logo from '../assets/images/logo-multiApp.png';
 
@@ -16,7 +17,7 @@ export default function Login() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem(TOKEN_KEY);
     if (token) {
       navigate("/");
     }
@@ -38,7 +39,7 @@ export default function Login() {
 
       if (!res.ok) return setErrorMsg(res.message);
 
-      localStorage.setItem("token", res.token);
+      localStorage.setItem(TOKEN_KEY, res.token);
       navigate("/");
     } catch (error) {
       setErrorMsg(error.message || "Error en login");
