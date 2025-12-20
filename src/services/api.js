@@ -3,8 +3,7 @@
 import axios from "axios";
 
 export const api = axios.create({
-  //baseURL: "http://localhost:4000/api",
-  baseURL: "https://684f24f7d099.ngrok-free.app/api",
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
     "ngrok-skip-browser-warning": "true",
