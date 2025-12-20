@@ -1,6 +1,7 @@
 // src/services/api.js
 
 import axios from "axios";
+import { TOKEN_KEY } from "../utils/constants";
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -12,7 +13,7 @@ export const api = axios.create({
 
 // 👉 INTERCEPTOR DE REQUEST: agrega token si existe
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem(TOKEN_KEY);
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -27,7 +28,7 @@ api.interceptors.response.use(
   (error) => {
     // Si el backend devuelve 401 → Token expirado o inválido
     if (error.response?.status === 401) {
-      localStorage.removeItem("token");
+      localStorage.removeItem(TOKEN_KEY);
 
       // Redirige inmediatamente al login
       window.location.href = "/login";
