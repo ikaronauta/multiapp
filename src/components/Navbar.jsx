@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import SectionNavbar from "./SectionNavbar";
 import { getMenuData } from "../adapters/menu.adapter";
 import { House, TriangleAlert } from "lucide-react";
-import { getBusinessData } from "../adapters/business.adapter";
+import { getBusinessesData } from "../adapters/business.adapter";
 import SpinnerLouder from "./SpinnerLouder";
 import ModalAlert from "./modals/ModalAlert";
 import { getUserFromToken } from "../utils/auth";
@@ -18,7 +18,7 @@ export default function Navbar({ onLinkClick }) {
   const [messageAlert1, setMessageAlert1] = useState("");
   const [messageAlert2, setMessageAlert2] = useState("");
   const [loadingUser, setLoadingUser] = useState(true);
-  const [selectedBusiness, setSelectedBusiness] = useState("1");
+  const [selectedBusiness, setSelectedBusiness] = useState(1);
   const [businessMenu, setBusinessMenu] = useState("");
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [iconComponentModalAlert, setIconComponentModalAlert] = useState(
@@ -29,8 +29,11 @@ export default function Navbar({ onLinkClick }) {
 
   useEffect(() => {
     const user = getUserFromToken();
-    if (user.businessId === 1 && user.roleId === 1) setIsSuperAdmin(true);
-  });
+    if (user?.businessId === 1 && user?.roleId === 1) {
+      setIsSuperAdmin(true);
+    }
+  }, []);
+
 
   useEffect(() => {
     const loadMenu = async () => {
@@ -41,7 +44,7 @@ export default function Navbar({ onLinkClick }) {
   }, [selectedBusiness]);
 
   useEffect(() => {
-    getBusinessData()
+    getBusinessesData()
       .then((data) => {
         if (data.data) {
           setBusinesses(data.data);
@@ -81,16 +84,18 @@ export default function Navbar({ onLinkClick }) {
   return (
     <nav className="space-y-4">
 
-      {isSuperAdmin && <select
-        className="border text-gray-500 border-gray-300 rounded-md px-3 py-2 mt-4 h-10 w-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-        onChange={handleSelectBusiness}
-        name="businessId"
-        value={selectedBusiness}
-      >
-        {businesses.map((business) => (
-          <option key={business.id} value={business.id}>{business.name}</option>
-        ))}
-      </select>}
+      {isSuperAdmin &&
+        <select
+          className="border border-gray-300 rounded-lg px-3 py-2 mt-4 h-10 w-full text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+          onChange={handleSelectBusiness}
+          value={selectedBusiness}
+          name="businessId"
+        >
+
+          {businesses.map((business) => (
+            <option key={`bus-${business.ID}`} value={business.ID} className="text-blue-900">{business.Nombre}</option>
+          ))}
+        </select>}
 
 
       <SectionNavbar
@@ -100,7 +105,7 @@ export default function Navbar({ onLinkClick }) {
 
       {sections.map((section, i) => (
         <SectionNavbar
-          key={section.id || i}
+          key={`section-${section.id ?? i}`}
           objDataSection={section}
           onLinkClick={onLinkClick}
         />

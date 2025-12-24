@@ -3,7 +3,7 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 
-import { getBusinessData } from "../../adapters/business.adapter";
+import { getBusinessesData } from "../../adapters/business.adapter";
 import { getRolesData } from "../../adapters/roles.adapter";
 import { getUserFromToken } from "../../utils/auth";
 import { Info, TriangleAlert, CircleChevronLeft } from "lucide-react";
@@ -59,7 +59,7 @@ export default function CreateUser() {
     if (user.businessId === 1) {
       setIsSuperAdmin(true);
       
-      getBusinessData()
+      getBusinessesData()
         .then((data) => {
           if (data.data) {
             setBusinesses(data.data);

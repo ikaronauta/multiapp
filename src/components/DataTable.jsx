@@ -15,7 +15,7 @@ export default function DataTable({ objData, onClickEdit, onClickDelete }) {
   const [globalFilter, setGlobalFilter] = useState("");
   const [sorting, setSorting] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({
-    id: false, // oculta la columna Id por defecto
+    ID: false, // oculta la columna Id por defecto
   });
   const [pageSize, setPageSize] = useState(10); // filas por página
   const [pageIndex, setPageIndex] = useState(0); // índice de página
@@ -38,13 +38,13 @@ export default function DataTable({ objData, onClickEdit, onClickDelete }) {
       }
 
       // Estilo para columna "status"
-      if (col.accessorKey === "Status") {
+      if (col.accessorKey.toLowerCase() === "status") {
         return {
           ...col,
           id: "status",
           cell: ({ getValue }) => (
             <span
-              className={`px-2 py-1 rounded text-xs font-semibold ${getValue() === "Activo"
+              className={`px-2 py-1 rounded text-xs font-semibold ${getValue().toLowerCase() === "activo"
                 ? "bg-green-100 text-green-700"
                 : "bg-red-100 text-red-700"
                 }`}
@@ -56,10 +56,10 @@ export default function DataTable({ objData, onClickEdit, onClickDelete }) {
       }
 
       // Estilo para columna "id"
-      if (col.accessorKey === "Id") {
+      if (col.accessorKey.toLowerCase() === "id") {
         return {
           ...col,
-          id: "id",
+          id: "ID",
           size: 40,
           enableResizing: false,
           enableHiding: true,
@@ -81,13 +81,13 @@ export default function DataTable({ objData, onClickEdit, onClickDelete }) {
         <div className="flex gap-2">
           <button
             onClick={() => onClickEdit(row)}
-            className="p-1 rounded hover:bg-blue-500 hover:text-white"
+            className="p-1 text-blue-700 rounded hover:bg-blue-500 hover:text-white"
           >
             <Edit size={16} />
           </button>
           <button
             onClick={() => onClickDelete(row)}
-            className="p-1 rounded hover:bg-red-500 hover:text-white"
+            className="p-1 text-red-700 rounded hover:bg-red-500 hover:text-white"
           >
             <Trash2 size={16} />
           </button>
@@ -136,7 +136,7 @@ export default function DataTable({ objData, onClickEdit, onClickDelete }) {
                   <th
                     key={header.id}
                     style={{ width: header.getSize() }}
-                    className="relative px-4 py-2 text-left text-sm font-semibold select-none"
+                    className="relative px-4 py-2 text-left text-sm font-semibold select-none border-r border-gray-300"
                   >
                     <div
                       onClick={header.column.getToggleSortingHandler()}
@@ -175,7 +175,6 @@ export default function DataTable({ objData, onClickEdit, onClickDelete }) {
               </tr>
             ))}
           </tbody>
-
 
         </table>
       </div>
