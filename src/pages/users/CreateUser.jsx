@@ -145,7 +145,7 @@ export default function CreateUser() {
         const errorMsg = response.message ?? "Error inesperado";
         setShowAlertSubmit(false);
         setShowAlert(true);
-        setTitleAlert("Error al agregar el Usuario.");
+        setTitleAlert("Error al agregar el usuario");
         setMessageAlert1(errorMsg);
         console.error("Error adding user:", errorMsg);
         return;
@@ -154,7 +154,7 @@ export default function CreateUser() {
        // Limpieza de inputs
       setShowAlertSubmit(false);
       setShowAlert(true);
-      setTitleAlert("Usuario agregado.");
+      setTitleAlert("Usuario agregado");
       setIconComponentModalAlert(<Info className="text-green-600" size={24} />);
       setMessageAlert1("El Usuario ha sido agregado correctamente.");
       setUserName("");

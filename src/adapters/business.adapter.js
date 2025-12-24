@@ -7,9 +7,22 @@ import { api } from "../services/api";
 export const getBusinessesData = async () => {
   try {
     //const user = getUserFromToken();
-    const { data } = await api.get("/business",);
+    const { data } = await api.get("/businesses");
     return data;
   } catch (error) {
-    error.response?.data ?? { ok: false, message: "Error en la petición" };
+    return error.response?.data ?? { ok: false, message: "Error en la petición" };
   }
 }
+
+export const newBusiness = async (formData) => {
+  try {
+    const { data } = await api.post("/businesses/newbusiness", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      }
+    });
+    return data;
+  } catch (error) {
+    return error.response?.data ?? { ok: false, message: "Error en la petición" };
+  }
+};

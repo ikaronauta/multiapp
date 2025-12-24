@@ -9,7 +9,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "deploy": "npm run build && cp CNAME dist/CNAME && gh-pages -d dist"
+    "deploy": "npm run build && cp CNAME dist/CNAME && cp dist/index.html dist/404.html && gh-pages -d dist"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.17",

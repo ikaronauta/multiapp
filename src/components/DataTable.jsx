@@ -37,6 +37,24 @@ export default function DataTable({ objData, onClickEdit, onClickDelete }) {
         col.id = col.id || col.accessorKey;
       }
 
+      // Columna Logo: mostrar imagen
+      if (col.accessorKey.toLowerCase() === "logo") {
+        return {
+          ...col,
+          cell: ({ getValue }) => {
+            // Si no hay valor, usar logo por defecto
+            const src = getValue() || "/src/assets/images/logo-multiApp.png";
+            return (
+              <img
+                src={src}
+                alt="Logo"
+                className="h-10 w-10 object-contain rounded"
+              />
+            );
+          },
+        };
+      }
+
       // Estilo para columna "status"
       if (col.accessorKey.toLowerCase() === "status") {
         return {

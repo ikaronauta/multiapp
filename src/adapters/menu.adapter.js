@@ -3,14 +3,6 @@
 import { api } from '../services/api';
 
 export const getMenuData = async (selectedBusiness) => {
-
-  // Simulación con setTimeout
-  // return new Promise((resolve) => {
-  //   setTimeout(() => {
-  //     resolve(dataSecciones);
-  //   }, 1000);
-  // });
-
   try {
     // const { data } = await api.get("/navbar", {selectedBusiness}); // GET y sin body
     const { data } = await api.get("/navbar", {

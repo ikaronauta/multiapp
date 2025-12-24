@@ -34,7 +34,6 @@ export default function Navbar({ onLinkClick }) {
     }
   }, []);
 
-
   useEffect(() => {
     const loadMenu = async () => {
       const data = await getMenuData(selectedBusiness);
