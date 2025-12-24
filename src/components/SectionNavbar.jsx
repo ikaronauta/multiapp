@@ -2,7 +2,7 @@
 
 import { Link } from "react-router-dom";
 
-import { getUserFromToken, canAccess, canAccessSection} from "../utils/auth";
+import { getUserFromToken, canAccess, canAccessSection } from "../utils/auth";
 
 export default function SectionNavbar({ objDataSection, onLinkClick }) {
 
@@ -11,12 +11,14 @@ export default function SectionNavbar({ objDataSection, onLinkClick }) {
   if (!user) return null;
 
   // if (!canAccess(objDataSection, user)) return null;
-  
+
   if (!canAccessSection(objDataSection, user)) return null;
 
   return (
-    <section className="mt-6 border border-gray-700 rounded-md p-3 space-y-2">
-      <h3 className="text-xs text-gray-400">{objDataSection.title}</h3>
+    <section className="border border-gray-700 rounded-md p-3 space-y-2">
+      {objDataSection.title && (
+        <h3 className="text-xs text-gray-400">{objDataSection.title}</h3>
+      )}
 
       {objDataSection.items
         .filter(item => canAccess(item, user))
@@ -24,12 +26,14 @@ export default function SectionNavbar({ objDataSection, onLinkClick }) {
           <Link
             key={i}
             to={item.route}
-            className="block text-sm hover:text-gray-300"
+            className="flex items-center gap-2 text-sm hover:text-gray-300"
             onClick={onLinkClick}
           >
-            {item.title}
+            {item.icon && item.icon}
+            <span>{item.title}</span>
           </Link>
         ))}
     </section>
   );
+
 }
