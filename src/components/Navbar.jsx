@@ -8,6 +8,7 @@ import { getBusinessData } from "../adapters/business.adapter";
 import SpinnerLouder from "./SpinnerLouder";
 import ModalAlert from "./modals/ModalAlert";
 import { getUserFromToken } from "../utils/auth";
+import { useNavigate } from "react-router-dom";
 
 export default function Navbar({ onLinkClick }) {
   const [sections, setSections] = useState([]);
@@ -23,6 +24,8 @@ export default function Navbar({ onLinkClick }) {
   const [iconComponentModalAlert, setIconComponentModalAlert] = useState(
     <TriangleAlert className="text-red-600" size={24} />
   );
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const user = getUserFromToken();
@@ -70,6 +73,7 @@ export default function Navbar({ onLinkClick }) {
 
   const handleSelectBusiness = (e) => {
     setSelectedBusiness(e.target.value);
+    navigate("/");
   };
 
   if (loadingUser) return <SpinnerLouder height="h-full" />;
