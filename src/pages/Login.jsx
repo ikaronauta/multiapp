@@ -38,9 +38,11 @@ export default function Login() {
         top: `${Math.random() * 70 + 15}%`,
         left: `${Math.random() * 70 + 15}%`,
       });
-      setVisible(true); // comienza visible
-
-      setTimeout(() => setVisible(false), 100); // dura 0.2s antes de desaparecer
+      setVisible(false); // comienza visible
+      
+      setTimeout(() => setVisible(true), 50);
+      console.log(`Word: ${w}`);
+      setTimeout(() => setVisible(false), 110);
     }, 1000);
 
     return () => clearInterval(interval);
