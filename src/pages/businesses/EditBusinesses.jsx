@@ -1,29 +1,63 @@
-import { CircleChevronLeft, Info, TriangleAlert } from "lucide-react";
-import { useState, useRef } from "react";
-import { Link } from "react-router-dom";
+// src/pages/businesses/EditBusinesses.jsx
+
+import { CircleChevronLeft, Info, TriangleAlert } from "lucide-react"
+import { useEffect, useRef, useState } from "react";
+import { Link, useParams } from "react-router-dom"
+import { getBusinessById, updateBusiness } from "../../adapters/business.adapter";
+import SpinnerLouder from "../../components/SpinnerLouder";
+import ModalAlert from "../../components/modals/ModalAlert";
 import { getUserFromToken } from "../../utils/auth";
 import ModalSpinner from "../../components/modals/ModelSpinner";
-import { newBusiness } from "../../adapters/business.adapter";
-import ModalAlert from "../../components/modals/ModalAlert";
 
-export const CreateBusinesses = () => {
+export const EditBusinesses = () => {
+
   const [user] = useState(() => getUserFromToken());
-  const [nameBusiness, setNameBusiness] = useState("");
-  const [slug, setSlug] = useState("");
-  const [fileName, setFileName] = useState("");
-  const [preview, setPreview] = useState(null);
-  const [selectedStatus, setSelectedStatus] = useState("activo");
+  const { id } = useParams();
+  const [loading, setLoading] = useState(true);
 
-  const fileInputRef = useRef(null);
-
-  const [showAlert, setShowAlert] = useState(false);
   const [showAlertSubmit, setShowAlertSubmit] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
   const [titleAlert, setTitleAlert] = useState("Atención.");
   const [messageAlert1, setMessageAlert1] = useState("");
   const [messageAlert2, setMessageAlert2] = useState("");
   const [iconComponentModalAlert, setIconComponentModalAlert] = useState(
     <TriangleAlert className="text-red-600" size={24} />
   );
+
+  const [nameBusiness, setNameBusiness] = useState("");
+  const [slug, setSlug] = useState("");
+  const [description, setDescription] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [preview, setPreview] = useState(null);
+
+  const fileInputRef = useRef(null);
+
+  const [fileName, setFileName] = useState("");
+
+  useEffect(() => {
+    getBusinessById(id)
+      .then((data) => {
+        if (data.data) {
+          setNameBusiness(data.data.Nombre);
+          setSlug(data.data.Slug);
+          setDescription(data.data.Descripcion);
+          setSelectedStatus(data.data.Status);
+          setPreview(data.data.Logo);
+        } else {
+          setShowAlert(true);
+          setTitleAlert("Error al obtener el negocio");
+          setMessageAlert1(data.message ?? 'Algo fallo');
+          setShowDataTable(false);
+        }
+      })
+      .catch((data) => {
+        setShowAlert(true);
+        setTitleAlert("Error al obtener el negocio");
+        setMessageAlert1(data.message ?? 'Algo fallo');
+        setShowDataTable(false);
+      })
+      .finally(() => setLoading(false));
+  }, [id]);
 
   const slugify = (text) => {
     return text
@@ -66,7 +100,7 @@ export const CreateBusinesses = () => {
     }
   };
 
-  const handleAddBusiness = async (e) => {
+  const handleEditBusiness = async (e) => {
     e.preventDefault();
     setShowAlertSubmit(true);
 
@@ -78,13 +112,13 @@ export const CreateBusinesses = () => {
       formData.append("slug", slug);
       formData.append("description", e.target.description.value);
       formData.append("status", selectedStatus);
-      formData.append("createdById", user.id);
+      formData.append("updatedById", user.id);
 
       if (logoFile) {
         formData.append("logo", logoFile);
       }
 
-      const response = await newBusiness(formData);
+      const response = await updateBusiness(id, formData);
 
       if (!response.ok) {
         const errorMsg = response.message ?? "Error inesperado";
@@ -117,6 +151,8 @@ export const CreateBusinesses = () => {
     }
   };
 
+  if (loading) return <SpinnerLouder height="h-full" />;
+
   return (
     <div className="sm:max-w-3xl mx-auto">
       <Link
@@ -128,9 +164,9 @@ export const CreateBusinesses = () => {
       </Link>
 
       <div className="relative w-full sm:max-w-3xl mx-auto bg-white shadow-md rounded-lg p-4 sm:p-6">
-        <h2 className="text-gray-900 text-2xl font-bold mb-4">Crear Negocio</h2>
+        <h2 className="text-gray-900 text-2xl font-bold mb-4">Editar Negocio</h2>
 
-        <form onSubmit={handleAddBusiness} className="flex flex-wrap -mx-2 items-end">
+        <form onSubmit={handleEditBusiness} className="flex flex-wrap -mx-2 items-end">
 
           <div className="px-2 w-full sm:w-[50%] mb-2">
             <label className="text-gray-900 text-sm">Nombre Negocio</label>
@@ -163,6 +199,7 @@ export const CreateBusinesses = () => {
             <textarea
               name="description"
               className="border border-gray-300 rounded-md px-3 py-2 min-h-32 w-full resize-y"
+              defaultValue={description}
               required
             ></textarea>
           </div>
@@ -191,7 +228,7 @@ export const CreateBusinesses = () => {
               <input
                 type="file"
                 name="logo"
-                required={!preview}
+                // required={!preview}
                 onChange={handleFileChange}
                 ref={fileInputRef}
                 className="
@@ -244,5 +281,5 @@ export const CreateBusinesses = () => {
         <ModalSpinner titleModal="Procesando..." messageModal="" iconComponent={<Info className="text-red-600" size={24} />} />
       )}
     </div>
-  );
-};
+  )
+}

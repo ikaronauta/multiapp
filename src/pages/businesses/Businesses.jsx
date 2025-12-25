@@ -1,6 +1,6 @@
-// src/pages/users/Users.jsx
+// src/pages/businesses/Businesses.jsx
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { PlusCircle, TriangleAlert } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -21,6 +21,8 @@ export default function Businesses() {
   const [messageAlert2, setMessageAlert2] = useState("");
   const [iconComponent, setIconComponent] = useState(<TriangleAlert className="text-red-600" size={24} />);
   const [showDataTable, setShowDataTable] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     getBusinessesData()
@@ -49,6 +51,7 @@ export default function Businesses() {
 
   const handleEdit = (row) => {
     console.log(row.original);
+    navigate(`/admin/businesses/edit/${row.original.ID}`);
   }
 
   const handleDelete = (row) => {

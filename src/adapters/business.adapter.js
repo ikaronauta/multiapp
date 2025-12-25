@@ -14,6 +14,15 @@ export const getBusinessesData = async () => {
   }
 }
 
+export const getBusinessById = async (id) => {
+  try {
+    const { data } = await api.get(`/businesses/${id}`);
+    return data;
+  } catch (error) {
+    return error.response?.data ?? { ok: false, message: "Error en la petición" };
+  }
+}
+
 export const newBusiness = async (formData) => {
   try {
     const { data } = await api.post("/businesses/newbusiness", formData, {
@@ -26,3 +35,16 @@ export const newBusiness = async (formData) => {
     return error.response?.data ?? { ok: false, message: "Error en la petición" };
   }
 };
+
+export const updateBusiness = async (id, formData) => {
+  try {
+    const { data } = await api.put(`/businesses/edit/${id}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return data;
+  } catch (error) {
+    return error.response?.data ?? { ok: false, message: "Error en la petición" };
+  }
+};
+
+

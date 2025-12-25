@@ -42,7 +42,7 @@ export default function Dashboard() {
           <LogOut size={20} />
         </button>
 
-        <div className="max-w-3xl mx-auto h-full">
+        <div className="mx-auto h-full">
           <Outlet />
         </div>
       </main>

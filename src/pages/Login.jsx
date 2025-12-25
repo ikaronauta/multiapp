@@ -27,7 +27,7 @@ export default function Login() {
     const words = [
       "útil", "rápido", "fácil", "eficiente",
       "seguro", "práctico", "innovador", "confiable",
-      "intuitivo", "rápido", "sencillo", "potente",
+      "intuitivo", "sencillo", "potente",
       "cómodo", "versátil", "rápido", "inteligente"
     ];
 
