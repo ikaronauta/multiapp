@@ -40,7 +40,7 @@ export default function Login() {
       });
       setVisible(true); // comienza visible
 
-      setTimeout(() => setVisible(false), 500); // dura 0.2s antes de desaparecer
+      setTimeout(() => setVisible(false), 100); // dura 0.2s antes de desaparecer
     }, 1000);
 
     return () => clearInterval(interval);
