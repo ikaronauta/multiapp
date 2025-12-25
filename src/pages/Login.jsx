@@ -13,14 +13,37 @@ export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [flashWord, setFlashWord] = useState("");
+  const [pos, setPos] = useState({ top: "50%", left: "50%" });
+  const [visible, setVisible] = useState(false);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem(TOKEN_KEY);
-    if (token) {
-      navigate("/");
-    }
+    if (token) navigate("/");
+
+    // 🔴 Flashes subliminales cada 1s
+    const words = [
+      "útil", "rápido", "fácil", "eficiente",
+      "seguro", "práctico", "innovador", "confiable",
+      "intuitivo", "rápido", "sencillo", "potente",
+      "cómodo", "versátil", "rápido", "inteligente"
+    ];
+
+    const interval = setInterval(() => {
+      const w = words[Math.floor(Math.random() * words.length)];
+      setFlashWord(w);
+      setPos({
+        top: `${Math.random() * 70 + 15}%`,
+        left: `${Math.random() * 70 + 15}%`,
+      });
+      setVisible(true); // comienza visible
+
+      setTimeout(() => setVisible(false), 500); // dura 0.2s antes de desaparecer
+    }, 1000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const handleChange = e => {
@@ -34,7 +57,7 @@ export default function Login() {
 
     try {
       if (form.email === '' || form.password === '') return setErrorMsg('Debe ingresar la información completa.');
-  
+
       const res = await loginApi(form);
 
       if (!res.ok) return setErrorMsg(res.message);
@@ -53,6 +76,21 @@ export default function Login() {
 
       {/* FONDO FUTURISTA CON GRADIENTE */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 opacity-90" />
+
+
+      {/* PALABRAS */}
+      {flashWord && (
+        <div
+          className="fixed text-white text-2xl font-bold select-none pointer-events-none z-30 transition-opacity duration-500"
+          style={{
+            top: pos.top,
+            left: pos.left,
+            opacity: visible ? 0.1 : 0,
+          }}
+        >
+          {flashWord}
+        </div>
+      )}
 
       {/* EFECTO GLASS */}
       <div className="relative z-10 w-full max-w-md p-8 rounded-2xl bg-white/10 backdrop-blur-md shadow-xl border border-white/20 animate-fadeIn">
