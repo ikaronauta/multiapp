@@ -47,4 +47,12 @@ export const updateBusiness = async (id, formData) => {
   }
 };
 
+export const getBusinessesTypes = async () => {
+  try {
+    const { data } = await api.get("/businesses/types");
+    return data;
+  } catch (error) {
+    return error.response?.data ?? { ok: false, message: "Error en la petición" };
+  }
+}
 
