@@ -131,9 +131,9 @@ export const EditBusinesses = () => {
 
       setShowAlertSubmit(false);
       setShowAlert(true);
-      setTitleAlert("Negocio agregado");
+      setTitleAlert("Negocio editado");
       setIconComponentModalAlert(<Info className="text-green-600" size={24} />);
-      setMessageAlert1("El negocio ha sido agregado correctamente");
+      setMessageAlert1("El negocio ha sido editado correctamente");
 
       // Reset form
       setNameBusiness("");
