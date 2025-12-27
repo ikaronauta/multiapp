@@ -10,3 +10,12 @@ export const getDeptos = async () => {
     return error.response?.data ?? { ok: false, message: "Error en la petición" };
   }
 }
+
+export const getCitiesByIdDepto = async (idDepto) => {
+  try {
+    const { data } = await api.get(`/utils/cities/${idDepto}`);
+    return data;
+  } catch (error) {
+    return error.response?.data ?? { ok: false, message: "Error en la petición" };
+  }
+}
