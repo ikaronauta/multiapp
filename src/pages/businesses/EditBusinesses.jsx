@@ -1,20 +1,28 @@
 // src/pages/businesses/EditBusinesses.jsx
 
-import { CircleChevronLeft, Info, TriangleAlert } from "lucide-react"
+import { AlertCircle, CircleChevronLeft, Info, TriangleAlert } from "lucide-react"
 import { useEffect, useRef, useState } from "react";
-import { Link, useParams } from "react-router-dom"
-import { getBusinessById, updateBusiness } from "../../adapters/business.adapter";
+import { Link, useNavigate, useParams } from "react-router-dom"
+import { getBusinessById, getBusinessesTypes, updateBusiness } from "../../adapters/business.adapter";
 import SpinnerLouder from "../../components/SpinnerLouder";
 import ModalAlert from "../../components/modals/ModalAlert";
 import { getUserFromToken } from "../../utils/auth";
 import ModalSpinner from "../../components/modals/ModelSpinner";
+import { getCitiesByIdDepto, getDeptos } from "../../adapters/utils.adapter";
+import { toTitleCaseSafeES } from "../../utils/common";
 
 export const EditBusinesses = () => {
+
+  const navigate = useNavigate();
 
   const [user] = useState(() => getUserFromToken());
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
 
+  const [loadingCities, setLoadingCities] = useState(false);
+  const [showAlertCities, setShowAlertCities] = useState(true);
+  const [loadingDeptos, setLoadingDeptos] = useState(true);
+  const [showAlertDeptos, setShowAlertDeptos] = useState(true);
   const [showAlertSubmit, setShowAlertSubmit] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [titleAlert, setTitleAlert] = useState("Atención.");
@@ -23,41 +31,32 @@ export const EditBusinesses = () => {
   const [iconComponentModalAlert, setIconComponentModalAlert] = useState(
     <TriangleAlert className="text-red-600" size={24} />
   );
+  const [loadingBusinessesTypes, setLoadingBusinessesTypes] = useState(true);
+  const [showAlertBusinessesTypes, setShowAlertBusinessesTypes] = useState(true);
 
   const [nameBusiness, setNameBusiness] = useState("");
   const [slug, setSlug] = useState("");
   const [description, setDescription] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
   const [preview, setPreview] = useState(null);
+  const [businessesTypes, setBusinessesTypes] = useState([]);
+  const [selectedBusinessType, setSelectedBusinessType] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [webSite, setWebSite] = useState("");
+  const [address, setAddress] = useState("");
+  const [cities, setCities] = useState([]);
+  const [selectedCity, setSelectedCity] = useState("");
+  const [deptos, setDeptos] = useState([]);
+  const [selectedDeptos, setSelectedDeptos] = useState("");
+
+  const [typesOk, setTypesOk] = useState(false);
+  const [deptosOk, setDeptosOk] = useState(false);
+  const [updateOk, setUpdateOk] = useState(false);
 
   const fileInputRef = useRef(null);
 
   const [fileName, setFileName] = useState("");
-
-  useEffect(() => {
-    getBusinessById(id)
-      .then((data) => {
-        if (data.data) {
-          setNameBusiness(data.data.Nombre);
-          setSlug(data.data.Slug);
-          setDescription(data.data.Descripcion);
-          setSelectedStatus(data.data.Status);
-          setPreview(data.data.Logo);
-        } else {
-          setShowAlert(true);
-          setTitleAlert("Error al obtener el negocio");
-          setMessageAlert1(data.message ?? 'Algo fallo');
-          setShowDataTable(false);
-        }
-      })
-      .catch((data) => {
-        setShowAlert(true);
-        setTitleAlert("Error al obtener el negocio");
-        setMessageAlert1(data.message ?? 'Algo fallo');
-        setShowDataTable(false);
-      })
-      .finally(() => setLoading(false));
-  }, [id]);
 
   const slugify = (text) => {
     return text
@@ -70,6 +69,106 @@ export const EditBusinesses = () => {
       .replace(/[\s_-]+/g, "-")
       .replace(/^-+|-+$/g, "");
   };
+
+  const removeLogo = () => {
+    setFileName("");
+    setPreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""; // reset input file
+    }
+  };
+
+  const loadCities = (idDepto) => {
+    setSelectedDeptos(idDepto);
+    setShowAlertDeptos(true);
+
+    getCitiesByIdDepto(idDepto)
+      .then((data) => {
+        if (data.data) setCities(data.data);
+        else setShowAlertCities(false);
+      })
+      .catch(() => setShowAlertCities(false))
+      .finally(() => setLoadingCities(false));
+  }
+
+  useEffect(() => {
+    getBusinessesTypes()
+      .then((data) => {
+        if (data.data) {
+          setBusinessesTypes(data.data);
+          setTypesOk(true);
+        } else {
+          setLoadingBusinessesTypes(false);
+          setTypesOk(false);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        setShowAlertBusinessesTypes(false);
+        setTypesOk(false);
+      })
+      .finally(() => setLoadingBusinessesTypes(false));
+  }, []);
+
+  useEffect(() => {
+    getDeptos()
+      .then((data) => {
+        if (data.data) {
+          setDeptos(data.data);
+          setDeptosOk(true);
+        } else {
+          setShowAlertDeptos(false);
+          setDeptosOk(false);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        setShowAlertDeptos(false);
+        setDeptosOk(false);
+      })
+      .finally(() => setLoadingDeptos(false));
+  }, []);
+
+  useEffect(() => { 
+    
+    if (!typesOk || !deptosOk) return;
+    getBusinessById(id)
+      .then((data) => {
+        if (data.data) {
+          setNameBusiness(data.data.name);
+          setSlug(data.data.slug);
+          setDescription(data.data.description);
+          setSelectedBusinessType(data.data.business_type_id);
+          setEmail(data.data.email);
+          setPhone(data.data.phone);
+          setWebSite(data.data.website);
+          setAddress(data.data.address);
+          setSelectedDeptos(data.data.departamento_id);
+          setSelectedCity(data.data.city_id);
+          setSelectedStatus(data.data.status);
+          setPreview(data.data.logo_url);
+        } else {
+          
+          setShowAlert(true);
+          setTitleAlert("Error al obtener el negocio");
+          setMessageAlert1(data.message ?? 'Algo fallo');
+        }
+      })
+      .catch((error) => {
+        
+        setShowAlert(true);
+        setTitleAlert("Error al obtener el negocio");
+        setMessageAlert1(error.message ?? 'Algo fallo');
+      })
+      .finally(() => setLoading(false));
+  }, [businessesTypes, deptos, id]);
+  
+
+  useEffect(() => {
+    if (deptos.length === 0 || !selectedDeptos) return;
+
+    loadCities(selectedDeptos);
+  }, [selectedDeptos]);
 
   const handleNameChange = (e) => {
     const value = e.target.value;
@@ -92,13 +191,10 @@ export const EditBusinesses = () => {
     }
   };
 
-  const removeLogo = () => {
-    setFileName("");
-    setPreview(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ""; // reset input file
-    }
-  };
+  const handleChangeDepto = (idDepto) => {
+    setSelectedCity("");
+    loadCities(idDepto);
+  }
 
   const handleEditBusiness = async (e) => {
     e.preventDefault();
@@ -111,6 +207,12 @@ export const EditBusinesses = () => {
       formData.append("nameBusiness", nameBusiness);
       formData.append("slug", slug);
       formData.append("description", e.target.description.value);
+       formData.append("businessType", selectedBusinessType);
+      formData.append("email", email);
+      formData.append("phone", phone);
+      formData.append("webSite", webSite);
+      formData.append("cityId", selectedCity);
+      formData.append("address", address);
       formData.append("status", selectedStatus);
       formData.append("updatedById", user.id);
 
@@ -124,24 +226,17 @@ export const EditBusinesses = () => {
         const errorMsg = response.message ?? "Error inesperado";
         setShowAlertSubmit(false);
         setShowAlert(true);
-        setTitleAlert("Error al agregar el negocio");
+        setTitleAlert("Error al editar el negocio");
         setMessageAlert1(errorMsg);
         return;
       }
 
+      setUpdateOk(true);
       setShowAlertSubmit(false);
       setShowAlert(true);
       setTitleAlert("Negocio editado");
       setIconComponentModalAlert(<Info className="text-green-600" size={24} />);
       setMessageAlert1("El negocio ha sido editado correctamente");
-
-      // Reset form
-      setNameBusiness("");
-      setSlug("");
-      setFileName("");
-      setPreview(null);
-      setSelectedStatus("activo");
-      removeLogo(); // limpia el input file también
 
     } catch (error) {
       setShowAlertSubmit(false);
@@ -204,6 +299,145 @@ export const EditBusinesses = () => {
             ></textarea>
           </div>
 
+          <div className="px-2 w-full sm:w-[50%] mb-2">
+            <label className="text-gray-900 text-sm">
+              Tipo de Negocio
+              <span className="text-red-700 font-extrabold"> *</span>
+              {loadingBusinessesTypes &&
+                <div className="inline-block ml-2 w-5 h-5 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>}
+
+              {!showAlertBusinessesTypes && (
+                <span className="ml-2 top-0 right-6 inline-flex items-center gap-1 text-xs text-red-600">
+                  <AlertCircle className="w-3 h-3" />
+                  <span>Ocurrió un problema</span>
+                </span>
+              )}
+            </label>
+            <select
+              className="border text-gray-500 border-gray-300 rounded-md px-3 py-2 h-10 w-full"
+              name="businessType"
+              value={selectedBusinessType}
+              onChange={(e) => setSelectedBusinessType(e.target.value)}
+              required
+            >
+              <option value="" disabled>Seleccione un tipo de negocio</option>
+
+              {businessesTypes.map((type) => (
+                <option key={type.id} value={type.id} >{type.name}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="px-2 w-full sm:w-[50%] mb-2">
+            <label className="text-gray-900 text-sm">Correo Electrónico</label>
+            <input
+              type="text"
+              placeholder="Correo Electrónico"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="border border-gray-300 rounded-md px-3 py-2 h-10 w-full"
+              name="email"
+              required
+            />
+          </div>
+
+          <div className="px-2 w-full sm:w-[50%] mb-2">
+            <label className="text-gray-900 text-sm">Teléfono</label>
+            <input
+              type="text"
+              placeholder="Teléfono"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="border border-gray-300 rounded-md px-3 py-2 h-10 w-full"
+              name="phone"
+              required
+            />
+          </div>
+
+          <div className="px-2 w-full sm:w-[50%] mb-2">
+            <label className="text-gray-900 text-sm">Sitio Web</label>
+            <input
+              type="text"
+              placeholder="https://tusitio.com"
+              value={webSite}
+              onChange={(e) => setWebSite(e.target.value)}
+              className="border border-gray-300 rounded-md px-3 py-2 h-10 w-full"
+              name="webSite"
+              required
+            />
+          </div>
+
+          <div className="px-2 w-full sm:w-[50%] mb-2">
+            <label className="text-gray-900 text-sm">
+              Departamento
+              <span className="text-red-700 font-extrabold"> *</span>
+              {loadingDeptos &&
+                <div className="inline-block ml-2 w-5 h-5 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>}
+
+              {!showAlertDeptos && (
+                <span className="ml-2 top-0 right-6 inline-flex items-center gap-1 text-xs text-red-600">
+                  <AlertCircle className="w-3 h-3" />
+                  <span>Ocurrió un problema</span>
+                </span>
+              )}
+            </label>
+            <select
+              className="border text-gray-500 border-gray-300 rounded-md px-3 py-2 h-10 w-full"
+              name="depto"
+              value={selectedDeptos}
+              onChange={(e) => handleChangeDepto(e.target.value)}
+              required
+            >
+              <option value="" disabled>Seleccione un departamento</option>
+
+              {deptos.map((depto) => (
+                <option key={depto.id} value={depto.id} >{toTitleCaseSafeES(depto.name)}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="px-2 w-full sm:w-[50%] mb-2">
+            <label className="text-gray-900 text-sm">
+              Ciudad
+              <span className="text-red-700 font-extrabold"> *</span>
+              {loadingCities &&
+                <div className="inline-block ml-2 w-5 h-5 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>}
+
+              {!showAlertCities && (
+                <span className="ml-2 top-0 right-6 inline-flex items-center gap-1 text-xs text-red-600">
+                  <AlertCircle className="w-3 h-3" />
+                  <span>Ocurrió un problema</span>
+                </span>
+              )}
+            </label>
+            <select
+              className="border text-gray-500 border-gray-300 rounded-md px-3 py-2 h-10 w-full"
+              name="city"
+              value={selectedCity}
+              onChange={(e) => setSelectedCity(e.target.value)}
+              required
+            >
+              <option value="" disabled>Seleccione una ciudad</option>
+
+              {cities.map((city) => (
+                <option key={city.id} value={city.id} >{toTitleCaseSafeES(city.name)}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="px-2 w-full sm:w-[50%] mb-2">
+            <label className="text-gray-900 text-sm">Dirección</label>
+            <input
+              type="text"
+              placeholder="Dirección"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              className="border border-gray-300 rounded-md px-3 py-2 h-10 w-full"
+              name="address"
+              required
+            />
+          </div>
+
           <div className="px-2 w-full sm:w-full mb-2">
             <label className="text-gray-900 text-sm">Estado</label>
             <select
@@ -258,7 +492,7 @@ export const EditBusinesses = () => {
 
           <div className="px-2 w-full sm:w-full mb-2">
             <button type="submit" className="bg-green-600 text-white px-3 py-2 h-10 rounded-md w-full hover:bg-green-700">
-              Agregar
+              Editar
             </button>
           </div>
 
@@ -273,7 +507,10 @@ export const EditBusinesses = () => {
           messageAlert2={messageAlert2}
           textButton="Cerrar"
           iconComponent={iconComponentModalAlert}
-          onClick={() => setShowAlert(false)}
+          onClick={() => {
+            updateOk && navigate(`/admin/businesses`);
+            setShowAlert(false);
+          }}
         />
       )}
 
