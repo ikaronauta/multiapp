@@ -129,8 +129,8 @@ export const EditBusinesses = () => {
       .finally(() => setLoadingDeptos(false));
   }, []);
 
-  useEffect(() => { 
-    
+  useEffect(() => {
+
     if (!typesOk || !deptosOk) return;
     getBusinessById(id)
       .then((data) => {
@@ -148,21 +148,21 @@ export const EditBusinesses = () => {
           setSelectedStatus(data.data.status);
           setPreview(data.data.logo_url);
         } else {
-          
+
           setShowAlert(true);
           setTitleAlert("Error al obtener el negocio");
           setMessageAlert1(data.message ?? 'Algo fallo');
         }
       })
       .catch((error) => {
-        
+
         setShowAlert(true);
         setTitleAlert("Error al obtener el negocio");
         setMessageAlert1(error.message ?? 'Algo fallo');
       })
       .finally(() => setLoading(false));
   }, [businessesTypes, deptos, id]);
-  
+
 
   useEffect(() => {
     if (deptos.length === 0 || !selectedDeptos) return;
@@ -207,7 +207,7 @@ export const EditBusinesses = () => {
       formData.append("nameBusiness", nameBusiness);
       formData.append("slug", slug);
       formData.append("description", e.target.description.value);
-       formData.append("businessType", selectedBusinessType);
+      formData.append("businessType", selectedBusinessType);
       formData.append("email", email);
       formData.append("phone", phone);
       formData.append("webSite", webSite);
@@ -295,7 +295,6 @@ export const EditBusinesses = () => {
               name="description"
               className="border border-gray-300 rounded-md px-3 py-2 min-h-32 w-full resize-y"
               defaultValue={description}
-              required
             ></textarea>
           </div>
 
@@ -337,7 +336,6 @@ export const EditBusinesses = () => {
               onChange={(e) => setEmail(e.target.value)}
               className="border border-gray-300 rounded-md px-3 py-2 h-10 w-full"
               name="email"
-              required
             />
           </div>
 
@@ -350,7 +348,6 @@ export const EditBusinesses = () => {
               onChange={(e) => setPhone(e.target.value)}
               className="border border-gray-300 rounded-md px-3 py-2 h-10 w-full"
               name="phone"
-              required
             />
           </div>
 
@@ -363,7 +360,6 @@ export const EditBusinesses = () => {
               onChange={(e) => setWebSite(e.target.value)}
               className="border border-gray-300 rounded-md px-3 py-2 h-10 w-full"
               name="webSite"
-              required
             />
           </div>
 
@@ -434,7 +430,6 @@ export const EditBusinesses = () => {
               onChange={(e) => setAddress(e.target.value)}
               className="border border-gray-300 rounded-md px-3 py-2 h-10 w-full"
               name="address"
-              required
             />
           </div>
 
@@ -451,6 +446,7 @@ export const EditBusinesses = () => {
               <option value="activo">Activo</option>
               <option value="inactivo">Inactivo</option>
               <option value="suspendido">Suspendido</option>
+              <option value="eliminado">Eliminado</option>
             </select>
           </div>
 

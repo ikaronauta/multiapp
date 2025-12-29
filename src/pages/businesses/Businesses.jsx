@@ -1,52 +1,63 @@
 // src/pages/businesses/Businesses.jsx
 
 import { Link, useNavigate } from "react-router-dom";
-import { PlusCircle, TriangleAlert } from "lucide-react";
+import { Info, PlusCircle, TriangleAlert } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { getBusinessesData } from "../../adapters/business.adapter";
+import { deleteBusiness, getBusinessesData } from "../../adapters/business.adapter";
 
 import DataTable from "../../components/DataTable";
 import ModalAlert from "../../components/modals/ModalAlert";
 import SpinnerLouder from "../../components/SpinnerLouder";
+import ModalSpinner from "../../components/modals/ModelSpinner";
+import ModalConfirm from "../../components/modals/ModalConfirm";
 
 
 export default function Businesses() {
 
   const [loading, setLoading] = useState(true);
-  const [dataBusinesses, setDataBusinesses] = useState({data: [], columns: []});
+  const [dataBusinesses, setDataBusinesses] = useState({ data: [], columns: [] });
   const [showAlert, setShowAlert] = useState(false);
   const [titleAlert, setTitleAlert] = useState("Atención.");
   const [messageAlert1, setMessageAlert1] = useState("");
   const [messageAlert2, setMessageAlert2] = useState("");
   const [iconComponent, setIconComponent] = useState(<TriangleAlert className="text-red-600" size={24} />);
   const [showDataTable, setShowDataTable] = useState(false);
+  const [showAlertSpinner, setShowAlertSpinner] = useState(false);
+  const [businessToDelete, setBusinessToDelete] = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const navigate = useNavigate();
 
-  useEffect(() => {
+
+  const loadBusinesses = () => {
+    setLoading(true);
     getBusinessesData()
       .then((data) => {
         if (data.data) {
           setDataBusinesses({
             data: data.data,
-            columns: data.data && data.data.length > 0 ? Object.keys(data.data[0]) : []
+            columns: data.data.length > 0 ? Object.keys(data.data[0]) : []
           });
           setShowDataTable(true);
         } else {
           setShowAlert(true);
           setTitleAlert("Error al obtener los negocios");
-          setMessageAlert1(data.message ?? 'Algo fallo');
+          setMessageAlert1(data.message ?? "Algo falló");
           setShowDataTable(false);
         }
       })
-      .catch((data) => {
+      .catch((err) => {
         setShowAlert(true);
-        setTitleAlert("Error al obtener los usuarios");
-        setMessageAlert1(data.message ?? 'Algo fallo');
+        setTitleAlert("Error al obtener los negocios");
+        setMessageAlert1(err.message ?? "Algo falló");
         setShowDataTable(false);
       })
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    loadBusinesses();
   }, []);
 
   const handleEdit = (row) => {
@@ -54,8 +65,35 @@ export default function Businesses() {
     navigate(`/admin/businesses/edit/${row.original.ID}`);
   }
 
-  const handleDelete = (row) => {
-    console.log(row.original);
+  const handleConfirmDeleteBusiness = (row) => {
+    setBusinessToDelete(row.original.ID);
+    setShowConfirm(true);
+  }
+
+  const handleDelete = async () => {
+    setShowAlertSpinner(true);
+
+    try {
+      const response = await deleteBusiness(businessToDelete);
+
+      if (!response.ok) {
+        setShowAlertSpinner(false);
+        setShowAlert(true);
+        setTitleAlert("Error al eliminar el negocio.");
+        setMessageAlert1(response.message);
+        return;
+      }
+
+      setBusinessToDelete(null);
+      setShowAlertSpinner(false);
+
+      loadBusinesses();
+    } catch (error) {
+      setShowAlertSpinner(false);
+      setTitleAlert("Error al eliminar negocio.");
+      setMessageAlert1('Algo fallo');
+      console.error("Error deleting business:", error);
+    }
   }
 
   if (loading) return <SpinnerLouder height="h-full" />;
@@ -71,7 +109,7 @@ export default function Businesses() {
       </Link>
 
       {showDataTable && (
-        <DataTable objData={dataBusinesses} onClickEdit={handleEdit} onClickDelete={handleDelete} />
+        <DataTable objData={dataBusinesses} onClickEdit={handleEdit} onClickDelete={handleConfirmDeleteBusiness} />
       )}
 
       {/* Modales */}
@@ -83,6 +121,26 @@ export default function Businesses() {
           textButton="Cerrar"
           iconComponent={iconComponent}
           onClick={() => setShowAlert(false)}
+        />
+      )}
+
+      {showAlertSpinner && (
+        <ModalSpinner
+          titleModal="Procesando..."
+          messageModal=""
+          iconComponent={<Info className="text-red-600" size={24} />}
+        />
+      )}
+
+      {showConfirm && (
+        <ModalConfirm
+          titleConfirm="¿Eliminar Negocio?"
+          messageConfirm="La eliminación solo se hace de manera lógica."
+          onClickConfirm={() => {
+            handleDelete();
+            setShowConfirm(false);
+          }}
+          onClickCancel={() => setShowConfirm(false)}
         />
       )}
     </>

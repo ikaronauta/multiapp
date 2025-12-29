@@ -56,3 +56,11 @@ export const getBusinessesTypes = async () => {
   }
 }
 
+export const deleteBusiness = async (idBusiness) => {
+  try {
+    const { data } = await api.delete(`/businesses/delete/${idBusiness}`);
+    return data;
+  } catch (error) {
+    return error.response?.data ?? { ok: false, message: "Error en la petición" };
+  }
+}

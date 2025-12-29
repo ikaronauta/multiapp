@@ -91,7 +91,7 @@ export default function AdminRoles() {
         setShowAlertSpinner(false);
         setShowAlert(true);
         setTitleAlert("Error al eliminar rol.");
-        setMessageAlert(response.message);
+        setMessageAlert1(response.message);
         return;
       }
 

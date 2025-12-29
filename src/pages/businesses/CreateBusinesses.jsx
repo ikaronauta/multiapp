@@ -241,7 +241,6 @@ export const CreateBusinesses = () => {
             <textarea
               name="description"
               className="border border-gray-300 rounded-md px-3 py-2 min-h-32 w-full resize-y"
-              required
             ></textarea>
           </div>
 
@@ -283,7 +282,6 @@ export const CreateBusinesses = () => {
               onChange={(e) => setEmail(e.target.value)}
               className="border border-gray-300 rounded-md px-3 py-2 h-10 w-full"
               name="email"
-              required
             />
           </div>
 
@@ -296,7 +294,6 @@ export const CreateBusinesses = () => {
               onChange={(e) => setPhone(e.target.value)}
               className="border border-gray-300 rounded-md px-3 py-2 h-10 w-full"
               name="phone"
-              required
             />
           </div>
 
@@ -309,7 +306,6 @@ export const CreateBusinesses = () => {
               onChange={(e) => setWebSite(e.target.value)}
               className="border border-gray-300 rounded-md px-3 py-2 h-10 w-full"
               name="webSite"
-              required
             />
           </div>
 
@@ -380,7 +376,6 @@ export const CreateBusinesses = () => {
               onChange={(e) => setAddress(e.target.value)}
               className="border border-gray-300 rounded-md px-3 py-2 h-10 w-full"
               name="address"
-              required
             />
           </div>
 
@@ -411,7 +406,7 @@ export const CreateBusinesses = () => {
               <input
                 type="file"
                 name="logo"
-                required={!preview}
+                // required={!preview}
                 onChange={handleFileChange}
                 ref={fileInputRef}
                 className="
