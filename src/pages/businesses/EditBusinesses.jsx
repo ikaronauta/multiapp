@@ -53,6 +53,7 @@ export const EditBusinesses = () => {
   const [typesOk, setTypesOk] = useState(false);
   const [deptosOk, setDeptosOk] = useState(false);
   const [updateOk, setUpdateOk] = useState(false);
+  const [logoRemoved, setLogoRemoved] = useState(false);
 
   const fileInputRef = useRef(null);
 
@@ -73,6 +74,7 @@ export const EditBusinesses = () => {
   const removeLogo = () => {
     setFileName("");
     setPreview(null);
+    setLogoRemoved(true);
     if (fileInputRef.current) {
       fileInputRef.current.value = ""; // reset input file
     }
@@ -215,10 +217,11 @@ export const EditBusinesses = () => {
       formData.append("address", address);
       formData.append("status", selectedStatus);
       formData.append("updatedById", user.id);
+      formData.append("logoRemoved", logoRemoved);
 
       if (logoFile) {
         formData.append("logo", logoFile);
-      }
+      } 
 
       const response = await updateBusiness(id, formData);
 

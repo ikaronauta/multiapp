@@ -11,6 +11,7 @@ import ModalAlert from "../../components/modals/ModalAlert";
 import SpinnerLouder from "../../components/SpinnerLouder";
 import ModalSpinner from "../../components/modals/ModelSpinner";
 import ModalConfirm from "../../components/modals/ModalConfirm";
+import ModalConfirmDelete from "../../components/modals/ModalConfirmDelete";
 
 
 export default function Businesses() {
@@ -26,6 +27,7 @@ export default function Businesses() {
   const [showAlertSpinner, setShowAlertSpinner] = useState(false);
   const [businessToDelete, setBusinessToDelete] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [nameBusinessToDelete, setNameBusinessToDelete] = useState("");
 
   const navigate = useNavigate();
 
@@ -68,6 +70,7 @@ export default function Businesses() {
   const handleConfirmDeleteBusiness = (row) => {
     setBusinessToDelete(row.original.ID);
     setShowConfirm(true);
+    setNameBusinessToDelete(row.original.Nombre);
   }
 
   const handleDelete = async () => {
@@ -133,10 +136,13 @@ export default function Businesses() {
       )}
 
       {showConfirm && (
-        <ModalConfirm
+        <ModalConfirmDelete
           titleConfirm="¿Eliminar Negocio?"
-          messageConfirm="La eliminación solo se hace de manera lógica."
+          messageConfirm1="Esta acción no se puede deshacer."
+          messageConfirm2="Debe ingresar el excatamente el nombre del negocio"
+          name={nameBusinessToDelete}
           onClickConfirm={() => {
+            // TODO: Agregar lógica para que el usuario tenga que ingresar el nombre del negocio antes de eliminarlo y ajustar el mensaje
             handleDelete();
             setShowConfirm(false);
           }}
