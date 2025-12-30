@@ -15,6 +15,17 @@ export const getBusinessesData = async () => {
 }
 
 export const getBusinessById = async (id) => {
+
+  try {
+    const { data } = await api.get(`/businesses/${id}`);
+    return data;
+  } catch (error) {
+    return error.response?.data ?? { ok: false, message: "Error en la petición" };
+  }
+}
+
+export const getBusinessByUUID = async (id) => {
+
   try {
     const { data } = await api.get(`/businesses/${id}`);
     return data;

@@ -16,6 +16,7 @@ export default function DataTable({ objData, onClickEdit, onClickDelete }) {
   const [sorting, setSorting] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({
     ID: false, // oculta la columna Id por defecto
+    uuid: false,
   });
   const [pageSize, setPageSize] = useState(10); // filas por página
   const [pageIndex, setPageIndex] = useState(0); // índice de página
@@ -83,7 +84,7 @@ export default function DataTable({ objData, onClickEdit, onClickDelete }) {
           enableHiding: true,
         };
       }
-
+      
       return col;
     });
 

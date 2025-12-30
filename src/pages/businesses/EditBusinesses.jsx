@@ -3,7 +3,7 @@
 import { AlertCircle, CircleChevronLeft, Info, TriangleAlert } from "lucide-react"
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom"
-import { getBusinessById, getBusinessesTypes, updateBusiness } from "../../adapters/business.adapter";
+import { getBusinessById, getBusinessByUUID, getBusinessesTypes, updateBusiness } from "../../adapters/business.adapter";
 import SpinnerLouder from "../../components/SpinnerLouder";
 import ModalAlert from "../../components/modals/ModalAlert";
 import { getUserFromToken } from "../../utils/auth";
@@ -134,7 +134,8 @@ export const EditBusinesses = () => {
   useEffect(() => {
 
     if (!typesOk || !deptosOk) return;
-    getBusinessById(id)
+    
+    getBusinessByUUID(id)
       .then((data) => {
         if (data.data) {
           setNameBusiness(data.data.name);
@@ -164,7 +165,6 @@ export const EditBusinesses = () => {
       })
       .finally(() => setLoading(false));
   }, [businessesTypes, deptos, id]);
-
 
   useEffect(() => {
     if (deptos.length === 0 || !selectedDeptos) return;

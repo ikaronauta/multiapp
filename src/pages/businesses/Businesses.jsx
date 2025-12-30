@@ -64,7 +64,7 @@ export default function Businesses() {
 
   const handleEdit = (row) => {
     console.log(row.original);
-    navigate(`/admin/businesses/edit/${row.original.ID}`);
+    navigate(`/admin/businesses/edit/${row.original.uuid}`);
   }
 
   const handleConfirmDeleteBusiness = (row) => {
