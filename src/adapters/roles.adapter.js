@@ -5,12 +5,8 @@ import { getUserFromToken } from "../utils/auth.js";
 
 
 export const getRolesData = async () => {
-    // const token = localStorage.getItem("token");
-    // const decoded = jwtDecode(token);
-
   try {
-    const user = getUserFromToken();
-    const { data } = await api.get(`/roles/${user.roleId}`);
+    const { data } = await api.get(`/roles`);
     return data;
   } catch (error) {
     return error.response?.data ?? { ok: false, message: "Error en la petición" };

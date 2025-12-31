@@ -10,7 +10,6 @@ import DataTable from "../../components/DataTable";
 import ModalAlert from "../../components/modals/ModalAlert";
 import SpinnerLouder from "../../components/SpinnerLouder";
 import ModalSpinner from "../../components/modals/ModelSpinner";
-import ModalConfirm from "../../components/modals/ModalConfirm";
 import ModalConfirmDelete from "../../components/modals/ModalConfirmDelete";
 
 
@@ -39,7 +38,7 @@ export default function Businesses() {
         if (data.data) {
           setDataBusinesses({
             data: data.data,
-            columns: data.data.length > 0 ? Object.keys(data.data[0]) : []
+            columns: data.data.length > 0 ? Object.keys(data.data[0]) : [],
           });
           setShowDataTable(true);
         } else {
