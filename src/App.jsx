@@ -18,6 +18,7 @@ import { ROLES } from "./data/data";
 import Businesses from "./pages/businesses/Businesses";
 import { CreateBusinesses } from "./pages/businesses/CreateBusinesses";
 import { EditBusinesses } from "./pages/businesses/EditBusinesses";
+import { CreateRol } from "./pages/roles/CreateRol";
 
 
 export default function App() {
@@ -66,6 +67,12 @@ export default function App() {
         <Route path="/admin/roles" element={
           <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
             <Roles />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/admin/roles/create" element={
+          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+            <CreateRol />
           </ProtectedRoute>
         } />
 

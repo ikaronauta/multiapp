@@ -13,9 +13,13 @@ export const getRolesData = async () => {
   }
 }
 
-export const newRol = async (nameRol) => {
+export const newRol = async (formData) => {
   try {
-    const { data } = await api.post("/roles/newrol", { nameRol });
+    const { data } = await api.post("/roles/newrol", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      }
+    });
     return data;
   } catch (error) {
     return error.response?.data ?? { ok: false, message: "Error en la petición" };

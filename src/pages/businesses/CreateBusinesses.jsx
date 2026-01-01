@@ -134,6 +134,7 @@ export const CreateBusinesses = () => {
       const logoFile = fileInputRef.current?.files[0];
 
       const formData = new FormData();
+      
       formData.append("nameBusiness", nameBusiness);
       formData.append("slug", slug);
       formData.append("description", e.target.description.value);
