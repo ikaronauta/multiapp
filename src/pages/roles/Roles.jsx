@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import SpinnerLouder from "../../components/SpinnerLouder";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { PlusCircle } from "lucide-react";
 import { getRolesData } from "../../adapters/roles.adapter";
 import DataTable from "../../components/DataTable";
@@ -16,6 +16,8 @@ export default function Roles() {
   const [messageAlert1, setMessageAlert1] = useState("");
   const [messageAlert2, setMessageAlert2] = useState("");
   const [dataRoles, setDataRoles] = useState({ data: [], columns: [] });
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     getRolesData()
@@ -42,6 +44,11 @@ export default function Roles() {
       .finally(() => setLoading(false));
   }, []);
 
+  const handleEdit = (row) => {
+    console.log(row.original);
+    navigate(`/admin/roles/edit/${row.original.uuid}`);
+  }
+
   if (loading) return <SpinnerLouder height="h-full" />;
 
   return (
@@ -55,7 +62,7 @@ export default function Roles() {
       </Link>
 
       {showDataTable && (
-        <DataTable objData={roles} onClickEdit={() => { }} onClickDelete={() => { }} />
+        <DataTable objData={roles} onClickEdit={handleEdit} onClickDelete={() => { }} />
       )}
     </>
   );

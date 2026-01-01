@@ -1,12 +1,19 @@
 // src/adapters/rolesAdapter.js
 
 import { api } from "../services/api.js";
-import { getUserFromToken } from "../utils/auth.js";
-
 
 export const getRolesData = async () => {
   try {
     const { data } = await api.get(`/roles`);
+    return data;
+  } catch (error) {
+    return error.response?.data ?? { ok: false, message: "Error en la petición" };
+  }
+}
+
+export const getRolById = async (id) => {
+  try {
+    const { data } = await api.get(`/roles/${id}`);
     return data;
   } catch (error) {
     return error.response?.data ?? { ok: false, message: "Error en la petición" };
@@ -35,9 +42,11 @@ export const deleteRol = async (idRol) => {
   }
 }
 
-export const editRol = async (idRol, newName) => {
+export const updatetRol = async (id, formData) => {
   try {
-    const { data } = await api.put(`/roles/updateRol/${idRol}`, { nameRol: newName });
+    const { data } = await api.put(`/roles/edit/${id}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
     return data;
   } catch (error) {
     return error.response?.data ?? { ok: false, message: "Error en la petición" };

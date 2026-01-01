@@ -30,7 +30,6 @@ export default function Businesses() {
 
   const navigate = useNavigate();
 
-
   const loadBusinesses = () => {
     setLoading(true);
     getBusinessesData()
@@ -141,7 +140,6 @@ export default function Businesses() {
           messageConfirm2="Debe ingresar el excatamente el nombre del negocio"
           name={nameBusinessToDelete}
           onClickConfirm={() => {
-            // TODO: Agregar lógica para que el usuario tenga que ingresar el nombre del negocio antes de eliminarlo y ajustar el mensaje
             handleDelete();
             setShowConfirm(false);
           }}

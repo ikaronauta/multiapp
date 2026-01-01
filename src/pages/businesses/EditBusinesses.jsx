@@ -517,5 +517,5 @@ export const EditBusinesses = () => {
         <ModalSpinner titleModal="Procesando..." messageModal="" iconComponent={<Info className="text-red-600" size={24} />} />
       )}
     </div>
-  )
+  );
 }
