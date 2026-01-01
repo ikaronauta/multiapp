@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import SpinnerLouder from "../../components/SpinnerLouder";
 import { Link, useNavigate } from "react-router-dom";
-import { PlusCircle } from "lucide-react";
-import { getRolesData } from "../../adapters/roles.adapter";
+import { Info, PlusCircle, TriangleAlert } from "lucide-react";
+import { deleteRol, getRolesData } from "../../adapters/roles.adapter";
 import DataTable from "../../components/DataTable";
+import ModalConfirmDelete from "../../components/modals/ModalConfirmDelete";
+import ModalSpinner from "../../components/modals/ModelSpinner";
+import ModalAlert from "../../components/modals/ModalAlert";
 
 
 export default function Roles() {
@@ -15,11 +18,20 @@ export default function Roles() {
   const [showAlert, setShowAlert] = useState(false);
   const [messageAlert1, setMessageAlert1] = useState("");
   const [messageAlert2, setMessageAlert2] = useState("");
+  const [iconComponent, setIconComponent] = useState(<TriangleAlert className="text-red-600" size={24} />);
   const [dataRoles, setDataRoles] = useState({ data: [], columns: [] });
+
+  const [rolToDelete, setRolToDelete] = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [codeRolToDelete, setCodeRolToDelete] = useState("");
+  const [showAlertSpinner, setShowAlertSpinner] = useState(false);
+
 
   const navigate = useNavigate();
 
-  useEffect(() => {
+  const loadRoles = () => {
+    setLoading(true);
+
     getRolesData()
       .then((data) => {
         if (data.data) {
@@ -42,11 +54,47 @@ export default function Roles() {
         setShowDataTable(false);
       })
       .finally(() => setLoading(false));
+  }
+
+  useEffect(() => {
+    loadRoles();
   }, []);
 
   const handleEdit = (row) => {
     console.log(row.original);
     navigate(`/admin/roles/edit/${row.original.uuid}`);
+  }
+
+  const handleConfirmDeleteRol = (row) => {
+    setRolToDelete(row.original.uuid);
+    setShowConfirm(true);
+    setCodeRolToDelete(row.original.Codigo);
+  }
+
+  const handleDelete = async () => {
+    setShowAlertSpinner(true);
+
+    try {
+      const response = await deleteRol(rolToDelete);
+
+      if (!response.ok) {
+        setShowAlertSpinner(false);
+        setShowAlert(true);
+        setTitleAlert("Error al eliminar el rol.");
+        setMessageAlert1(response.message);
+        return;
+      }
+
+      setCodeRolToDelete(null);
+      setShowAlertSpinner(false);
+
+      loadRoles();
+    } catch (error) {
+      setShowAlertSpinner(false);
+      setTitleAlert("Error al eliminar rol.");
+      setMessageAlert1('Algo fallo');
+      console.error("Error deleting rol:", error);
+    }
   }
 
   if (loading) return <SpinnerLouder height="h-full" />;
@@ -61,8 +109,42 @@ export default function Roles() {
         <span>Nuevo rol</span>
       </Link>
 
+      {/* Modales */}
       {showDataTable && (
-        <DataTable objData={roles} onClickEdit={handleEdit} onClickDelete={() => { }} />
+        <DataTable objData={roles} onClickEdit={handleEdit} onClickDelete={handleConfirmDeleteRol} />
+      )}
+
+      {showConfirm && (
+        <ModalConfirmDelete
+          titleConfirm="¿Eliminar Rol?"
+          messageConfirm1="Esta acción no se puede deshacer."
+          messageConfirm2="Debe ingresar excatamente el código del rol"
+          name={codeRolToDelete}
+          onClickConfirm={() => {
+            handleDelete();
+            setShowConfirm(false);
+          }}
+          onClickCancel={() => setShowConfirm(false)}
+        />
+      )}
+
+      {showAlertSpinner && (
+        <ModalSpinner
+          titleModal="Procesando..."
+          messageModal=""
+          iconComponent={<Info className="text-red-600" size={24} />}
+        />
+      )}
+
+      {showAlert && (
+        <ModalAlert
+          titleAlert={titleAlert}
+          messageAlert1={messageAlert1}
+          messageAlert2={messageAlert2}
+          textButton="Cerrar"
+          iconComponent={iconComponent}
+          onClick={() => setShowAlert(false)}
+        />
       )}
     </>
   );

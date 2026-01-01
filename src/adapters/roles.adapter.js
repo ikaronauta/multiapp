@@ -35,7 +35,7 @@ export const newRol = async (formData) => {
 
 export const deleteRol = async (idRol) => {
   try {
-    const { data } = await api.delete(`/roles/deleterol/${idRol}`);
+    const { data } = await api.delete(`/roles/delete/${idRol}`);
     return data;
   } catch (error) {
     return error.response?.data ?? { ok: false, message: "Error en la petición" };;

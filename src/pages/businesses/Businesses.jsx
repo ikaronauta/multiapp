@@ -66,7 +66,7 @@ export default function Businesses() {
   }
 
   const handleConfirmDeleteBusiness = (row) => {
-    setBusinessToDelete(row.original.ID);
+    setBusinessToDelete(row.original.uuid);
     setShowConfirm(true);
     setNameBusinessToDelete(row.original.Nombre);
   }
@@ -137,7 +137,7 @@ export default function Businesses() {
         <ModalConfirmDelete
           titleConfirm="¿Eliminar Negocio?"
           messageConfirm1="Esta acción no se puede deshacer."
-          messageConfirm2="Debe ingresar el excatamente el nombre del negocio"
+          messageConfirm2="Debe ingresar excatamente el nombre del negocio"
           name={nameBusinessToDelete}
           onClickConfirm={() => {
             handleDelete();
