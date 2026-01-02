@@ -31,6 +31,9 @@ export default function CreateUser() {
   const [userConfirmEmail, setUserConfirmEmail] = useState("");
   const [userPassword, setUserPassword] = useState("");
   const [userConfirmPassword, setUserConfirmPassword] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("activo");
+  const [selectedDocumentType, setSelectedDocumentType] = useState("CC");
+  const [userDocument, setUserDocument] = useState("");
 
   const [showAlert, setShowAlert] = useState(false);
   const [showAlertSubmit, setShowAlertSubmit] = useState(false);
@@ -41,14 +44,14 @@ export default function CreateUser() {
     <TriangleAlert className="text-red-600" size={24} />
   );
 
-   // Inicializa selectedBusiness cuando user está disponible
+  // Inicializa selectedBusiness cuando user está disponible
   useEffect(() => {
-  if (user?.businessId) {
-    setSelectedBusiness(user.businessId);
-  }
-}, [user]);
+    if (user?.businessId) {
+      setSelectedBusiness(user.businessId);
+    }
+  }, [user]);
 
- // Carga negocios si es System
+  // Carga negocios si es System
   useEffect(() => {
 
     if (!user) {
@@ -56,29 +59,22 @@ export default function CreateUser() {
       return;
     }
 
-    if (user.businessId === 1) {
-      setIsSuperAdmin(true);
-      
-      getBusinessesData()
-        .then((data) => {
-          if (data.data) {
-            setBusinesses(data.data);
-          } else {
-            setShowAlert(true);
-            setTitleAlert("Error al obtener los negocios");
-            setMessageAlert1(data.message ?? 'Algo fallo');
-          }
-        })
-        .catch((error) => {
+    getBusinessesData()
+      .then((data) => {
+        if (data.data) {
+          setBusinesses(data.data);
+        } else {
           setShowAlert(true);
           setTitleAlert("Error al obtener los negocios");
-          setMessageAlert1(error.message ?? 'Algo fallo');
-        })
-        .finally(() => setLoadingUser(false));
-    } else {
-      setIsSuperAdmin(false);
-      setLoadingUser(false);
-    }
+          setMessageAlert1(data.message ?? 'Algo fallo');
+        }
+      })
+      .catch((error) => {
+        setShowAlert(true);
+        setTitleAlert("Error al obtener los negocios");
+        setMessageAlert1(error.message ?? 'Algo fallo');
+      })
+      .finally(() => setLoadingUser(false));
   }, [user]);
 
   // Carga roles
@@ -101,18 +97,9 @@ export default function CreateUser() {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleSelectBusiness = (e) => {
-    setSelectedBusiness(e.target.value);
-    if (e.target.value === "1") {
-      setSelectedRole("1");
-      return;
-    }
-
-    setSelectedRole("");
-  };
-
   const handleAddUser = async (e) => {
     e.preventDefault();
+    setShowAlertSubmit(true);
 
     if (userEmail !== userConfirmEmail) {
       setShowAlert(true);
@@ -128,18 +115,23 @@ export default function CreateUser() {
       return;
     }
 
-    setShowAlertSubmit(true);
-
     try {
-      const formData = new FormData(e.target);
-      const dataUser = Object.fromEntries(formData.entries());
-      dataUser["createdById"] = user.id;
+     
+      const formData = new FormData();
 
-      if (!dataUser.businessId) {
-        dataUser["businessId"] = user.businessId;
-      }
+      formData.append("business_id", selectedBusiness);
+      formData.append("first_name", userName);
+      formData.append("last_name", userLastName);
+      formData.append("document_type", selectedDocumentType);
+      formData.append("document", userDocument);
+      formData.append("email", userEmail);
+      formData.append("password", userPassword);
+      formData.append("rol_id", selectedRole);
+      formData.append("status", selectedStatus);
+      formData.append("created_by_id", user.id);
 
-      const response = await newUser(dataUser);
+      // ¿ Porque esta llegando el req.body = undefined ?
+      const response = await newUser(formData);
 
       if (!response.ok) {
         const errorMsg = response.message ?? "Error inesperado";
@@ -151,7 +143,13 @@ export default function CreateUser() {
         return;
       }
 
-       // Limpieza de inputs
+      setShowAlertSubmit(false);
+      setShowAlert(true);
+      setTitleAlert("Negocio agregado");
+      setIconComponentModalAlert(<Info className="text-green-600" size={24} />);
+      setMessageAlert1("El negocio ha sido agregado correctamente");
+
+      // Limpieza de inputs
       setShowAlertSubmit(false);
       setShowAlert(true);
       setTitleAlert("Usuario agregado");
@@ -159,6 +157,8 @@ export default function CreateUser() {
       setMessageAlert1("El Usuario ha sido agregado correctamente.");
       setUserName("");
       setUserLastName("");
+      setSelectedDocumentType("");
+      setUserDocument("");
       setUserEmail("");
       setUserConfirmEmail("");
       setUserPassword("");
@@ -167,6 +167,7 @@ export default function CreateUser() {
       setSelectedBusiness("");
     } catch (error) {
       setShowAlertSubmit(false);
+      setShowAlert(true);
       setTitleAlert("Error al agregar Usuario.");
       setMessageAlert1(error.message ?? "Error inesperado");
       console.error("Error adding user:", error);
@@ -190,26 +191,31 @@ export default function CreateUser() {
         <h2 className="text-gray-900 text-2xl font-bold mb-4">Crear Usuario</h2>
 
         <form onSubmit={handleAddUser} className="flex flex-wrap -mx-2 items-end">
-          {isSuperAdmin && (
-            <div className="px-2 w-full sm:w-full mb-2">
-              <label className="text-gray-900 text-sm">Empresa o Negocio</label>
+          <div className="px-2 w-full sm:w-full mb-2">
+              <label className="text-gray-900 text-sm">
+                Empresa o Negocio
+                <span className="text-red-700 font-extrabold"> *</span>
+              </label>
               <select
                 className="border text-gray-500 border-gray-300 rounded-md px-3 py-2 h-10 w-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                onChange={handleSelectBusiness}
+                onChange={(e) => setSelectedBusiness(e.target.value)}
                 name="businessId"
                 value={selectedBusiness}
+                required
               >
                 <option value="">Seleccione una Empresa o Negocio</option>
 
                 {businesses.map((business) => (
-                  <option key={business.id} value={business.id}>{business.name}</option>
+                  <option key={business.ID} value={business.ID}>{business.Nombre}</option>
                 ))}
               </select>
             </div>
-          )}
 
           <div className="px-2 w-full sm:w-[50%] mb-2">
-            <label className="text-gray-900 text-sm">Nombres</label>
+            <label className="text-gray-900 text-sm">
+              Nombres
+              <span className="text-red-700 font-extrabold"> *</span>
+            </label>
             <input
               type="text"
               placeholder="Nombres del usuario"
@@ -222,7 +228,10 @@ export default function CreateUser() {
           </div>
 
           <div className="px-2 w-full sm:w-[50%] mb-2">
-            <label className="text-gray-900 text-sm">Apellidos</label>
+            <label className="text-gray-900 text-sm">
+              Apellidos
+              <span className="text-red-700 font-extrabold"> *</span>
+            </label>
             <input
               type="text"
               placeholder="Apellidos del usuario"
@@ -234,8 +243,47 @@ export default function CreateUser() {
             />
           </div>
 
-          <div className="px-2 w-full sm:w-full mb-2">
-            <label className="text-gray-900 text-sm">Rol</label>
+          <div className="px-2 w-full sm:w-[50%] mb-2">
+            <label className="text-gray-900 text-sm">
+              Tipo de Documento
+              <span className="text-red-700 font-extrabold"> *</span>
+            </label>
+            <select
+              className="border text-gray-500 border-gray-300 rounded-md px-3 py-2 h-10 w-full"
+              name="document_type"
+              value={selectedDocumentType}
+              onChange={(e) => setSelectedDocumentType(e.target.value)}
+              required
+            >
+              <option value="" disabled>Seleccione un tipo de documento</option>
+              <option value="CC">Cedula de Ciudadania</option>
+              <option value="CE">Cedula de Estrangeria</option>
+              <option value="NIT">NIT</option>
+              <option value="PAS">Pasaporte</option>
+            </select>
+          </div>
+
+          <div className="px-2 w-full sm:w-[50%] mb-2">
+            <label className="text-gray-900 text-sm">
+              Documento
+              <span className="text-red-700 font-extrabold"> *</span>
+            </label>
+            <input
+              type="text"
+              placeholder="Documento"
+              value={userDocument}
+              onChange={(e) => setUserDocument(e.target.value)}
+              className="border border-gray-300 rounded-md px-3 py-2 h-10 w-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              name="document"
+              required
+            />
+          </div>
+
+          <div className="px-2 w-full sm:w-[50%] mb-2">
+            <label className="text-gray-900 text-sm">
+              Rol
+              <span className="text-red-700 font-extrabold"> *</span>
+            </label>
             <select
               value={selectedRole}
               className="border text-gray-500 border-gray-300 rounded-md px-3 py-2 h-10 w-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
@@ -245,14 +293,36 @@ export default function CreateUser() {
               <option value="">Seleccione un rol</option>
 
               {roles.map((rol) => (
-                <option key={rol.id} value={rol.id} >{rol.name}</option>
+                <option key={rol.ID} value={rol.ID} >{rol.Rol}</option>
               ))}
 
             </select>
           </div>
 
           <div className="px-2 w-full sm:w-[50%] mb-2">
-            <label className="text-gray-900 text-sm">Correo electrónico</label>
+            <label className="text-gray-900 text-sm">
+              Estado
+              <span className="text-red-700 font-extrabold"> *</span>
+            </label>
+            <select
+              className="border text-gray-500 border-gray-300 rounded-md px-3 py-2 h-10 w-full"
+              name="status"
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+              required
+            >
+              <option value="" disabled>Seleccione un estado</option>
+              <option value="activo">Activo</option>
+              <option value="inactivo">Inactivo</option>
+              <option value="suspendido">Suspendido</option>
+            </select>
+          </div>
+
+          <div className="px-2 w-full sm:w-[50%] mb-2">
+            <label className="text-gray-900 text-sm">
+              Correo electrónico
+              <span className="text-red-700 font-extrabold"> *</span>
+            </label>
             <input
               type="email"
               placeholder="Correo electrónico del usuario"
@@ -277,7 +347,10 @@ export default function CreateUser() {
           </div>
 
           <div className="px-2 w-full sm:w-[50%] mb-2">
-            <label className="text-gray-900 text-sm">Password</label>
+            <label className="text-gray-900 text-sm">
+              Password
+              <span className="text-red-700 font-extrabold"> *</span>
+            </label>
             <input
               type="password"
               placeholder="Password"
@@ -301,11 +374,8 @@ export default function CreateUser() {
             />
           </div>
 
-          <div className="px-2 w-full sm:w-full mb-2">
-            <button
-              type="submit"
-              className="bg-green-600 text-white px-3 py-2 h-10 rounded-md w-full hover:bg-green-700"
-            >
+          <div className="px-2 w-full sm:w-full mb-2 mt-2">
+            <button type="submit" className="bg-green-600 text-white px-3 py-2 h-10 rounded-md w-full hover:bg-green-700">
               Agregar
             </button>
           </div>

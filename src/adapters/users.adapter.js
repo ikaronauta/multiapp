@@ -7,15 +7,19 @@ export const getUsersData = async () => {
     const { data } = await api.get("/users");
     return data;
   } catch (error) {
-    error.response?.data ?? { ok: false, message: "Error en la petición" };
+    return error.response?.data ?? { ok: false, message: "Error en la petición" };
   }
 }
 
-export const newUser = async (userData) => {
+export const newUser = async (formData) => {
   try {
-    const { data } = await api.post("/users/newuser", userData);
+    const { data } = await api.post("/users/newuser", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      }
+    });
     return data;
   } catch (error) {
-    error.response?.data ?? { ok: false, message: "Error en la petición" };
+    return error.response?.data ?? { ok: false, message: "Error en la petición" };
   }
 }
