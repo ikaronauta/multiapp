@@ -13,13 +13,12 @@ export default function Roles() {
 
   const [loading, setLoading] = useState(true);
   const [showDataTable, setShowDataTable] = useState(false);
-  const [roles, setRoles] = useState([]);
-  const [titleAlert, setTitleAlert] = useState("Atención.");
+  const [roles, setRoles] = useState({ data: [], columns: [] });
   const [showAlert, setShowAlert] = useState(false);
+  const [titleAlert, setTitleAlert] = useState("Atención.");
   const [messageAlert1, setMessageAlert1] = useState("");
   const [messageAlert2, setMessageAlert2] = useState("");
   const [iconComponent, setIconComponent] = useState(<TriangleAlert className="text-red-600" size={24} />);
-  const [dataRoles, setDataRoles] = useState({ data: [], columns: [] });
 
   const [rolToDelete, setRolToDelete] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);

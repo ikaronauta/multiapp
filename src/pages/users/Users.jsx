@@ -1,56 +1,52 @@
-// src/pages/users/Users.jsx
-
-import { Link } from "react-router-dom";
 import { PlusCircle, TriangleAlert } from "lucide-react";
-import { useEffect, useState } from "react";
-
-import { getUsersData } from "../../adapters/users.adapter";
-
+import { Link } from "react-router-dom";
 import DataTable from "../../components/DataTable";
-import ModalAlert from "../../components/modals/ModalAlert";
+import { useEffect, useState } from "react";
+import { getUsersData } from "../../adapters/users.adapter";
 import SpinnerLouder from "../../components/SpinnerLouder";
+import ModalAlert from "../../components/modals/ModalAlert";
 
 
 export default function Users() {
 
   const [loading, setLoading] = useState(true);
-  const [dataUsers, setDataUsers] = useState([]);
+  const [showDataTable, setShowDataTable] = useState(false);
+  const [dataUsers, setDataUsers] = useState({ data: [], columns: [] });
   const [showAlert, setShowAlert] = useState(false);
   const [titleAlert, setTitleAlert] = useState("Atención.");
   const [messageAlert1, setMessageAlert1] = useState("");
   const [messageAlert2, setMessageAlert2] = useState("");
   const [iconComponent, setIconComponent] = useState(<TriangleAlert className="text-red-600" size={24} />);
-  const [showDataTable, setShowDataTable] = useState(false);
 
-  useEffect(() => {
+  const loadUsers = () => {
+    setLoading(true);
+
     getUsersData()
       .then((data) => {
-        if (data.data.data) {
-          setDataUsers(data.data);
+        if (data.data) {
+          setDataUsers({
+            data: data.data,
+            columns: data.data.length > 0 ? Object.keys(data.data[0]) : [],
+          });
           setShowDataTable(true);
         } else {
           setShowAlert(true);
           setTitleAlert("Error al obtener los usuarios");
-          setMessageAlert1(data.message ?? 'Algo fallo');
+          setMessageAlert1(data.message ?? "Algo falló");
           setShowDataTable(false);
         }
       })
-      .catch((data) => {
+      .catch((err) => {
         setShowAlert(true);
         setTitleAlert("Error al obtener los usuarios");
-        setMessageAlert1(data.message ?? 'Algo fallo');
-        setShowDataTable(false);
+        setMessageAlert1(err.message ?? "Algo falló");
       })
       .finally(() => setLoading(false));
+  }
+
+  useEffect(() => {
+    loadUsers();
   }, []);
-
-  const handleEdit = (row) => {
-    console.log(row.original);
-  }
-
-  const handleDelete = (row) => {
-    console.log(row.original);
-  }
 
   if (loading) return <SpinnerLouder height="h-full" />;
 
@@ -65,7 +61,7 @@ export default function Users() {
       </Link>
 
       {showDataTable && (
-        <DataTable objData={dataUsers} onClickEdit={handleEdit} onClickDelete={handleDelete} />
+        <DataTable objData={dataUsers} onClickEdit={() => { }} onClickDelete={() => { }} />
       )}
 
       {/* Modales */}

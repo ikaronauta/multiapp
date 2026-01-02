@@ -4,11 +4,7 @@ import { getUserFromToken } from "../utils/auth";
 export const getUsersData = async () => {
   try {
     const user = getUserFromToken();
-    const { data } = await api.get("/users", {
-      params: {
-        businessId: user.businessId,
-      },
-    });
+    const { data } = await api.get("/users");
     return data;
   } catch (error) {
     error.response?.data ?? { ok: false, message: "Error en la petición" };

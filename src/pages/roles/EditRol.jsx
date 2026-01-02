@@ -139,7 +139,7 @@ export const EditRol = () => {
             />
           </div>
 
-          <div className="px-2 w-full sm:w-[50%] mb-2">
+          <div className="px-2 w-full sm:w-full mb-2">
             <label className="text-gray-900 text-sm">
               Estado
               <span className="text-red-700 font-extrabold"> *</span>
