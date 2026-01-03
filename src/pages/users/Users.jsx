@@ -1,5 +1,5 @@
 import { PlusCircle, TriangleAlert } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import DataTable from "../../components/DataTable";
 import { useEffect, useState } from "react";
 import { getUsersData } from "../../adapters/users.adapter";
@@ -8,6 +8,8 @@ import ModalAlert from "../../components/modals/ModalAlert";
 
 
 export default function Users() {
+
+  const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
   const [showDataTable, setShowDataTable] = useState(false);
@@ -48,6 +50,11 @@ export default function Users() {
     loadUsers();
   }, []);
 
+  const handleEdit = (row) => {
+    console.log(row.original);
+    navigate(`/admin/users/edit/${row.original.uuid}`);
+  }
+
   if (loading) return <SpinnerLouder height="h-full" />;
 
   return (
@@ -61,7 +68,7 @@ export default function Users() {
       </Link>
 
       {showDataTable && (
-        <DataTable objData={dataUsers} onClickEdit={() => { }} onClickDelete={() => { }} />
+        <DataTable objData={dataUsers} onClickEdit={handleEdit} onClickDelete={() => { }} />
       )}
 
       {/* Modales */}

@@ -25,7 +25,6 @@ export default function Roles() {
   const [codeRolToDelete, setCodeRolToDelete] = useState("");
   const [showAlertSpinner, setShowAlertSpinner] = useState(false);
 
-
   const navigate = useNavigate();
 
   const loadRoles = () => {
