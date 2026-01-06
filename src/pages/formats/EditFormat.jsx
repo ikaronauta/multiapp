@@ -1,0 +1,93 @@
+import { CircleChevronLeft } from "lucide-react";
+import { Link } from "react-router-dom";
+import ModalSpinner from "../../components/modals/ModelSpinner";
+import ModalAlert from "../../components/modals/ModalAlert";
+
+
+export default function EditPerson() {
+
+  const navigate = useNavigate();
+
+  const [user] = useState(() => getUserFromToken());
+  const { id } = useParams();
+  const [loading, setLoading] = useState(true);
+
+  const [showAlert, setShowAlert] = useState(false);
+  const [showAlertSubmit, setShowAlertSubmit] = useState(false);
+
+  const [titleAlert, setTitleAlert] = useState("Atención.");
+  const [messageAlert1, setMessageAlert1] = useState("");
+  const [messageAlert2, setMessageAlert2] = useState("");
+  const [iconComponentModalAlert, setIconComponentModalAlert] = useState(
+    <TriangleAlert className="text-red-600" size={24} />
+  );
+
+  const [updateOk, setUpdateOk] = useState(false);
+
+  useEffect(() => {
+    getPersonByUUID(id)
+      .then((data) => {
+        if (data.data) {
+          setDocumentType(data.data.document_type);
+          setDocument(data.data.document);
+          setFirstName(data.data.name);
+          setLastName(data.data.last_name);
+          setPhone(data.data.phone);
+          setEmail(data.data.email);
+        } else {
+          setShowAlert(true);
+          setTitleAlert("Error al obtener el negocio");
+          setMessageAlert1(data.message ?? 'Algo fallo');
+        }
+      })
+      .catch((error) => {
+        setShowAlert(true);
+        setTitleAlert("Error al obtener el negocio");
+        setMessageAlert1(error.message ?? 'Algo fallo');
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <SpinnerLouder height="h-full" />;
+
+  return (
+    <div className="sm:max-w-3xl mx-auto">
+      <Link
+        to="/admin/persons"
+        className="relative inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mb-4"
+      >
+        <CircleChevronLeft size={16} />
+        <span>Regresar</span>
+      </Link>
+
+      <div className="relative w-full sm:max-w-3xl mx-auto bg-white shadow-md rounded-lg p-4 sm:p-6">
+        <h2 className="text-gray-900 text-2xl font-bold mb-4">Editar Negocio</h2>
+
+        <form onSubmit={handleEdit} className="flex flex-wrap -mx-2 items-end">
+          {/* campos del formulario */}
+        </form>
+      </div>
+
+      {/* Modales */}
+      <>
+        {showAlert && (
+          <ModalAlert
+            titleAlert={titleAlert}
+            messageAlert1={messageAlert1}
+            messageAlert2={messageAlert2}
+            textButton="Cerrar"
+            iconComponent={iconComponentModalAlert}
+            onClick={() => {
+              updateOk && navigate(`/admin/businesses`);
+              setShowAlert(false);
+            }}
+          />
+        )}
+
+        {showAlertSubmit && (
+          <ModalSpinner titleModal="Procesando..." messageModal="" iconComponent={<Info className="text-red-600" size={24} />} />
+        )}
+      </>
+    </div>
+  );
+}

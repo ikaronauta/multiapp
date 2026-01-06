@@ -23,3 +23,12 @@ export const newPerson = async (formData) => {
     return error.response?.data ?? { ok: false, message: "Error en la petición" };
   }
 }
+
+export const getPersonByUUID = async (id) => {
+  try {
+    const { data } = await api.get(`/persons/${id}`);
+    return data;
+  } catch (error) {
+    return error.response?.data ?? { ok: false, message: "Error en la petición" };
+  }
+}

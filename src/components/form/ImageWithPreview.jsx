@@ -1,9 +1,9 @@
 import { useState } from "react";
 
 
-export default function ImageWithPreview({fileInputRef, widthPercent, textLabel, isRequired,  name}) {
+export default function ImageWithPreview({fileInputRef, widthPercent, textLabel, isRequired,  name, prev = null}) {
 
-  const [preview, setPreview] = useState(null);
+  const [preview, setPreview] = useState(prev);
   const [fileName, setFileName] = useState("");
 
   const handleFileChange = (e) => {

@@ -151,14 +151,12 @@ export const EditBusinesses = () => {
           setSelectedStatus(data.data.status);
           setPreview(data.data.logo_url);
         } else {
-
           setShowAlert(true);
           setTitleAlert("Error al obtener el negocio");
           setMessageAlert1(data.message ?? 'Algo fallo');
         }
       })
       .catch((error) => {
-
         setShowAlert(true);
         setTitleAlert("Error al obtener el negocio");
         setMessageAlert1(error.message ?? 'Algo fallo');

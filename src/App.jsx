@@ -23,6 +23,7 @@ import { EditRol } from "./pages/roles/EditRol";
 import EditUser from "./pages/users/EditUser";
 import Persons from "./pages/persons/Persons";
 import CreatePerson from "./pages/persons/CreatePerson";
+import EditPerson from "./pages/persons/EditPerson";
 
 
 export default function App() {
@@ -77,6 +78,12 @@ export default function App() {
         <Route path="/admin/persons/create" element={
           <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
             <CreatePerson />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/admin/persons/edit/:id" element={
+          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+            <EditPerson />
           </ProtectedRoute>
         } />
 
