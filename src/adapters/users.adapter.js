@@ -1,5 +1,6 @@
+// src/adapters/users.adapter.js
+
 import { api } from "../services/api";
-import { getUserFromToken } from "../utils/auth";
 
 export const getUsersData = async () => {
   try {

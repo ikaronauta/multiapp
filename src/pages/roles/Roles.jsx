@@ -107,7 +107,7 @@ export default function Roles() {
         <span>Nuevo rol</span>
       </Link>
 
-      {/* Modales */}
+      {/* Tabla */}
       {showDataTable && (
         <DataTable objData={roles} onClickEdit={handleEdit} onClickDelete={handleConfirmDeleteRol} />
       )}

@@ -1,0 +1,68 @@
+import { useEffect, useState } from "react";
+import DataTable from "../../components/DataTable";
+import { Link } from "react-router-dom";
+import { PlusCircle, TriangleAlert } from "lucide-react";
+import { getPersonsData } from "../../adapters/persons.adapter";
+import SpinnerLouder from "../../components/SpinnerLouder";
+
+
+export default function Persons() {
+
+  const [loading, setLoading] = useState(true);
+  const [showDataTable, setShowDataTable] = useState(false);
+  const [dataPersons, setDataPersons] = useState({ data: [], columns: [] });
+  const [showAlert, setShowAlert] = useState(false);
+  const [titleAlert, setTitleAlert] = useState("Atención.");
+  const [messageAlert1, setMessageAlert1] = useState("");
+  const [messageAlert2, setMessageAlert2] = useState("");
+  const [iconComponent, setIconComponent] = useState(<TriangleAlert className="text-red-600" size={24} />);
+
+  const loadPersons = () => {
+    setLoading(true);
+
+    getPersonsData()
+      .then((data) => {
+        if (data.data) {
+          setDataPersons({
+            data: data.data,
+            columns: data.data.length > 0 ? Object.keys(data.data[0]) : [],
+          });
+          setShowDataTable(true);
+        } else {
+          setShowAlert(true);
+          setTitleAlert("Error al obtener las personas");
+          setMessageAlert1(data.message ?? "Algo falló");
+          setShowDataTable(false);
+        }
+      })
+      .catch((err) => {
+        setShowAlert(true);
+        setTitleAlert("Error al obtener los usuarios");
+        setMessageAlert1(err.message ?? "Algo falló");
+      })
+      .finally(() => setLoading(false));
+  }
+
+  useEffect(() => {
+    loadPersons();
+  }, []);
+
+  if (loading) return <SpinnerLouder height="h-full" />;
+
+  return (
+    <>
+      <Link
+        to="/admin/persons/create"
+        className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mb-4"
+      >
+        <PlusCircle size={16} />
+        <span>Nueva persona</span>
+      </Link>
+
+      {/* Tabla */}
+      {showDataTable && (
+        <DataTable objData={dataPersons} onClickEdit={() => { }} onClickDelete={() => { }} />
+      )}
+    </>
+  );
+}

@@ -39,7 +39,7 @@ export default function DataTable({ objData, onClickEdit, onClickDelete }) {
       }
 
       // Columna Logo: mostrar imagen
-      if (col.accessorKey.toLowerCase() === "logo") {
+      if (col.accessorKey.toLowerCase() === "logo" || col.accessorKey.toLowerCase() === "perfil") {
         return {
           ...col,
           cell: ({ getValue }) => {

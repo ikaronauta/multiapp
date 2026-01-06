@@ -130,7 +130,6 @@ export default function CreateUser() {
       formData.append("status", selectedStatus);
       formData.append("created_by_id", user.id);
 
-      // ¿ Porque esta llegando el req.body = undefined ?
       const response = await newUser(formData);
 
       if (!response.ok) {
@@ -177,7 +176,7 @@ export default function CreateUser() {
   if (loading || loadingUser) return <SpinnerLouder height="h-full" />;
 
   return (
-    <>
+    <div className="sm:max-w-3xl mx-auto">
       <Link
         to="/admin/users"
         className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mb-4"
@@ -403,6 +402,6 @@ export default function CreateUser() {
           />
         )}
       </>
-    </>
+    </div>
   );
 }
