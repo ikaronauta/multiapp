@@ -385,7 +385,7 @@ export const EditBusinesses = () => {
               onChange={(e) => handleChangeDepto(e.target.value)}
               required
             >
-              <option value="" disabled>Seleccione un departamento</option>
+              <option value="">Seleccione un departamento</option>
 
               {deptos.map((depto) => (
                 <option key={depto.id} value={depto.id} >{toTitleCaseSafeES(depto.name)}</option>
@@ -414,7 +414,7 @@ export const EditBusinesses = () => {
               onChange={(e) => setSelectedCity(e.target.value)}
               required
             >
-              <option value="" disabled>Seleccione una ciudad</option>
+              <option value="">Seleccione una ciudad</option>
 
               {cities.map((city) => (
                 <option key={city.id} value={city.id} >{toTitleCaseSafeES(city.name)}</option>
@@ -434,8 +434,11 @@ export const EditBusinesses = () => {
             />
           </div>
 
-          <div className="px-2 w-full sm:w-full mb-2">
-            <label className="text-gray-900 text-sm">Estado</label>
+          <div className="px-2 w-full sm:w-[50%] mb-2">
+            <label className="text-gray-900 text-sm">
+              Estado
+              <span className="text-red-700 font-extrabold"> *</span>
+            </label>
             <select
               className="border text-gray-500 border-gray-300 rounded-md px-3 py-2 h-10 w-full"
               name="status"
@@ -487,7 +490,7 @@ export const EditBusinesses = () => {
             )}
           </div>
 
-          <div className="px-2 w-full sm:w-full mb-2">
+          <div className="px-2 w-full sm:w-full mb-2 mt-2">
             <button type="submit" className="bg-green-600 text-white px-3 py-2 h-10 rounded-md w-full hover:bg-green-700">
               Editar
             </button>

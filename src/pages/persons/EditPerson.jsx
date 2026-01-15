@@ -1,11 +1,11 @@
-import { CircleChevronLeft, TriangleAlert } from "lucide-react";
+import { CircleChevronLeft, Info, TriangleAlert } from "lucide-react";
 import { getUserFromToken } from "../../utils/auth";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import Input from "../../components/form/Input";
 import Select from "../../components/form/Select";
 import SpinnerLouder from "../../components/SpinnerLouder";
-import { getPersonByUUID } from "../../adapters/persons.adapter";
+import { getPersonByUUID, updatePerson } from "../../adapters/persons.adapter";
 import ImageWithPreview from "../../components/form/ImageWithPreview";
 import ModalAlert from "../../components/modals/ModalAlert";
 import ModalSpinner from "../../components/modals/ModelSpinner";
@@ -40,6 +40,7 @@ export default function EditPerson() {
   );
 
   const [updateOk, setUpdateOk] = useState(false);
+  const [perfilRemoved, setPerfilRemoved] = useState(false);
 
   useEffect(() => {
     getPersonByUUID(id)
@@ -71,7 +72,43 @@ export default function EditPerson() {
     setShowAlertSubmit(true);
 
     try {
-      // TODO: Implementar logica para enviar la información al backend
+
+      const perfilFile = fileInputRef.current?.files[0];
+      
+      const formData = new FormData();
+
+      formData.append("document_type", documentType);
+      formData.append("document", document);
+      formData.append("name", firstName);
+      formData.append("last_name", lastName);
+      formData.append("phone", phone);
+      formData.append("email", email);
+      formData.append("updated_by_id", user.id);
+      formData.append("perfilRemoved", perfilRemoved);
+
+      if (perfilFile) {
+        formData.append("perfil", perfilFile);
+      }
+
+      const response = await updatePerson(id, formData);
+
+      if (!response.ok) {
+        const errorMsg = response.message ?? "Error inesperado";
+        setShowAlertSubmit(false);
+        setShowAlert(true);
+        setTitleAlert("Error al editar la persona");
+        setMessageAlert1(errorMsg);
+        console.error("Error adding person:", errorMsg);
+        return;
+      }
+
+      setUpdateOk(true);
+      setShowAlertSubmit(false);
+      setShowAlert(true);
+      setTitleAlert("Persona editado");
+      setIconComponentModalAlert(<Info className="text-green-600" size={24} />);
+      setMessageAlert1("La persona ha sido editado correctamente");
+
     } catch (error) {
       setShowAlertSubmit(false);
       setShowAlert(true);
@@ -176,11 +213,12 @@ export default function EditPerson() {
             name="imagenPerson"
             fileInputRef={fileInputRef}
             prev={preview}
+            setImageRemoved={setPerfilRemoved}
           />
 
           <div className="px-2 w-full sm:w-full mb-2 mt-2">
             <button type="submit" className="bg-green-600 text-white px-3 py-2 h-10 rounded-md w-full hover:bg-green-700">
-              Agregar
+              Editar
             </button>
           </div>
         </form>
@@ -196,7 +234,7 @@ export default function EditPerson() {
             textButton="Cerrar"
             iconComponent={iconComponentModalAlert}
             onClick={() => {
-              updateOk && navigate(`/admin/businesses`);
+              updateOk && navigate(`/admin/persons`);
               setShowAlert(false);
             }}
           />

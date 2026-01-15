@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 
-export default function ImageWithPreview({fileInputRef, widthPercent, textLabel, isRequired,  name, prev = null}) {
+export default function ImageWithPreview({fileInputRef, widthPercent, textLabel, isRequired,  name, prev = null, setImageRemoved}) {
 
   const [preview, setPreview] = useState(prev);
   const [fileName, setFileName] = useState("");
@@ -24,6 +24,10 @@ export default function ImageWithPreview({fileInputRef, widthPercent, textLabel,
   const removeLogo = () => {
     setFileName("");
     setPreview(null);
+    
+    if(setImageRemoved) 
+      setImageRemoved(true);
+
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
