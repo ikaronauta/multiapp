@@ -9,7 +9,7 @@ export default function ModalAlert({titleAlert, messageAlert1, messageAlert2, te
         </h2>
         <div className="text-gray-600 mb-6">
           {messageAlert1 && ( <p className="text-gray-600 mb-6">{messageAlert1}</p>)}    
-          {messageAlert2 && (<p className="text-gray-600 mb-6">{messageAlert2}</p>)}
+          {messageAlert2 && (<p className="text-xs text-gray-600 mb-6">{messageAlert2}</p>)}
         </div>
 
         <div className="flex justify-center gap-3">

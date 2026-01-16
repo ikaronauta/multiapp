@@ -1,7 +1,7 @@
 // src/pages/users/CreateUser.jsx
 
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 
 import { getBusinessesData } from "../../adapters/business.adapter";
 import { getRolesData } from "../../adapters/roles.adapter";
@@ -12,28 +12,25 @@ import { newUser } from "../../adapters/users.adapter";
 import ModalAlert from "../../components/modals/ModalAlert";
 import ModalSpinner from "../../components/modals/ModelSpinner";
 import SpinnerLouder from "../../components/SpinnerLouder";
+import { getPersonsData } from "../../adapters/persons.adapter";
 
 export default function CreateUser() {
   const [businesses, setBusinesses] = useState([]);
   const [roles, setRoles] = useState([]);
   const [user, setUser] = useState(() => getUserFromToken());
 
-  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadingUser, setLoadingUser] = useState(true);
 
   const [selectedBusiness, setSelectedBusiness] = useState("");
   const [selectedRole, setSelectedRole] = useState("");
 
-  const [userName, setUserName] = useState("");
-  const [userLastName, setUserLastName] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [userConfirmEmail, setUserConfirmEmail] = useState("");
   const [userPassword, setUserPassword] = useState("");
   const [userConfirmPassword, setUserConfirmPassword] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("activo");
-  const [selectedDocumentType, setSelectedDocumentType] = useState("CC");
-  const [userDocument, setUserDocument] = useState("");
+  const [persons, setPersons] = useState([]);
 
   const [showAlert, setShowAlert] = useState(false);
   const [showAlertSubmit, setShowAlertSubmit] = useState(false);
@@ -43,6 +40,10 @@ export default function CreateUser() {
   const [iconComponentModalAlert, setIconComponentModalAlert] = useState(
     <TriangleAlert className="text-red-600" size={24} />
   );
+
+  const [loadingPersons, setLoadingPersons] = useState(true);
+  const [showAlertPersons, setShowAlertPersons] = useState(true);
+  const [selectedPerson, setSelectedPerson] = useState("");
 
   // Inicializa selectedBusiness cuando user está disponible
   useEffect(() => {
@@ -76,6 +77,19 @@ export default function CreateUser() {
       })
       .finally(() => setLoadingUser(false));
   }, [user]);
+
+  useEffect(() => {
+    getPersonsData()
+      .then((data) => {
+        if (data.data) setPersons(data.data);
+        else setLoadingPersons(false);
+      })
+      .catch((error) => {
+        console.log(error);
+        setShowAlertPersons(false);
+      })
+      .finally(() => setLoadingPersons(false));
+  }, []);
 
   // Carga roles
   useEffect(() => {
@@ -116,18 +130,15 @@ export default function CreateUser() {
     }
 
     try {
-     
+
       const formData = new FormData();
 
       formData.append("business_id", selectedBusiness);
-      formData.append("first_name", userName);
-      formData.append("last_name", userLastName);
-      formData.append("document_type", selectedDocumentType);
-      formData.append("document", userDocument);
+      formData.append("status", selectedStatus);
+      formData.append("person_id", selectedPerson);
       formData.append("email", userEmail);
       formData.append("password", userPassword);
       formData.append("rol_id", selectedRole);
-      formData.append("status", selectedStatus);
       formData.append("created_by_id", user.id);
 
       const response = await newUser(formData);
@@ -138,6 +149,7 @@ export default function CreateUser() {
         setShowAlert(true);
         setTitleAlert("Error al agregar el usuario");
         setMessageAlert1(errorMsg);
+        setMessageAlert2(response.error.details && response.error.details);
         console.error("Error adding user:", errorMsg);
         return;
       }
@@ -156,8 +168,6 @@ export default function CreateUser() {
       setMessageAlert1("El Usuario ha sido agregado correctamente.");
       setUserName("");
       setUserLastName("");
-      setSelectedDocumentType("");
-      setUserDocument("");
       setUserEmail("");
       setUserConfirmEmail("");
       setUserPassword("");
@@ -190,111 +200,23 @@ export default function CreateUser() {
         <h2 className="text-gray-900 text-2xl font-bold mb-4">Crear Usuario</h2>
 
         <form onSubmit={handleAddUser} className="flex flex-wrap -mx-2 items-end">
-          <div className="px-2 w-full sm:w-full mb-2">
-              <label className="text-gray-900 text-sm">
-                Empresa o Negocio
-                <span className="text-red-700 font-extrabold"> *</span>
-              </label>
-              <select
-                className="border text-gray-500 border-gray-300 rounded-md px-3 py-2 h-10 w-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                onChange={(e) => setSelectedBusiness(e.target.value)}
-                name="businessId"
-                value={selectedBusiness}
-                required
-              >
-                <option value="">Seleccione una Empresa o Negocio</option>
-
-                {businesses.map((business) => (
-                  <option key={business.ID} value={business.ID}>{business.Nombre}</option>
-                ))}
-              </select>
-            </div>
-
           <div className="px-2 w-full sm:w-[50%] mb-2">
             <label className="text-gray-900 text-sm">
-              Nombres
-              <span className="text-red-700 font-extrabold"> *</span>
-            </label>
-            <input
-              type="text"
-              placeholder="Nombres del usuario"
-              value={userName}
-              onChange={(e) => setUserName(e.target.value)}
-              className="border border-gray-300 rounded-md px-3 py-2 h-10 w-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              name="name"
-              required
-            />
-          </div>
-
-          <div className="px-2 w-full sm:w-[50%] mb-2">
-            <label className="text-gray-900 text-sm">
-              Apellidos
-              <span className="text-red-700 font-extrabold"> *</span>
-            </label>
-            <input
-              type="text"
-              placeholder="Apellidos del usuario"
-              value={userLastName}
-              onChange={(e) => setUserLastName(e.target.value)}
-              className="border border-gray-300 rounded-md px-3 py-2 h-10 w-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              name="lastName"
-              required
-            />
-          </div>
-
-          <div className="px-2 w-full sm:w-[50%] mb-2">
-            <label className="text-gray-900 text-sm">
-              Tipo de Documento
+              Empresa o Negocio
               <span className="text-red-700 font-extrabold"> *</span>
             </label>
             <select
-              className="border text-gray-500 border-gray-300 rounded-md px-3 py-2 h-10 w-full"
-              name="document_type"
-              value={selectedDocumentType}
-              onChange={(e) => setSelectedDocumentType(e.target.value)}
-              required
-            >
-              <option value="" disabled>Seleccione un tipo de documento</option>
-              <option value="CC">Cedula de Ciudadania</option>
-              <option value="CE">Cedula de Estrangeria</option>
-              <option value="NIT">NIT</option>
-              <option value="PAS">Pasaporte</option>
-            </select>
-          </div>
-
-          <div className="px-2 w-full sm:w-[50%] mb-2">
-            <label className="text-gray-900 text-sm">
-              Documento
-              <span className="text-red-700 font-extrabold"> *</span>
-            </label>
-            <input
-              type="text"
-              placeholder="Documento"
-              value={userDocument}
-              onChange={(e) => setUserDocument(e.target.value)}
-              className="border border-gray-300 rounded-md px-3 py-2 h-10 w-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              name="document"
-              required
-            />
-          </div>
-
-          <div className="px-2 w-full sm:w-[50%] mb-2">
-            <label className="text-gray-900 text-sm">
-              Rol
-              <span className="text-red-700 font-extrabold"> *</span>
-            </label>
-            <select
-              value={selectedRole}
               className="border text-gray-500 border-gray-300 rounded-md px-3 py-2 h-10 w-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              onChange={(e) => setSelectedRole(e.target.value)}
-              name="roleId"
+              onChange={(e) => setSelectedBusiness(e.target.value)}
+              name="businessId"
+              value={selectedBusiness}
+              required
             >
-              <option value="">Seleccione un rol</option>
+              <option value="">Seleccione una Empresa o Negocio</option>
 
-              {roles.map((rol) => (
-                <option key={rol.ID} value={rol.ID} >{rol.Rol}</option>
+              {businesses.map((business) => (
+                <option key={business.ID} value={business.ID}>{business.Nombre}</option>
               ))}
-
             </select>
           </div>
 
@@ -314,6 +236,58 @@ export default function CreateUser() {
               <option value="activo">Activo</option>
               <option value="inactivo">Inactivo</option>
               <option value="suspendido">Suspendido</option>
+            </select>
+          </div>
+
+          <div className="px-2 w-full sm:w-[50%] mb-2">
+            <label className="text-gray-900 text-sm">
+              Persona
+              {loadingPersons &&
+                <div className="inline-block ml-2 w-5 h-5 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>}
+
+              {!showAlertPersons && (
+                <span className="ml-2 top-0 right-6 inline-flex items-center gap-1 text-xs text-red-600">
+                  <AlertCircle className="w-3 h-3" />
+                  <span>Ocurrió un problema</span>
+                </span>
+              )}
+            </label>
+            <select
+              className="border text-gray-500 border-gray-300 rounded-md px-3 py-2 h-10 w-full"
+              name="businessType"
+              value={selectedPerson}
+              onChange={(e) => {
+                setSelectedPerson(e.target.value);
+                console.log(persons);
+                const personSelected = persons.find((person) => {return person.id == e.target.value});
+                setUserEmail(!personSelected ? "" : personSelected.Email ? personSelected.Email : "");
+              }}
+            >
+              <option value="">Seleccione una persona</option>
+
+              {persons.map((person) => (
+                <option key={person.id} value={person.id} >{`${person.Nombre} ${person.Apellidos}`}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="px-2 w-full sm:w-[50%] mb-2">
+            <label className="text-gray-900 text-sm">
+              Rol
+              <span className="text-red-700 font-extrabold"> *</span>
+            </label>
+            <select
+              value={selectedRole}
+              className="border text-gray-500 border-gray-300 rounded-md px-3 py-2 h-10 w-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              onChange={(e) => setSelectedRole(e.target.value)}
+              name="roleId"
+            >
+              <option value="">Seleccione un rol</option>
+
+              {roles.map((rol) => (
+                <option key={rol.ID} value={rol.ID} >{rol.Rol}</option>
+              ))}
+
             </select>
           </div>
 
