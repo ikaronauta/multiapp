@@ -43,3 +43,12 @@ export const updatePerson = async (id, formData) => {
     return error.response?.data ?? { ok: false, message: "Error en la petición" };
   }
 };
+
+export const deletePerson = async (idPerson) => {
+  try {
+    const { data } = await api.delete(`/persons/delete/${idPerson}`);
+    return data;
+  } catch (error) {
+    return error.response?.data ?? { ok: false, message: "Error en la petición" };
+  }
+}

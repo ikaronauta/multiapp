@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import DataTable from "../../components/DataTable";
 import { Link, useNavigate } from "react-router-dom";
-import { PlusCircle, TriangleAlert } from "lucide-react";
-import { getPersonsData } from "../../adapters/persons.adapter";
+import { Info, PlusCircle, TriangleAlert } from "lucide-react";
+import { deletePerson, getPersonsData } from "../../adapters/persons.adapter";
 import SpinnerLouder from "../../components/SpinnerLouder";
 import ModalAlert from "../../components/modals/ModalAlert";
 import ModalSpinner from "../../components/modals/ModelSpinner";
+import ModalConfirmDelete from "../../components/modals/ModalConfirmDelete";
 
 
 export default function Persons() {
@@ -23,6 +24,10 @@ export default function Persons() {
   const [messageAlert1, setMessageAlert1] = useState("");
   const [messageAlert2, setMessageAlert2] = useState("");
   const [iconComponent, setIconComponent] = useState(<TriangleAlert className="text-red-600" size={24} />);
+
+  const [personToDelete, setPersonToDelete] = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [namePersonToDelete, setNamePersonToDelete] = useState("");
 
   const loadPersons = () => {
     setLoading(true);
@@ -59,6 +64,38 @@ export default function Persons() {
     navigate(`/admin/persons/edit/${row.original.uuid}`);
   }
 
+  const handleConfirmDeletePerson = (row) => {
+    setPersonToDelete(row.original.uuid);
+    setShowConfirm(true);
+    setNamePersonToDelete(row.original.Nombre);
+  }
+
+  const handleDelete = async () => {
+      setShowAlertSpinner(true);
+  
+      try {
+        const response = await deletePerson(personToDelete);
+  
+        if (!response.ok) {
+          setShowAlertSpinner(false);
+          setShowAlert(true);
+          setTitleAlert("Error al eliminar la persona.");
+          setMessageAlert1(response.message);
+          return;
+        }
+  
+        setPersonToDelete(null);
+        setShowAlertSpinner(false);
+  
+        loadPersons();
+      } catch (error) {
+        setShowAlertSpinner(false);
+        setTitleAlert("Error al eliminar negocio.");
+        setMessageAlert1('Algo fallo');
+        console.error("Error deleting business:", error);
+      }
+    }
+
   if (loading) return <SpinnerLouder height="h-full" />;
 
   return (
@@ -73,7 +110,7 @@ export default function Persons() {
 
       {/* Tabla */}
       {showDataTable && (
-        <DataTable objData={dataPersons} onClickEdit={handleEdit} onClickDelete={() => { }} />
+        <DataTable objData={dataPersons} onClickEdit={handleEdit} onClickDelete={handleConfirmDeletePerson} />
       )}
 
       {/* Modales */}
@@ -90,12 +127,26 @@ export default function Persons() {
         )}
 
         {showAlertSpinner && (
-        <ModalSpinner
-          titleModal="Procesando..."
-          messageModal=""
-          iconComponent={<Info className="text-red-600" size={24} />}
-        />
-      )}
+          <ModalSpinner
+            titleModal="Procesando..."
+            messageModal=""
+            iconComponent={<Info className="text-red-600" size={24} />}
+          />
+        )}
+
+        {showConfirm && (
+          <ModalConfirmDelete
+            titleConfirm="¿Eliminar Persona?"
+            messageConfirm1="Esta acción no se puede deshacer."
+            messageConfirm2="Debe ingresar excatamente el nombre de la persona"
+            name={namePersonToDelete}
+            onClickConfirm={() => {
+              handleDelete();
+              setShowConfirm(false);
+            }}
+            onClickCancel={() => setShowConfirm(false)}
+          />
+        )}
       </>
     </>
   );
