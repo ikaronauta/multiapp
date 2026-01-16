@@ -166,8 +166,6 @@ export default function CreateUser() {
       setTitleAlert("Usuario agregado");
       setIconComponentModalAlert(<Info className="text-green-600" size={24} />);
       setMessageAlert1("El Usuario ha sido agregado correctamente.");
-      setUserName("");
-      setUserLastName("");
       setUserEmail("");
       setUserConfirmEmail("");
       setUserPassword("");
@@ -235,7 +233,7 @@ export default function CreateUser() {
               <option value="" disabled>Seleccione un estado</option>
               <option value="activo">Activo</option>
               <option value="inactivo">Inactivo</option>
-              <option value="suspendido">Suspendido</option>
+              <option value="bloqueado">Bloqueado</option>
             </select>
           </div>
 

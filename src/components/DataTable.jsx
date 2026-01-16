@@ -57,7 +57,7 @@ export default function DataTable({ objData, onClickEdit, onClickDelete }) {
       }
 
       // Estilo para columna "status"
-      if (col.accessorKey.toLowerCase() === "status") {
+      if (col.accessorKey.toLowerCase() === "status" || col.accessorKey.toLowerCase() === "estado") {
         return {
           ...col,
           id: "status",

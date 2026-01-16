@@ -81,6 +81,7 @@ export default function Persons() {
           setShowAlert(true);
           setTitleAlert("Error al eliminar la persona.");
           setMessageAlert1(response.message);
+          setMessageAlert2(response.error?.details || "");
           return;
         }
   

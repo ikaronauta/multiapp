@@ -1,4 +1,4 @@
-import { CircleChevronLeft, Info, TriangleAlert } from "lucide-react";
+import { AlertCircle, CircleChevronLeft, Info, TriangleAlert } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { getBusinessesData } from "../../adapters/business.adapter";
@@ -8,6 +8,7 @@ import ModalAlert from "../../components/modals/ModalAlert";
 import ModalSpinner from "../../components/modals/ModelSpinner";
 import { getRolesData } from "../../adapters/roles.adapter";
 import { getUserByUUID, updateUser } from "../../adapters/users.adapter";
+import { getPersonsData } from "../../adapters/persons.adapter";
 
 
 export default function EditUser() {
@@ -27,13 +28,9 @@ export default function EditUser() {
   const [loadingRoles, setLoadingRoles] = useState(true);
   const [loadingUser, setLoadingUser] = useState(true);
 
-  const [userName, setUserName] = useState("");
-  const [userLastName, setUserLastName] = useState("");
   const [userEmail, setUserEmail] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState("activo");
-  const [selectedDocumentType, setSelectedDocumentType] = useState("CC");
-  const [userDocument, setUserDocument] = useState("");
-
+  const [selectedStatus, setSelectedStatus] = useState("");
+  
   const [showAlert, setShowAlert] = useState(false);
   const [showAlertSubmit, setShowAlertSubmit] = useState(false);
   const [titleAlert, setTitleAlert] = useState("Atención.");
@@ -45,7 +42,13 @@ export default function EditUser() {
 
   const [businessesOk, setBusinessesOk] = useState(false);
   const [rolesOk, setRolesOk] = useState(false);
+  const [personsOk, setPersonsOk] = useState(false);
   const [updateOk, setUpdateOk] = useState(false);
+
+  const [persons, setPersons] = useState([]);
+  const [loadingPersons, setLoadingPersons] = useState(true);
+  const [showAlertPersons, setShowAlertPersons] = useState(true);
+  const [selectedPerson, setSelectedPerson] = useState("");
 
   useEffect(() => {
     getBusinessesData()
@@ -70,6 +73,26 @@ export default function EditUser() {
   }, []);
 
   useEffect(() => {
+      getPersonsData()
+        .then((data) => {
+          if (data.data) {
+            setPersons(data.data);
+            setPersonsOk(true);
+          } else {
+            setLoadingPersons(false);
+            setPersonsOk(false);
+          }
+          
+        })
+        .catch((error) => {
+          console.log(error);
+          setShowAlertPersons(false);
+          setPersonsOk(false);
+        })
+        .finally(() => setLoadingPersons(false));
+    }, []);
+
+  useEffect(() => {
     getRolesData()
       .then((data) => {
         if (data.data) {
@@ -92,15 +115,13 @@ export default function EditUser() {
   }, []);
 
   useEffect(() => {
-    if (!businessesOk || !rolesOk) return;
+    if (!businessesOk || !rolesOk || !personsOk) return;
 
     getUserByUUID(id)
       .then((data) => {
         if (data.data) {
-          setUserName(data.data.name);
-          setUserLastName(data.data.last_name);
-          setSelectedDocumentType(data.data.document_type);
-          setUserDocument(data.data.document);
+          setSelectedStatus(data.data.status);
+          setSelectedPerson(data.data.person_id);
           setUserEmail(data.data.email);
           setSelectedRole(data.data.role_id);
           setSelectedBusiness(data.data.business_id);
@@ -122,10 +143,7 @@ export default function EditUser() {
       const formData = new FormData();
 
       formData.append("business_id", selectedBusiness);
-      formData.append("first_name", userName);
-      formData.append("last_name", userLastName);
-      formData.append("document_type", selectedDocumentType);
-      formData.append("document", userDocument);
+      formData.append("person_id", selectedPerson);
       formData.append("email", userEmail);
       formData.append("rol_id", selectedRole);
       formData.append("status", selectedStatus);
@@ -137,8 +155,9 @@ export default function EditUser() {
         const errorMsg = response.message ?? "Error inesperado";
         setShowAlertSubmit(false);
         setShowAlert(true);
-        setTitleAlert("Error al editar el negocio");
+        setTitleAlert("Error al editar el usuario");
         setMessageAlert1(errorMsg);
+        setMessageAlert2(response.error.details && response.error.details);
         return;
       }
 
@@ -173,7 +192,7 @@ export default function EditUser() {
         <h2 className="text-gray-900 text-2xl font-bold mb-4">Editar Usuario</h2>
 
         <form onSubmit={handleEditUser} className="flex flex-wrap -mx-2 items-end">
-          <div className="px-2 w-full sm:w-[50%] mb-2">
+          <div className="px-2 w-full sm:w-full mb-2">
             <label className="text-gray-900 text-sm">
               Empresa o Negocio
               <span className="text-red-700 font-extrabold"> *</span>
@@ -195,70 +214,53 @@ export default function EditUser() {
 
           <div className="px-2 w-full sm:w-[50%] mb-2">
             <label className="text-gray-900 text-sm">
-              Nombres
-              <span className="text-red-700 font-extrabold"> *</span>
-            </label>
-            <input
-              type="text"
-              placeholder="Nombres del usuario"
-              value={userName}
-              onChange={(e) => setUserName(e.target.value)}
-              className="border border-gray-300 rounded-md px-3 py-2 h-10 w-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              name="name"
-              required
-            />
-          </div>
-
-          <div className="px-2 w-full sm:w-[50%] mb-2">
-            <label className="text-gray-900 text-sm">
-              Apellidos
-              <span className="text-red-700 font-extrabold"> *</span>
-            </label>
-            <input
-              type="text"
-              placeholder="Apellidos del usuario"
-              value={userLastName}
-              onChange={(e) => setUserLastName(e.target.value)}
-              className="border border-gray-300 rounded-md px-3 py-2 h-10 w-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              name="lastName"
-              required
-            />
-          </div>
-
-          <div className="px-2 w-full sm:w-[50%] mb-2">
-            <label className="text-gray-900 text-sm">
-              Tipo de Documento
+              Estado
               <span className="text-red-700 font-extrabold"> *</span>
             </label>
             <select
               className="border text-gray-500 border-gray-300 rounded-md px-3 py-2 h-10 w-full"
-              name="document_type"
-              value={selectedDocumentType}
-              onChange={(e) => setSelectedDocumentType(e.target.value)}
+              name="status"
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
               required
             >
-              <option value="" disabled>Seleccione un tipo de documento</option>
-              <option value="CC">Cedula de Ciudadania</option>
-              <option value="CE">Cedula de Estrangeria</option>
-              <option value="NIT">NIT</option>
-              <option value="PAS">Pasaporte</option>
+              <option value="" disabled>Seleccione un estado</option>
+              <option value="activo">Activo</option>
+              <option value="inactivo">Inactivo</option>
+              <option value="bloqueado">Bloqueado</option>
             </select>
           </div>
 
           <div className="px-2 w-full sm:w-[50%] mb-2">
             <label className="text-gray-900 text-sm">
-              Documento
-              <span className="text-red-700 font-extrabold"> *</span>
+              Persona
+              {loadingPersons &&
+                <div className="inline-block ml-2 w-5 h-5 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>}
+
+              {!showAlertPersons && (
+                <span className="ml-2 top-0 right-6 inline-flex items-center gap-1 text-xs text-red-600">
+                  <AlertCircle className="w-3 h-3" />
+                  <span>Ocurrió un problema</span>
+                </span>
+              )}
             </label>
-            <input
-              type="text"
-              placeholder="Documento"
-              value={userDocument}
-              onChange={(e) => setUserDocument(e.target.value)}
-              className="border border-gray-300 rounded-md px-3 py-2 h-10 w-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              name="document"
-              required
-            />
+            <select
+              className="border text-gray-500 border-gray-300 rounded-md px-3 py-2 h-10 w-full"
+              name="businessType"
+              value={selectedPerson}
+              onChange={(e) => {
+                setSelectedPerson(e.target.value);
+                console.log(persons);
+                const personSelected = persons.find((person) => {return person.id == e.target.value});
+                setUserEmail(!personSelected ? "" : personSelected.Email ? personSelected.Email : "");
+              }}
+            >
+              <option value="">Seleccione una persona</option>
+
+              {persons.map((person) => (
+                <option key={person.id} value={person.id} >{`${person.Nombre} ${person.Apellidos}`}</option>
+              ))}
+            </select>
           </div>
 
           <div className="px-2 w-full sm:w-[50%] mb-2">
@@ -278,25 +280,6 @@ export default function EditUser() {
                 <option key={rol.ID} value={rol.ID} >{rol.Rol}</option>
               ))}
 
-            </select>
-          </div>
-
-          <div className="px-2 w-full sm:w-[50%] mb-2">
-            <label className="text-gray-900 text-sm">
-              Estado
-              <span className="text-red-700 font-extrabold"> *</span>
-            </label>
-            <select
-              className="border text-gray-500 border-gray-300 rounded-md px-3 py-2 h-10 w-full"
-              name="status"
-              value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
-              required
-            >
-              <option value="" disabled>Seleccione un estado</option>
-              <option value="activo">Activo</option>
-              <option value="inactivo">Inactivo</option>
-              <option value="suspendido">Suspendido</option>
             </select>
           </div>
 
