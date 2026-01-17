@@ -122,8 +122,7 @@ export default function App() {
             <EditUser />
           </ProtectedRoute>
         } />
-
-
+        
       </Route>
 
       {/* Si la ruta no existe, al login */}

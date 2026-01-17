@@ -68,9 +68,10 @@ export default function Navbar({ onLinkClick }) {
       {
         title: "Dashboard",
         route: "/",
-        icon: <House size={24} /> // pasamos el icono aquí
+        icon: <House size={24} />, // pasamos el icono aquí
+        show: 1,
       }
-    ]
+    ],
   };
 
   const handleSelectBusiness = (e) => {

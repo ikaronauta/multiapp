@@ -23,15 +23,17 @@ export default function SectionNavbar({ objDataSection, onLinkClick }) {
       {objDataSection.items
         .filter(item => canAccess(item, user))
         .map((item, i) => (
-          <Link
-            key={i}
-            to={item.route}
-            className="flex items-center gap-2 text-sm hover:text-gray-300"
-            onClick={onLinkClick}
-          >
-            {item.icon && item.icon}
-            <span>{item.title}</span>
-          </Link>
+          item.show && (
+            <Link
+              key={i}
+              to={item.route}
+              className="flex items-center gap-2 text-sm hover:text-gray-300"
+              onClick={onLinkClick}
+            >
+              {item.icon && item.icon}
+              <span>{item.title}</span>
+            </Link>
+          )
         ))}
     </section>
   );
