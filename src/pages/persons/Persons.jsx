@@ -91,9 +91,9 @@ export default function Persons() {
         loadPersons();
       } catch (error) {
         setShowAlertSpinner(false);
-        setTitleAlert("Error al eliminar negocio.");
+        setTitleAlert("Error al eliminar persona.");
         setMessageAlert1('Algo fallo');
-        console.error("Error deleting business:", error);
+        console.error("Error deleting person:", error);
       }
     }
 

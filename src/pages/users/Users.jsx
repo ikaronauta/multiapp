@@ -2,9 +2,10 @@ import { PlusCircle, TriangleAlert } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import DataTable from "../../components/DataTable";
 import { useEffect, useState } from "react";
-import { getUsersData } from "../../adapters/users.adapter";
+import { deleteUser, getUsersData } from "../../adapters/users.adapter";
 import SpinnerLouder from "../../components/SpinnerLouder";
 import ModalAlert from "../../components/modals/ModalAlert";
+import ModalConfirmDelete from "../../components/modals/ModalConfirmDelete";
 
 
 export default function Users() {
@@ -13,12 +14,18 @@ export default function Users() {
 
   const [loading, setLoading] = useState(true);
   const [showDataTable, setShowDataTable] = useState(false);
+  const [showAlertSpinner, setShowAlertSpinner] = useState(false);
+
   const [dataUsers, setDataUsers] = useState({ data: [], columns: [] });
   const [showAlert, setShowAlert] = useState(false);
   const [titleAlert, setTitleAlert] = useState("Atención.");
   const [messageAlert1, setMessageAlert1] = useState("");
   const [messageAlert2, setMessageAlert2] = useState("");
   const [iconComponent, setIconComponent] = useState(<TriangleAlert className="text-red-600" size={24} />);
+
+  const [userToDelete, setUserToDelete] = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [emailToDelete, setEmailPersonToDelete] = useState("");
 
   const loadUsers = () => {
     setLoading(true);
@@ -55,6 +62,39 @@ export default function Users() {
     navigate(`/admin/users/edit/${row.original.uuid}`);
   }
 
+  const handleConfirmDelete = (row) => {
+    setUserToDelete(row.original.uuid);
+    setShowConfirm(true);
+    setEmailPersonToDelete(row.original.Email);
+  }
+
+  const handleDelete = async () => {
+        setShowAlertSpinner(true);
+    
+        try {
+          const response = await deleteUser(userToDelete);
+    
+          if (!response.ok) {
+            setShowAlertSpinner(false);
+            setShowAlert(true);
+            setTitleAlert("Error al eliminar el usuario.");
+            setMessageAlert1(response.message);
+            setMessageAlert2(response.error?.details || "");
+            return;
+          }
+    
+          setUserToDelete(null);
+          setShowAlertSpinner(false);
+    
+          loadUsers();
+        } catch (error) {
+          setShowAlertSpinner(false);
+          setTitleAlert("Error al eliminar usuario.");
+          setMessageAlert1('Algo fallo');
+          console.error("Error deleting user:", error);
+        }
+      }
+
   if (loading) return <SpinnerLouder height="h-full" />;
 
   return (
@@ -68,7 +108,7 @@ export default function Users() {
       </Link>
 
       {showDataTable && (
-        <DataTable objData={dataUsers} onClickEdit={handleEdit} onClickDelete={() => { }} />
+        <DataTable objData={dataUsers} onClickEdit={handleEdit} onClickDelete={handleConfirmDelete} />
       )}
 
       {/* Modales */}
@@ -80,6 +120,20 @@ export default function Users() {
           textButton="Cerrar"
           iconComponent={iconComponent}
           onClick={() => setShowAlert(false)}
+        />
+      )}
+
+      {showConfirm && (
+        <ModalConfirmDelete
+          titleConfirm="¿Eliminar usuario?"
+          messageConfirm1="Esta acción no se puede deshacer."
+          messageConfirm2="Debe ingresar excatamente el correo de la persona"
+          name={emailToDelete}
+          onClickConfirm={() => {
+            handleDelete();
+            setShowConfirm(false);
+          }}
+          onClickCancel={() => setShowConfirm(false)}
         />
       )}
     </>
