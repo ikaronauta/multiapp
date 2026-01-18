@@ -5,7 +5,7 @@ import { getRoutesData } from "../adapters/routes.adapter";
 
 export const useRoutesFromDB = () => {
   const [routes, setRoutes] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loadingRoutes, setLoadingRoutes] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -28,9 +28,9 @@ export const useRoutesFromDB = () => {
         });
       })
       .finally(() => {
-        setLoading(false);
+        setLoadingRoutes(false);
       });
   }, []);
 
-  return { routes, loading, error };
+  return { routes, loadingRoutes, error };
 };

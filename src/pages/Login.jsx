@@ -1,52 +1,51 @@
 // src/pages/Login.jsx
 
-import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-
 import { loginAdapter as loginApi } from "../adapters/auth/authAdapter";
 import { TOKEN_KEY } from "../utils/constants";
-
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import Logo from '../assets/images/logo-multiApp.png';
 
-export default function Login() {
 
+export default function Login() {
+  
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [flashWord, setFlashWord] = useState("");
   const [pos, setPos] = useState({ top: "50%", left: "50%" });
   const [visible, setVisible] = useState(false);
-
+  
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const token = localStorage.getItem(TOKEN_KEY);
-    if (token) navigate("/");
+  // useEffect(() => {
+  //   const token = localStorage.getItem(TOKEN_KEY);
+  //   if (token) navigate("/");
 
-    // 🔴 Flashes subliminales cada 1s
-    const words = [
-      "útil", "rápido", "fácil", "eficiente",
-      "seguro", "práctico", "innovador", "confiable",
-      "intuitivo", "sencillo", "potente",
-      "cómodo", "versátil", "rápido", "inteligente"
-    ];
+  //   // 🔴 Flashes subliminales cada 1s
+  //   const words = [
+  //     "útil", "rápido", "fácil", "eficiente",
+  //     "seguro", "práctico", "innovador", "confiable",
+  //     "intuitivo", "sencillo", "potente",
+  //     "cómodo", "versátil", "rápido", "inteligente"
+  //   ];
 
-    const interval = setInterval(() => {
-      const w = words[Math.floor(Math.random() * words.length)];
-      setFlashWord(w);
-      setPos({
-        top: `${Math.random() * 70 + 15}%`,
-        left: `${Math.random() * 70 + 15}%`,
-      });
-      setVisible(false); // comienza visible
-      
-      setTimeout(() => setVisible(true), 50);
-      console.log(`Word: ${w}`);
-      setTimeout(() => setVisible(false), 110);
-    }, 1000);
+  //   const interval = setInterval(() => {
+  //     const w = words[Math.floor(Math.random() * words.length)];
+  //     setFlashWord(w);
+  //     setPos({
+  //       top: `${Math.random() * 70 + 15}%`,
+  //       left: `${Math.random() * 70 + 15}%`,
+  //     });
+  //     setVisible(false); // comienza visible
 
-    return () => clearInterval(interval);
-  }, []);
+  //     setTimeout(() => setVisible(true), 50);
+  //     console.log(`Word: ${w}`);
+  //     setTimeout(() => setVisible(false), 110);
+  //   }, 1000);
+
+  //   return () => clearInterval(interval);
+  // }, []);
 
   const handleChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -65,6 +64,7 @@ export default function Login() {
       if (!res.ok) return setErrorMsg(res.message);
 
       localStorage.setItem(TOKEN_KEY, res.token);
+
       navigate("/");
     } catch (error) {
       setErrorMsg(error.message || "Error en login");
@@ -81,7 +81,7 @@ export default function Login() {
 
 
       {/* PALABRAS */}
-      {flashWord && (
+      {/* {flashWord && (
         <div
           className="fixed text-white text-2xl font-bold select-none pointer-events-none z-30 transition-opacity duration-500"
           style={{
@@ -92,7 +92,7 @@ export default function Login() {
         >
           {flashWord}
         </div>
-      )}
+      )} */}
 
       {/* EFECTO GLASS */}
       <div className="relative z-10 w-full max-w-md p-8 rounded-2xl bg-white/10 backdrop-blur-md shadow-xl border border-white/20 animate-fadeIn">
