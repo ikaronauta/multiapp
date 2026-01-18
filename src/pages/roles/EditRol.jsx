@@ -8,7 +8,7 @@ import ModalSpinner from "../../components/modals/ModelSpinner";
 import ModalAlert from "../../components/modals/ModalAlert";
 
 
-export const EditRol = () => {
+export default function EditRol() {
 
   const navigate = useNavigate();
 

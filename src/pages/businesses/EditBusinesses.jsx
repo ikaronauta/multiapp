@@ -11,7 +11,7 @@ import ModalSpinner from "../../components/modals/ModelSpinner";
 import { getCitiesByIdDepto, getDeptos } from "../../adapters/utils.adapter";
 import { toTitleCaseSafeES } from "../../utils/common";
 
-export const EditBusinesses = () => {
+export default function EditBusinesses() {
 
   const navigate = useNavigate();
 

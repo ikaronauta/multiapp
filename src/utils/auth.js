@@ -14,7 +14,7 @@ export const getUserFromToken = () => {
 };
 
 export const isRoleAllowed = (allowedRoleIds, userRoleId) => {
-  if (!allowedRoleIds) return true; // null = todos
+  if (!allowedRoleIds) return false; // null = ninguno
   return allowedRoleIds.includes(userRoleId);
 };
 

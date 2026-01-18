@@ -9,7 +9,7 @@ import SpinnerLouder from "../../components/SpinnerLouder";
 import { getCitiesByIdDepto, getDeptos } from "../../adapters/utils.adapter";
 import { toTitleCaseSafeES } from "../../utils/common";
 
-export const CreateBusinesses = () => {
+export default function CreateBusinesses() {
   const [user] = useState(() => getUserFromToken());
   const [nameBusiness, setNameBusiness] = useState("");
   const [slug, setSlug] = useState("");

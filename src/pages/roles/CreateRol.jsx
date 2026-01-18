@@ -7,7 +7,7 @@ import ModalAlert from "../../components/modals/ModalAlert";
 import { newRol } from "../../adapters/roles.adapter";
 
 
-export const CreateRol = () => {
+export default function CreateRol() {
   const [user] = useState(() => getUserFromToken());
   const [codeRol, setCodeRol] = useState("");
   const [nameRol, setNameRol] = useState("");

@@ -2,131 +2,95 @@
 
 import { Routes, Route, Navigate } from "react-router-dom";
 
-import { isTokenValid } from "./utils/auth";
+import { getUserFromToken, isTokenValid } from "./utils/auth";
 
-import CreateUser from "./pages/users/CreateUser";
 import Dashboard from "./layouts/Dashboard";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
-import Roles from "./pages/roles/Roles";
-import Users from "./pages/users/Users";
 
 import './App.css';
 
-import { ROLES } from "./data/data";
-import Businesses from "./pages/businesses/Businesses";
-import { CreateBusinesses } from "./pages/businesses/CreateBusinesses";
-import { EditBusinesses } from "./pages/businesses/EditBusinesses";
-import { CreateRol } from "./pages/roles/CreateRol";
-import { EditRol } from "./pages/roles/EditRol";
-import EditUser from "./pages/users/EditUser";
-import Persons from "./pages/persons/Persons";
-import CreatePerson from "./pages/persons/CreatePerson";
-import EditPerson from "./pages/persons/EditPerson";
+import { useRoutesFromDB } from "./hooks/useRoutesFromDB";
+import { componentMap } from "./utils/componentMap";
+import { useEffect, useState } from "react";
+import SpinnerLouder from "./components/SpinnerLouder";
+import ModalAlert from "./components/modals/ModalAlert";
+import { TriangleAlert } from "lucide-react";
 
 
 export default function App() {
 
   const tokenOK = isTokenValid();
 
+  const [titleAlert, setTitleAlert] = useState("Atención.");
+  const [messageAlert1, setMessageAlert1] = useState("");
+  const [messageAlert2, setMessageAlert2] = useState("");
+  const [iconComponent, setIconComponent] = useState(<TriangleAlert className="text-red-600" size={24} />);
+  
+  const { routes, loading, error } = useRoutesFromDB();
+
+  const [showAlert, setShowAlert] = useState(false);
+
+  useEffect(() => {
+    if (error) {
+      setShowAlert(true);
+      setTitleAlert(error.titleAlert || "Atención.");
+      setMessageAlert1(error.messageAlert1 || "Algo salió mal.");
+      setMessageAlert2(error.messageAlert2 || "");
+
+    }
+  }, [error]);
+
+  if (loading) return <SpinnerLouder height="h-screen" />;
+
   return (
-    <Routes>
-      {/* 🔵 Ruta pública */}
-      <Route path="/login" element={<Login />} />
+    <>
+      <Routes>
+        {/* 🔵 Ruta pública */}
+        <Route path="/login" element={<Login />} />
 
-      {/* Si NO hay token, fuerza login */}
-      {!tokenOK && (
+        {/* Si NO hay token, fuerza login */}
+        {!tokenOK && (
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        )}
+
+        {/* 🔵 Rutas protegidas dentro del dashboard */}
+        <Route element={ <Dashboard /> }>
+
+          {/* Home por defecto */}
+          <Route index element={<Home />} />
+
+          {routes.map((route, i) => {
+            const Component = componentMap[route.component];
+
+            if (!Component) return null;
+
+            return (
+              <Route
+                key={i}
+                path={route.route}
+                element={ <Component />}
+              />
+            );
+          })}
+
+        </Route>
+
+        {/* Si la ruta no existe, al login */}
         <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+
+      {showAlert && (
+        <ModalAlert
+          titleAlert={titleAlert}
+          messageAlert1={messageAlert1}
+          messageAlert2={messageAlert2}
+          textButton="Cerrar" 
+          iconComponent={iconComponent}
+          onClick={() => setShowAlert(false)}
+        />
       )}
-
-      {/* 🔵 Rutas protegidas dentro del dashboard */}
-      <Route
-        element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        }
-      >
-        {/* Home por defecto */}
-        <Route path="/" element={<Home />} />
-
-        <Route path="/admin/businesses" element={
-          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
-            <Businesses />
-          </ProtectedRoute>
-        } />
-
-        <Route path="/admin/businesses/create" element={
-          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
-            <CreateBusinesses />
-          </ProtectedRoute>
-        } />
-
-        <Route path="/admin/businesses/edit/:id" element={
-          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
-            <EditBusinesses />
-          </ProtectedRoute>
-        } />
-
-        <Route path="/admin/persons" element={
-          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
-            <Persons />
-          </ProtectedRoute>
-        } />
-
-        <Route path="/admin/persons/create" element={
-          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
-            <CreatePerson />
-          </ProtectedRoute>
-        } />
-
-        <Route path="/admin/persons/edit/:id" element={
-          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
-            <EditPerson />
-          </ProtectedRoute>
-        } />
-
-        <Route path="/admin/roles" element={
-          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
-            <Roles />
-          </ProtectedRoute>
-        } />
-
-        <Route path="/admin/roles/create" element={
-          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
-            <CreateRol />
-          </ProtectedRoute>
-        } />
-
-        <Route path="/admin/roles/edit/:id" element={
-          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
-            <EditRol />
-          </ProtectedRoute>
-        } />
-
-        <Route path="/admin/users" element={
-          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
-            <Users />
-          </ProtectedRoute>
-        } />
-
-        <Route path="/admin/users/create" element={
-          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
-            <CreateUser />
-          </ProtectedRoute>
-        } />
-
-        <Route path="/admin/users/edit/:id" element={
-          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
-            <EditUser />
-          </ProtectedRoute>
-        } />
-        
-      </Route>
-
-      {/* Si la ruta no existe, al login */}
-      <Route path="*" element={<Navigate to="/login" replace />} />
-    </Routes>
+    </>
   );
 }
