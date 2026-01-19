@@ -42,7 +42,7 @@ export default function Sidebar({ open, setOpen }) {
             <X size={24} />
           </button>
           
-          <img src={Logo} alt="MultiApp" className="mx-auto w-16 sm:w-20 lg:w-24" />          
+          <img src={Logo} alt="MultiApp" className="mb-4 mx-auto w-16 sm:w-20 lg:w-24" />          
 
           <Navbar onLinkClick={() => setOpen(false)} />
         </div>

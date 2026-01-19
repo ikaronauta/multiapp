@@ -8,6 +8,7 @@ import { useState } from 'react';
 import Dashboard from "./layouts/Dashboard";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
+import SpinnerLouder from './components/SpinnerLouder';
 
 
 export default function App() {
@@ -34,13 +35,9 @@ export default function App() {
           {/* Home por defecto */}
           <Route index element={<Home />} />
 
-          {/* Si la ruta no existe, al login */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-
-          { loadRoutes && (
-            routes.map((route, i) => {
+          {loadRoutes
+            ? routes.map((route, i) => {
               const Component = componentMap[route.component];
-
               if (!Component) return null;
 
               return (
@@ -51,7 +48,11 @@ export default function App() {
                 />
               );
             })
-          )}
+            : <Route path="*" element={<SpinnerLouder height="h-screen" />} />
+          }
+
+          {/* Si la ruta no existe, al login */}
+          <Route path="*" element={<Navigate to="/" replace />} />
 
         </Route>
 

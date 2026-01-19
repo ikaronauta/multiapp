@@ -2,15 +2,16 @@
 
 import Businesses from "../pages/businesses/Businesses";
 import CreateBusinesses from "../pages/businesses/CreateBusinesses";
-import EditBusinesses from "../pages/businesses/EditBusinesses";
 import CreatePerson from "../pages/persons/CreatePerson";
-import EditPerson from "../pages/persons/EditPerson";
-import Persons from "../pages/persons/Persons";
 import CreateRol from "../pages/roles/CreateRol";
-import EditRol from "../pages/roles/EditRol";
-import Roles from "../pages/roles/Roles";
 import CreateUser from "../pages/users/CreateUser";
+import EditBusinesses from "../pages/businesses/EditBusinesses";
+import EditPerson from "../pages/persons/EditPerson";
+import EditRol from "../pages/roles/EditRol";
 import EditUser from "../pages/users/EditUser";
+import Modules from "../pages/modules/Modules";
+import Persons from "../pages/persons/Persons";
+import Roles from "../pages/roles/Roles";
 import Users from "../pages/users/Users";
 
 export const componentMap = {
@@ -26,4 +27,5 @@ export const componentMap = {
   Users,
   CreateUser,
   EditUser,
+  Modules,
 };

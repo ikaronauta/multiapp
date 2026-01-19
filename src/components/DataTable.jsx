@@ -74,6 +74,23 @@ export default function DataTable({ objData, onClickEdit, onClickDelete }) {
         };
       }
 
+      if (col.accessorKey.toLowerCase() === "mostrar") {
+        return {
+          ...col,
+          id: "Mostrar",
+          cell: ({ getValue }) => (
+            <span
+              className={`px-2 py-1 rounded text-xs font-semibold ${getValue()
+                ? "bg-green-100 text-green-700"
+                : "bg-red-100 text-red-700"
+                }`}
+            >
+              {getValue() == 1 ? "Sí" : "No"}
+            </span>
+          ),
+        };
+      }
+
       // Estilo para columna "id"
       if (col.accessorKey.toLowerCase() === "id") {
         return {

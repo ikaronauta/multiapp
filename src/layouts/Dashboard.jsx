@@ -76,9 +76,9 @@ export default function Dashboard({ setRoutes, setLoadRoutes }) {
 
       {showAlert && (
         <ModalAlert
-          titleAlert={error.title || titleAlert}
-          messageAlert1={error.message1 || messageAlert1}
-          messageAlert2={error.message2 || messageAlert2}
+          titleAlert={error.title || "Atención."}
+          messageAlert1={error.message1 || "Algo salió mal."}
+          messageAlert2={error.message2 || ""}
           textButton="Cerrar" 
           iconComponent={<TriangleAlert className="text-red-600" size={24} />}
           onClick={() => setShowAlert(false)}

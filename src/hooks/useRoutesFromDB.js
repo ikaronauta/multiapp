@@ -17,6 +17,7 @@ export const useRoutesFromDB = () => {
           setError({
             title: "Error al obtener las rutas",
             message1: "Respuesta inválida del servidor",
+            message2: data.message || "",
           });
         }
       })

@@ -4,7 +4,14 @@ import { api } from "../services/api.js";
 
 export const getRoutesData = async () => {
 
-  const { data } = await api.get(`/routes`);
-  return data;
+  try {
+    const { data } = await api.get(`/routes`);
+    return data;
+  } catch (error) {
+    debugger;
+    return error.response?.data ?? { ok: false, message: "Error en la petición" };
+  }
+
+
   // El error lo maneja el interceptor en api.js
 }

@@ -20,7 +20,7 @@ export default function Formats() {
   const [messageAlert2, setMessageAlert2] = useState("");
   const [iconComponent, setIconComponent] = useState(<TriangleAlert className="text-red-600" size={24} />);
 
-  const loadPersons = () => {
+  const loadData = () => {
     setLoading(true);
 
     getFormatsData()
@@ -47,7 +47,7 @@ export default function Formats() {
   }
 
   useEffect(() => {
-    loadPersons();
+    loadData();
   }, []);
 
   const handleEdit = (row) => {

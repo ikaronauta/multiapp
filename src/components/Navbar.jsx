@@ -43,23 +43,27 @@ export default function Navbar({ onLinkClick }) {
   }, [selectedBusiness]);
 
   useEffect(() => {
-    getBusinessesData()
-      .then((data) => {
-        if (data.data) {
-          setBusinesses(data.data);
-        } else {
+    if (isSuperAdmin) {
+      getBusinessesData()
+        .then((data) => {
+          if (data.data) {
+            setBusinesses(data.data);
+          } else {
+            setShowAlert(true);
+            setTitleAlert("Error al obtener los negocios");
+            setMessageAlert1(data.message ?? 'Algo fallo');
+          }
+        })
+        .catch((error) => {
           setShowAlert(true);
           setTitleAlert("Error al obtener los negocios");
-          setMessageAlert1(data.message ?? 'Algo fallo');
-        }
-      })
-      .catch((error) => {
-        setShowAlert(true);
-        setTitleAlert("Error al obtener los negocios");
-        setMessageAlert1(error.message ?? 'Algo fallo');
-      })
-      .finally(() => setLoadingUser(false));
-  }, []);
+          setMessageAlert1(error.message ?? 'Algo fallo');
+        })
+        .finally(() => setLoadingUser(false));
+    } else {
+      setLoadingUser(false);
+    }
+  }, [isSuperAdmin]);
 
   const dataHome = {
     id: "home",
@@ -86,7 +90,7 @@ export default function Navbar({ onLinkClick }) {
 
       {isSuperAdmin &&
         <select
-          className="border border-gray-300 rounded-lg px-3 py-2 mt-4 h-10 w-full text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+          className="border border-gray-300 rounded-lg px-3 py-2 h-10 w-full text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
           onChange={handleSelectBusiness}
           value={selectedBusiness}
           name="businessId"
