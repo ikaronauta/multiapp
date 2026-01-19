@@ -13,6 +13,7 @@ import Modules from "../pages/modules/Modules";
 import Persons from "../pages/persons/Persons";
 import Roles from "../pages/roles/Roles";
 import Users from "../pages/users/Users";
+import CreateModule from "../pages/modules/CreateModule";
 
 export const componentMap = {
   Businesses,
@@ -28,4 +29,5 @@ export const componentMap = {
   CreateUser,
   EditUser,
   Modules,
+  CreateModule,
 };

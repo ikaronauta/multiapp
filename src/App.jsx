@@ -57,7 +57,7 @@ export default function App() {
         </Route>
 
         {/* Si la ruta no existe, al login */}
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        {/* <Route path="*" element={<Navigate to="/login" replace />} /> */}
       </Routes>
     </>
   );
