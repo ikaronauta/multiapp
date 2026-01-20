@@ -1,11 +1,14 @@
 // src/pages/modules/Modules.jsx
 
 import { Link, useNavigate } from "react-router-dom";
-import { PlusCircle, TriangleAlert } from "lucide-react";
+import { Info, PlusCircle, TriangleAlert } from "lucide-react";
 import { useEffect, useState } from "react";
 import DataTable from "../../components/DataTable";
 import SpinnerLouder from "../../components/SpinnerLouder";
-import { getModulesData } from "../../adapters/modules.adapter";
+import { deleteModule, getModulesData } from "../../adapters/modules.adapter";
+import ModalConfirmDelete from "../../components/modals/ModalConfirmDelete";
+import ModalSpinner from "../../components/modals/ModelSpinner";
+import ModalAlert from "../../components/modals/ModalAlert";
 
 export default function Modules() {
 
@@ -23,39 +26,76 @@ export default function Modules() {
   const [messageAlert2, setMessageAlert2] = useState("");
   const [iconComponent, setIconComponent] = useState(<TriangleAlert className="text-red-600" size={24} />);
 
+  const [moduleToDelete, setModuleToDelete] = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [nameModuleToDelete, setNameModuleToDelete] = useState("");
+
   const loadData = () => {
-      setLoading(true);
-  
-      getModulesData()
-        .then((data) => {
-          if (data.data) {
-            setData({
-              data: data.data,
-              columns: data.data.length > 0 ? Object.keys(data.data[0]) : [],
-            });
-            setShowDataTable(true);
-          } else {
-            setShowAlert(true);
-            setTitleAlert("Error al obtener....");
-            setMessageAlert1(data.message ?? "Algo falló");
-            setShowDataTable(false);
-          }
-        })
-        .catch((err) => {
+    setLoading(true);
+
+    getModulesData()
+      .then((data) => {
+        if (data.data) {
+          setData({
+            data: data.data,
+            columns: data.data.length > 0 ? Object.keys(data.data[0]) : [],
+          });
+          setShowDataTable(true);
+        } else {
           setShowAlert(true);
-          setTitleAlert("Error al obtener.....");
-          setMessageAlert1(err.message ?? "Algo falló");
-        })
-        .finally(() => setLoading(false));
-    }
-  
-    useEffect(() => {
-      loadData();
-    }, []);
+          setTitleAlert("Error al obtener....");
+          setMessageAlert1(data.message ?? "Algo falló");
+          setShowDataTable(false);
+        }
+      })
+      .catch((err) => {
+        setShowAlert(true);
+        setTitleAlert("Error al obtener.....");
+        setMessageAlert1(err.message ?? "Algo falló");
+      })
+      .finally(() => setLoading(false));
+  }
+
+  useEffect(() => {
+    loadData();
+  }, []);
 
   const handleEdit = (row) => {
     console.log(row.original);
     navigate(`/admin/modules/edit/${row.original.uuid}`);
+  }
+
+  const handleConfirmDelete = (row) => {
+    setModuleToDelete(row.original.uuid);
+    setShowConfirm(true);
+    setNameModuleToDelete(row.original.Nombre);
+  }
+
+  const handleDelete = async () => {
+    setShowAlertSpinner(true);
+
+    try {
+      const response = await deleteModule(moduleToDelete);
+
+      if (!response.ok) {
+        setShowAlertSpinner(false);
+        setShowAlert(true);
+        setTitleAlert("Error al eliminar el módulo.");
+        setMessageAlert1(response.message ?? "Algo falló");
+        setMessageAlert2(response.error?.details || "");
+        return;
+      }
+
+      setModuleToDelete(null);
+      setShowAlertSpinner(false);
+
+      loadData();
+    } catch (error) {
+      setShowAlertSpinner(false);
+      setTitleAlert("Error al eliminar el Modulo.");
+      setMessageAlert1('Algo fallo');
+      console.error("Error deleting person:", error);
+    }
   }
 
   if (loading) return <SpinnerLouder height="h-full" />;
@@ -72,8 +112,44 @@ export default function Modules() {
 
       {/* Tabla */}
       {showDataTable && (
-        <DataTable objData={data} onClickEdit={handleEdit} onClickDelete={() => { }} />
+        <DataTable objData={data} onClickEdit={handleEdit} onClickDelete={handleConfirmDelete} />
       )}
+
+      {/* Modales */}
+      <>
+        {showAlert && (
+          <ModalAlert
+            titleAlert={titleAlert}
+            messageAlert1={messageAlert1}
+            messageAlert2={messageAlert2}
+            textButton="Cerrar"
+            iconComponent={iconComponent}
+            onClick={() => setShowAlert(false)}
+          />
+        )}
+
+        {showAlertSpinner && (
+          <ModalSpinner
+            titleModal="Procesando..."
+            messageModal=""
+            iconComponent={<Info className="text-red-600" size={24} />}
+          />
+        )}
+
+        {showConfirm && (
+          <ModalConfirmDelete
+            titleConfirm="¿Eliminar Persona?"
+            messageConfirm1="Esta acción no se puede deshacer."
+            messageConfirm2="Debe ingresar excatamente el nombre de la persona"
+            name={nameModuleToDelete}
+            onClickConfirm={() => {
+              handleDelete();
+              setShowConfirm(false);
+            }}
+            onClickCancel={() => setShowConfirm(false)}
+          />
+        )}
+      </>
     </>
   );
 }

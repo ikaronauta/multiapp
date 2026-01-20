@@ -71,31 +71,31 @@ export default function Persons() {
   }
 
   const handleDelete = async () => {
-      setShowAlertSpinner(true);
-  
-      try {
-        const response = await deletePerson(personToDelete);
-  
-        if (!response.ok) {
-          setShowAlertSpinner(false);
-          setShowAlert(true);
-          setTitleAlert("Error al eliminar la persona.");
-          setMessageAlert1(response.message);
-          setMessageAlert2(response.error?.details || "");
-          return;
-        }
-  
-        setPersonToDelete(null);
+    setShowAlertSpinner(true);
+
+    try {
+      const response = await deletePerson(personToDelete);
+
+      if (!response.ok) {
         setShowAlertSpinner(false);
-  
-        loadPersons();
-      } catch (error) {
-        setShowAlertSpinner(false);
-        setTitleAlert("Error al eliminar persona.");
-        setMessageAlert1('Algo fallo');
-        console.error("Error deleting person:", error);
+        setShowAlert(true);
+        setTitleAlert("Error al eliminar la persona.");
+        setMessageAlert1(response.message);
+        setMessageAlert2(response.error?.details || "");
+        return;
       }
+
+      setPersonToDelete(null);
+      setShowAlertSpinner(false);
+
+      loadPersons();
+    } catch (error) {
+      setShowAlertSpinner(false);
+      setTitleAlert("Error al eliminar persona.");
+      setMessageAlert1('Algo fallo');
+      console.error("Error deleting person:", error);
     }
+  }
 
   if (loading) return <SpinnerLouder height="h-full" />;
 
