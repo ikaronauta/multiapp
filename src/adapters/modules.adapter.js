@@ -23,3 +23,23 @@ export const newModule = async (formData) => {
     return error.response?.data ?? { ok: false, message: "Error en la petición" };
   }
 }
+
+export const getModuleByUUID = async (id) => {
+  try {
+    const { data } = await api.get(`/modules/${id}`);
+    return data;
+  } catch (error) {
+    return error.response?.data ?? { ok: false, message: "Error en la petición" };
+  }
+}
+
+export const updatetModule = async (id, formData) => {
+  try {
+    const { data } = await api.put(`/modules/edit/${id}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return data;
+  } catch (error) {
+    return error.response?.data ?? { ok: false, message: "Error en la petición" };
+  }
+};

@@ -67,7 +67,7 @@ export default function EditUser() {
         setShowAlert(true);
         setTitleAlert("Error al obtener los negocios");
         setMessageAlert1(error.message ?? 'Algo fallo');
-        etBusinessesOk(false);
+        setBusinessesOk(false);
       })
       .finally(() => setLoadingBusinesses(false));
   }, []);
@@ -126,7 +126,7 @@ export default function EditUser() {
           setSelectedRole(data.data.role_id);
           setSelectedBusiness(data.data.business_id);
         } else {
-          debugger;
+          console.log(data);
         }
       })
       .catch((error) => {
@@ -157,7 +157,7 @@ export default function EditUser() {
         setShowAlert(true);
         setTitleAlert("Error al editar el usuario");
         setMessageAlert1(errorMsg);
-        setMessageAlert2(response.error.details && response.error.details);
+        setMessageAlert2(response?.error?.details ?? "");
         return;
       }
 

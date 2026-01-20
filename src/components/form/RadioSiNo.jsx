@@ -1,10 +1,11 @@
+import { widthClasses } from "../../utils/common";
 
 
-export default function RadioSiNo({ widthPercent, textLabel, isRequired, value, onChange, 
+export default function RadioSiNo({ widthPercent, textLabel, isRequired, value, onChange,
   name }) {
 
   return (
-    <div className={`px-2 w-full sm:w-[${widthPercent}%] mb-2`}>
+    <div className={`px-2 w-full ${widthClasses[widthPercent]} mb-2`}>
       <label className="text-gray-900 text-sm">
         {textLabel}
         {isRequired && (

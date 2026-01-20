@@ -149,7 +149,7 @@ export default function CreateUser() {
         setShowAlert(true);
         setTitleAlert("Error al agregar el usuario");
         setMessageAlert1(errorMsg);
-        setMessageAlert2(response.error.details && response.error.details);
+        setMessageAlert2(response?.error?.details ?? "");
         console.error("Error adding user:", errorMsg);
         return;
       }

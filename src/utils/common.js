@@ -1,7 +1,7 @@
 // src/utils/common.js
 
 export const toTitleCaseSafeES = (str) => {
- if (!str) return "";
+  if (!str) return "";
 
   // Normalizar el string para manejar correctamente tildes y Ñ
   const normalized = str.normalize("NFC").toLowerCase();
@@ -19,4 +19,13 @@ export const toTitleCaseSafeES = (str) => {
   });
 
   return titleCased.join(" ");
+};
+
+export const widthClasses = {
+  20: "sm:w-1/5",
+  25: "sm:w-1/4",
+  33: "sm:w-1/3",
+  50: "sm:w-1/2",
+  75: "sm:w-3/4",
+  100: "sm:w-full",
 };
