@@ -6,7 +6,7 @@ import ModalAlert from "../../components/modals/ModalAlert";
 import ModalConfirmDelete from "../../components/modals/ModalConfirmDelete";
 import ModalSpinner from "../../components/modals/ModelSpinner";
 import SpinnerLouder from "../../components/SpinnerLouder";
-import { getAssignedPermissions } from "../../adapters/permissions.adapter";
+import { getAssignedPermissions } from "../../adapters/assignedPermissions.adapter";
 
 
 export default function AssignedPermissions() {

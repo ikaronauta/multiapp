@@ -48,7 +48,7 @@ export default function EditModule() {
   useEffect(() => {
     if (permissions.length > 0) {
       const mapped = permissions.map((permission) => {
-        return { value: permission.id, text: permission.name };
+        return { value: permission.id, text: permission.Nombre };
       });
       setOptionsPermissions(mapped);
     }
@@ -149,7 +149,7 @@ export default function EditModule() {
       </Link>
 
       <div className="relative w-full sm:max-w-3xl mx-auto bg-white shadow-md rounded-lg p-4 sm:p-6">
-        <h2 className="text-gray-900 text-2xl font-bold mb-4">Editar Negocio</h2>
+        <h2 className="text-gray-900 text-2xl font-bold mb-4">Editar Modulo</h2>
 
         <form onSubmit={handleEdit} className="flex flex-wrap -mx-2 items-end">
 

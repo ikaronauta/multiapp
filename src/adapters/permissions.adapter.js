@@ -52,12 +52,3 @@ export const deletePermission = async (idPermission) => {
     return error.response?.data ?? { ok: false, message: "Error en la petición" };
   }
 };
-
-export const getAssignedPermissions = async () => {
-  try {
-    const { data } = await api.get("/assigned_permissions");
-    return data;
-  } catch (error) {
-    return error.response?.data ?? { ok: false, message: "Error en la petición" };
-  }
-};

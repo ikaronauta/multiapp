@@ -53,6 +53,7 @@ export default function CreateFormat() {
         setShowAlert(true);
         setTitleAlert("Error al agregar.....");
         setMessageAlert1(errorMsg);
+        setMessageAlert2(response?.error?.details ?? "");
         console.error("Error adding...:", errorMsg);
         return;
       }
