@@ -8,7 +8,7 @@ import ModalAlert from "../../components/modals/ModalAlert";
 import ModalConfirmDelete from "../../components/modals/ModalConfirmDelete";
 import ModalSpinner from "../../components/modals/ModelSpinner";
 import SpinnerLouder from "../../components/SpinnerLouder";
-import { getSectionsData } from "../../adapters/sections.adapter";
+import { deleteSection, getSectionsData } from "../../adapters/sections.adapter";
 
 
 export default function Sections() {
@@ -76,7 +76,7 @@ export default function Sections() {
     setShowAlertSpinner(true);
 
     try {
-      //const response = await deleteItem(itemToDelete);
+      const response = await deleteSection(itemToDelete);
 
       if (!response.ok) {
         setShowAlertSpinner(false);

@@ -20,6 +20,7 @@ import CreatePermission from "../pages/permissions/CreatePermission";
 import EditPermission from "../pages/permissions/EditPermission";
 import Sections from "../pages/sections/Sections";
 import CreateSection from "../pages/sections/CreateSection";
+import EditSection from "../pages/sections/EditSection";
 
 export const componentMap = {
   Businesses,
@@ -42,5 +43,5 @@ export const componentMap = {
   EditPermission,
   Sections,
   CreateSection,
-  // EditSection,
+  EditSection,
 };
