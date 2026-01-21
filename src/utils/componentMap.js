@@ -16,6 +16,8 @@ import Permissions from "../pages/permissions/Permissions";
 import Persons from "../pages/persons/Persons";
 import Roles from "../pages/roles/Roles";
 import Users from "../pages/users/Users";
+import CreatePermission from "../pages/permissions/CreatePermission";
+import EditPermission from "../pages/permissions/EditPermission";
 
 export const componentMap = {
   Businesses,
@@ -34,4 +36,6 @@ export const componentMap = {
   CreateModule,
   EditModule,
   Permissions,
+  CreatePermission,
+  EditPermission,
 };

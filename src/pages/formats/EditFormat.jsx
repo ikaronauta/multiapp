@@ -1,7 +1,10 @@
-import { CircleChevronLeft } from "lucide-react";
-import { Link } from "react-router-dom";
-import ModalSpinner from "../../components/modals/ModelSpinner";
+import { CircleChevronLeft, Info, TriangleAlert } from "lucide-react";
+import { getUserFromToken } from "../../utils/auth";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import ModalAlert from "../../components/modals/ModalAlert";
+import ModalSpinner from "../../components/modals/ModelSpinner";
+import SpinnerLouder from "../../components/SpinnerLouder";
 
 
 export default function EditPerson() {

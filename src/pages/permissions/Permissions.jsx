@@ -1,12 +1,14 @@
+// src/pages/permissions/Permissions.jsx
+
+import { getPermissionsData } from "../../adapters/permissions.adapter";
 import { Link, useNavigate } from "react-router-dom";
 import { PlusCircle, TriangleAlert } from "lucide-react";
 import { useEffect, useState } from "react";
 import DataTable from "../../components/DataTable";
-import SpinnerLouder from "../../components/SpinnerLouder";
-import { getPermissionsData } from "../../adapters/permissions.adapter";
 import ModalAlert from "../../components/modals/ModalAlert";
-import ModalSpinner from "../../components/modals/ModelSpinner";
 import ModalConfirmDelete from "../../components/modals/ModalConfirmDelete";
+import ModalSpinner from "../../components/modals/ModelSpinner";
+import SpinnerLouder from "../../components/SpinnerLouder";
 
 export default function Permissions() {
 

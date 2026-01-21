@@ -108,6 +108,7 @@ export default function CreateModule() {
       setShowAlert(true);
       setTitleAlert("Error al agregar Usuario.");
       setMessageAlert1(error.message ?? "Error inesperado");
+      setMessageAlert2(error?.details ?? "");
       console.error("Error adding user:", error);
     }
   }
