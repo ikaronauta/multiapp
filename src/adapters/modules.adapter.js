@@ -51,4 +51,4 @@ export const deleteModule = async (idModule) => {
   } catch (error) {
     return error.response?.data ?? { ok: false, message: "Error en la petición" };
   }
-}
+};

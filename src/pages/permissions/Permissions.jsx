@@ -1,8 +1,8 @@
 // src/pages/permissions/Permissions.jsx
 
-import { getPermissionsData } from "../../adapters/permissions.adapter";
+import { deletePermission, getPermissionsData } from "../../adapters/permissions.adapter";
 import { Link, useNavigate } from "react-router-dom";
-import { PlusCircle, TriangleAlert } from "lucide-react";
+import { Info, PlusCircle, TriangleAlert } from "lucide-react";
 import { useEffect, useState } from "react";
 import DataTable from "../../components/DataTable";
 import ModalAlert from "../../components/modals/ModalAlert";
@@ -26,8 +26,9 @@ export default function Permissions() {
   const [messageAlert2, setMessageAlert2] = useState("");
   const [iconComponent, setIconComponent] = useState(<TriangleAlert className="text-red-600" size={24} />);
 
-
+  const [itemToDelete, setItemToDelete] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [nameItemToDelete, setNameItemToDelete] = useState("");
 
   const loadData = () => {
     setLoading(false);
@@ -64,6 +65,39 @@ export default function Permissions() {
     navigate(`/admin/permissions/edit/${row.original.uuid}`);
   }
 
+  const handleConfirmDelete = (row) => {
+    setItemToDelete(row.original.uuid);
+    setShowConfirm(true);
+    setNameItemToDelete(row.original.Nombre);
+  }
+
+  const handleDelete = async () => {
+    setShowAlertSpinner(true);
+
+    try {
+      const response = await deletePermission(itemToDelete);
+
+      if (!response.ok) {
+        setShowAlertSpinner(false);
+        setShowAlert(true);
+        setTitleAlert("Error al eliminar el módulo.");
+        setMessageAlert1(response.message ?? "Algo falló");
+        setMessageAlert2(response.error?.details || "");
+        return;
+      }
+
+      setItemToDelete(null);
+      setShowAlertSpinner(false);
+
+      loadData();
+    } catch (error) {
+      setShowAlertSpinner(false);
+      setTitleAlert("Error al eliminar el Modulo.");
+      setMessageAlert1('Algo fallo');
+      console.error("Error deleting person:", error);
+    }
+  }
+
   if (loading) return <SpinnerLouder height="h-full" />;
 
   return (
@@ -78,7 +112,7 @@ export default function Permissions() {
 
       {/* Tabla */}
       {showDataTable && (
-        <DataTable objData={data} onClickEdit={handleEdit} onClickDelete={() => { }} />
+        <DataTable objData={data} onClickEdit={handleEdit} onClickDelete={handleConfirmDelete} />
       )}
 
       {/* Modales */}
@@ -107,7 +141,7 @@ export default function Permissions() {
             titleConfirm="¿Eliminar Permiso?"
             messageConfirm1="Esta acción no se puede deshacer."
             messageConfirm2="Debe ingresar excatamente el nombre del permiso"
-            name={nameBusinessToDelete}
+            name={nameItemToDelete}
             onClickConfirm={() => {
               handleDelete();
               setShowConfirm(false);

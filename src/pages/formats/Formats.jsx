@@ -1,8 +1,12 @@
 import { Link, useNavigate } from "react-router-dom";
-import { PlusCircle, TriangleAlert } from "lucide-react";
+import { Info, PlusCircle, TriangleAlert } from "lucide-react";
 import { useEffect, useState } from "react";
 import DataTable from "../../components/DataTable";
+import ModalAlert from "../../components/modals/ModalAlert";
+import ModalConfirmDelete from "../../components/modals/ModalConfirmDelete";
+import ModalSpinner from "../../components/modals/ModelSpinner";
 import SpinnerLouder from "../../components/SpinnerLouder";
+
 
 export default function Formats() {
 
@@ -20,8 +24,10 @@ export default function Formats() {
   const [messageAlert2, setMessageAlert2] = useState("");
   const [iconComponent, setIconComponent] = useState(<TriangleAlert className="text-red-600" size={24} />);
 
+  const [itemToDelete, setItemToDelete] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
-  
+  const [nameItemToDelete, setNameItemToDelete] = useState("");
+
   const loadData = () => {
     setLoading(true);
 
@@ -57,6 +63,39 @@ export default function Formats() {
     navigate(`/admin/businesses/edit/${row.original.uuid}`);
   }
 
+  const handleConfirmDelete = (row) => {
+    setModuleToDelete(row.original.uuid);
+    setShowConfirm(true);
+    setNameItemToDelete(row.original.Nombre);
+  }
+
+  const handleDelete = async () => {
+    setShowAlertSpinner(true);
+
+    try {
+      const response = await deleteItem(itemToDelete);
+
+      if (!response.ok) {
+        setShowAlertSpinner(false);
+        setShowAlert(true);
+        setTitleAlert("Error al eliminar el módulo.");
+        setMessageAlert1(response.message ?? "Algo falló");
+        setMessageAlert2(response.error?.details || "");
+        return;
+      }
+
+      setItemToDelete(null);
+      setShowAlertSpinner(false);
+
+      loadData();
+    } catch (error) {
+      setShowAlertSpinner(false);
+      setTitleAlert("Error al eliminar el Modulo.");
+      setMessageAlert1('Algo fallo');
+      console.error("Error deleting person:", error);
+    }
+  }
+
   if (loading) return <SpinnerLouder height="h-full" />;
 
   return (
@@ -71,7 +110,7 @@ export default function Formats() {
 
       {/* Tabla */}
       {showDataTable && (
-        <DataTable objData={dataFormats} onClickEdit={handleEdit} onClickDelete={() => { }} />
+        <DataTable objData={dataFormats} onClickEdit={handleEdit} onClickDelete={handleConfirmDelete} />
       )}
 
       {/* Modales */}
@@ -97,10 +136,10 @@ export default function Formats() {
 
         {showConfirm && (
           <ModalConfirmDelete
-            titleConfirm="¿Eliminar Negocio?"
+            titleConfirm="¿Eliminar Permiso?"
             messageConfirm1="Esta acción no se puede deshacer."
-            messageConfirm2="Debe ingresar excatamente el nombre del negocio"
-            name={nameBusinessToDelete}
+            messageConfirm2="Debe ingresar excatamente el nombre del permiso"
+            name={nameItemToDelete}
             onClickConfirm={() => {
               handleDelete();
               setShowConfirm(false);
