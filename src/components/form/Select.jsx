@@ -34,8 +34,8 @@ export default function Select({ widthPercent, textLabel, isRequired, value, onC
           <option value="">{textFirstOption}</option>
         )}
 
-        {options.map((option) => {
-          return <option key={option.value} value={option.value}>{option.text}</option>
+        {options.map((option, index) => {
+          return <option key={index} value={option.value}>{option.text}</option>
         })}
       </select>
     </div>
