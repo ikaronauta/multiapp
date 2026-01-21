@@ -1,3 +1,5 @@
+// src/pages/sections/Sections.jsx
+
 import { Link, useNavigate } from "react-router-dom";
 import { Info, PlusCircle, TriangleAlert } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -6,13 +8,14 @@ import ModalAlert from "../../components/modals/ModalAlert";
 import ModalConfirmDelete from "../../components/modals/ModalConfirmDelete";
 import ModalSpinner from "../../components/modals/ModelSpinner";
 import SpinnerLouder from "../../components/SpinnerLouder";
+import { getSectionsData } from "../../adapters/sections.adapter";
 
 
-export default function Formats() {
+export default function Sections() {
 
   const navigate = useNavigate();
 
-  const [dataFormats, setDataFormats] = useState({ data: [], columns: [] });
+  const [data, setData] = useState({ data: [], columns: [] });
   const [showDataTable, setShowDataTable] = useState(false);
 
   const [loading, setLoading] = useState(true);
@@ -31,17 +34,17 @@ export default function Formats() {
   const loadData = () => {
     setLoading(true);
 
-    getFormatsData()
+    getSectionsData()
       .then((data) => {
         if (data.data) {
-          setDataPersons({
+          setData({
             data: data.data,
             columns: data.data.length > 0 ? Object.keys(data.data[0]) : [],
           });
           setShowDataTable(true);
         } else {
           setShowAlert(true);
-          setTitleAlert("Error al obtener....");
+          setTitleAlert("Error al obtener las secciones");
           setMessageAlert1(data.message ?? "Algo falló");
           setShowDataTable(false);
         }
@@ -60,7 +63,7 @@ export default function Formats() {
 
   const handleEdit = (row) => {
     console.log(row.original);
-    navigate(`/admin/businesses/edit/${row.original.uuid}`);
+    navigate(`/admin/sections/edit/${row.original.uuid}`);
   }
 
   const handleConfirmDelete = (row) => {
@@ -73,12 +76,12 @@ export default function Formats() {
     setShowAlertSpinner(true);
 
     try {
-      const response = await deleteItem(itemToDelete);
+      //const response = await deleteItem(itemToDelete);
 
       if (!response.ok) {
         setShowAlertSpinner(false);
         setShowAlert(true);
-        setTitleAlert("Error al eliminar el módulo.");
+        setTitleAlert("Error al eliminar la sección.");
         setMessageAlert1(response.message ?? "Algo falló");
         setMessageAlert2(response.error?.details || "");
         return;
@@ -90,9 +93,9 @@ export default function Formats() {
       loadData();
     } catch (error) {
       setShowAlertSpinner(false);
-      setTitleAlert("Error al eliminar el Modulo.");
+      setTitleAlert("Error al eliminar la sección.");
       setMessageAlert1('Algo fallo');
-      console.error("Error deleting person:", error);
+      console.error("Error deleting section:", error);
     }
   }
 
@@ -101,16 +104,16 @@ export default function Formats() {
   return (
     <>
       <Link
-        to="/admin/persons/create"
+        to="/admin/sections/create"
         className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mb-4"
       >
         <PlusCircle size={16} />
-        <span>Nueva persona</span>
+        <span>Nueva sección</span>
       </Link>
 
       {/* Tabla */}
       {showDataTable && (
-        <DataTable objData={dataFormats} onClickEdit={handleEdit} onClickDelete={handleConfirmDelete} />
+        <DataTable objData={data} onClickEdit={handleEdit} onClickDelete={handleConfirmDelete} />
       )}
 
       {/* Modales */}
@@ -136,9 +139,9 @@ export default function Formats() {
 
         {showConfirm && (
           <ModalConfirmDelete
-            titleConfirm="¿Eliminar Permiso?"
+            titleConfirm="¿Eliminar Sección?"
             messageConfirm1="Esta acción no se puede deshacer."
-            messageConfirm2="Debe ingresar excatamente el nombre del permiso"
+            messageConfirm2="Debe ingresar excatamente el nombre de la sección"
             name={nameItemToDelete}
             onClickConfirm={() => {
               handleDelete();

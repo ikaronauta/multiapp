@@ -1,21 +1,18 @@
-// src/pages/permissions/CreatePermission.jsx
+// src/pages/sections/CreateSection.jsx
 
 import { CircleChevronLeft, Info, TriangleAlert } from "lucide-react";
 import { getUserFromToken } from "../../utils/auth";
 import { Link } from "react-router-dom";
-import { newPermission } from "../../adapters/permissions.adapter";
 import { useState } from "react";
-import Input from "../../components/form/Input";
 import ModalAlert from "../../components/modals/ModalAlert";
 import ModalSpinner from "../../components/modals/ModelSpinner";
 
-export default function CreatePermission() {
+
+export default function CreateFormat() {
 
   const [user, setUser] = useState(() => getUserFromToken());
 
   // Campos Formulario
-  const [code, setCode] = useState("");
-  const [name, setName] = useState("");
 
   // Variables para Modales
   const [showAlert, setShowAlert] = useState(false);
@@ -32,49 +29,66 @@ export default function CreatePermission() {
     setShowAlertSubmit(true);
 
     try {
-
+     
       const formData = new FormData();
 
-      formData.append("code", code);
-      formData.append("name", name);
-      formData.append("created_by_id", user.id);
+      /*
+      1. Agregar campos al FormData
 
-      const response = await newPermission(formData);
+      Ejemplo:
+    
+      formData.append("business_id", selectedBusiness);
+      */
+     
+
+      /*
+      2. Enviar los datos por medio de adaptador
+
+      Ejemplo:
+    
+      const response = await newUser(formData);
+      */
 
       if (!response.ok) {
         const errorMsg = response.message ?? "Error inesperado";
         setShowAlertSubmit(false);
         setShowAlert(true);
-        setTitleAlert("Error al agregar el permiso");
+        setTitleAlert("Error al agregar.....");
         setMessageAlert1(errorMsg);
-        setMessageAlert2(response?.error?.details ?? "");
-        console.error("Error adding permission:", errorMsg);
+        console.error("Error adding...:", errorMsg);
         return;
       }
 
       setShowAlertSubmit(false);
       setShowAlert(true);
-      setTitleAlert("Permiso agregado");
+      setTitleAlert("Negocio agregado");
       setIconComponentModalAlert(<Info className="text-green-600" size={24} />);
-      setMessageAlert1("El permiso ha sido agregado correctamente");
+      setMessageAlert1("El negocio ha sido agregado correctamente");
 
       // Limpieza de inputs
-      setCode("");
-      setName("");
 
+      /*
+      2. Limpiar inputs
+
+      Ejemplo:
+    
+      setUserName("");
+      */
+      
     } catch (error) {
       setShowAlertSubmit(false);
       setShowAlert(true);
-      setTitleAlert("Error al agregar el permiso.");
+      setTitleAlert("Error al agregar Usuario.");
       setMessageAlert1(error.message ?? "Error inesperado");
-      console.error("Error adding permission:", error);
+      setMessageAlert2(response?.error?.details ?? "");
+      console.error("Error adding user:", error);
     }
   }
 
   return (
     <div className="sm:max-w-3xl mx-auto">
       <Link
-        to="/admin/permissions"
+        to="/admin/persons"
         className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mb-4"
       >
         <CircleChevronLeft size={16} />
@@ -83,31 +97,10 @@ export default function CreatePermission() {
 
       {/* Formulario */}
       <div className="relative w-full sm:max-w-3xl mx-auto bg-white shadow-md rounded-lg p-4 sm:p-6">
-        <h2 className="text-gray-900 text-2xl font-bold mb-4">Crear Permiso</h2>
+        <h2 className="text-gray-900 text-2xl font-bold mb-4">Crear....</h2>
 
         <form onSubmit={handleAdd} className="flex flex-wrap -mx-2 items-end">
-
-          <Input
-            widthPercent="50"
-            textLabel="Código"
-            isRequired={true}
-            type="text"
-            placeholder="Código"
-            value={code}
-            onChange={setCode}
-            name="code"
-          />
-
-          <Input
-            widthPercent="50"
-            textLabel="Nombre"
-            isRequired={true}
-            type="text"
-            placeholder="Nombre"
-            value={name}
-            onChange={setName}
-            name="name"
-          />
+          {/* Agregar los campos se necesiten para el formulario */}
 
           <div className="px-2 w-full sm:w-full mb-2 mt-2">
             <button type="submit" className="bg-green-600 text-white px-3 py-2 h-10 rounded-md w-full hover:bg-green-700">
