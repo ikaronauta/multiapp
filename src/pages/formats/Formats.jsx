@@ -12,7 +12,7 @@ export default function Formats() {
 
   const navigate = useNavigate();
 
-  const [dataFormats, setDataFormats] = useState({ data: [], columns: [] });
+  const [data, setData] = useState({ data: [], columns: [] });
   const [showDataTable, setShowDataTable] = useState(false);
 
   const [loading, setLoading] = useState(true);
@@ -34,7 +34,7 @@ export default function Formats() {
     getFormatsData()
       .then((data) => {
         if (data.data) {
-          setDataPersons({
+          setData({
             data: data.data,
             columns: data.data.length > 0 ? Object.keys(data.data[0]) : [],
           });
@@ -110,7 +110,7 @@ export default function Formats() {
 
       {/* Tabla */}
       {showDataTable && (
-        <DataTable objData={dataFormats} onClickEdit={handleEdit} onClickDelete={handleConfirmDelete} />
+        <DataTable objData={data} onClickEdit={handleEdit} onClickDelete={handleConfirmDelete} />
       )}
 
       {/* Modales */}

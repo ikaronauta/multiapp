@@ -2,7 +2,7 @@
 
 import { deletePermission, getPermissionsData } from "../../adapters/permissions.adapter";
 import { Link, useNavigate } from "react-router-dom";
-import { Info, PlusCircle, TriangleAlert } from "lucide-react";
+import { Info, Lock, PlusCircle, ShieldCheck, ShieldPlus, TriangleAlert } from "lucide-react";
 import { useEffect, useState } from "react";
 import DataTable from "../../components/DataTable";
 import ModalAlert from "../../components/modals/ModalAlert";
@@ -17,7 +17,7 @@ export default function Permissions() {
   const [data, setData] = useState({ data: [], columns: [] });
   const [showDataTable, setShowDataTable] = useState(false);
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [showAlert, setShowAlert] = useState(false);
   const [showAlertSpinner, setShowAlertSpinner] = useState(false);
 
@@ -104,10 +104,18 @@ export default function Permissions() {
     <>
       <Link
         to="/admin/permissions/create"
-        className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mb-4"
+        className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mb-4 "
       >
         <PlusCircle size={16} />
         <span>Nuevo permiso</span>
+      </Link>
+
+      <Link
+        to="/admin/assigned_permissions"
+        className="inline-flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 mb-4 ml-1"
+      >
+        <Lock size={16} />
+        <span>Permisos asignados</span>
       </Link>
 
       {/* Tabla */}
