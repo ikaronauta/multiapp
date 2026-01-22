@@ -104,7 +104,7 @@ export default function SectionModules() {
   return (
     <>
       <Link
-        to="/admin/persons/create"
+        to="/admin/section_modules/create"
         className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mb-4"
       >
         <Puzzle size={16} />

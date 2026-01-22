@@ -43,52 +43,52 @@ export default function CreateAssignedPermissions() {
   const [showAlertPermissions, setShowAlertPermissions] = useState(false);
 
   // Cargar roles
-    useEffect(() => {
-      getRolesData()
-        .then((data) => {
-          if (data.data) setRoles(data.data);
-          else setShowAlertRoles(true);
-        })
-        .catch((error) => {
-          setShowAlertRoles(true);
-          console.error("Error fetching roles:", error);
-        })
-        .finally(() => setLoadingRoles(false));
-    }, []);
-  
-    // Mapear los roles para el formato del select
-    useEffect(() => {
-      if (roles.length > 0) {
-        const mapped = roles.map((item) => {
-          return { value: item.ID, text: item.Rol };
-        });
-        setOptionsRoles(mapped);
-      }
-    }, [roles]);
+  useEffect(() => {
+    getRolesData()
+      .then((data) => {
+        if (data.data) setRoles(data.data);
+        else setShowAlertRoles(true);
+      })
+      .catch((error) => {
+        setShowAlertRoles(true);
+        console.error("Error fetching roles:", error);
+      })
+      .finally(() => setLoadingRoles(false));
+  }, []);
 
-    // Cargar permisos
-    useEffect(() => {
-      getPermissionsData()
-        .then((data) => {
-          if (data.data) setPermissions(data.data);
-          else setShowAlertPermissions(true);
-        })
-        .catch((error) => {
-          setShowAlertPermissions(true);
-          console.error("Error fetching permission:", error);
-        })
-        .finally(() => setLoadingPermissions(false));
-    }, []);
-  
-    // Mapear los permisos para el formato del select
-    useEffect(() => {
-      if (permissions.length > 0) {
-        const mapped = permissions.map((item) => {
-          return { value: item.id, text: item.Nombre };
-        });
-        setOptionsPermissions(mapped);
-      }
-    }, [permissions]);
+  // Mapear los roles para el formato del select
+  useEffect(() => {
+    if (roles.length > 0) {
+      const mapped = roles.map((item) => {
+        return { value: item.ID, text: item.Rol };
+      });
+      setOptionsRoles(mapped);
+    }
+  }, [roles]);
+
+  // Cargar permisos
+  useEffect(() => {
+    getPermissionsData()
+      .then((data) => {
+        if (data.data) setPermissions(data.data);
+        else setShowAlertPermissions(true);
+      })
+      .catch((error) => {
+        setShowAlertPermissions(true);
+        console.error("Error fetching permission:", error);
+      })
+      .finally(() => setLoadingPermissions(false));
+  }, []);
+
+  // Mapear los permisos para el formato del select
+  useEffect(() => {
+    if (permissions.length > 0) {
+      const mapped = permissions.map((item) => {
+        return { value: item.id, text: item.Nombre };
+      });
+      setOptionsPermissions(mapped);
+    }
+  }, [permissions]);
 
   const handleAdd = async (e) => {
     e.preventDefault();
@@ -98,9 +98,9 @@ export default function CreateAssignedPermissions() {
 
       const formData = new FormData();
 
-     formData.append("role_id", rol);
-     formData.append("permission_id", permission);
-     formData.append("created_by_id", user.id);
+      formData.append("role_id", rol);
+      formData.append("permission_id", permission);
+      formData.append("created_by_id", user.id);
 
       const response = await assignPermission(formData);
 
