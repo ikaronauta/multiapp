@@ -26,9 +26,11 @@ export default function Navbar({ onLinkClick }) {
   );
 
   const navigate = useNavigate();
+  const user = getUserFromToken();
 
   useEffect(() => {
-    const user = getUserFromToken();
+    setSelectedBusiness(user.businessId);
+
     if (user?.businessId === 1 && user?.roleId === 1) {
       setIsSuperAdmin(true);
     }

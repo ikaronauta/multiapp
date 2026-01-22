@@ -8,10 +8,7 @@ export const getRoutesData = async () => {
     const { data } = await api.get(`/routes`);
     return data;
   } catch (error) {
-    debugger;
+    console.error(error);
     return error.response?.data ?? { ok: false, message: "Error en la petición" };
   }
-
-
-  // El error lo maneja el interceptor en api.js
 }
