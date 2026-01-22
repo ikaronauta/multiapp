@@ -1,3 +1,5 @@
+// src/pages/sections/EditSectionModules.jsx
+
 import { CircleChevronLeft, Info, TriangleAlert } from "lucide-react";
 import { getUserFromToken } from "../../utils/auth";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -7,17 +9,18 @@ import ModalSpinner from "../../components/modals/ModelSpinner";
 import SpinnerLouder from "../../components/SpinnerLouder";
 import Select from "../../components/form/Select";
 import Input from "../../components/form/Input";
-import { getBusinessesData } from "../../adapters/business.adapter";
-import { getSectionByUUID, updatetSection } from "../../adapters/sections.adapter";
+import { getSectionsData } from "../../adapters/sections.adapter";
+import { getModulesData } from "../../adapters/modules.adapter";
+import { getSectionModulesByUUID, updatetSectionModule } from "../../adapters/sectionModules.adapter";
 
 
-export default function EditSection() {
+export default function EditSectionModules() {
 
   const navigate = useNavigate();
 
   const [user] = useState(() => getUserFromToken());
   const { id } = useParams();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const [showAlert, setShowAlert] = useState(false);
   const [showAlertSubmit, setShowAlertSubmit] = useState(false);
@@ -32,62 +35,92 @@ export default function EditSection() {
   const [updateOk, setUpdateOk] = useState(false);
 
   // Campos Formulario
-  const [business, setBusiness] = useState("");
-  const [name, setName] = useState("");
   const [position, setPosition] = useState("");
+  const [section, setSection] = useState("");
+  const [module, setModule] = useState("");
 
-  // Variables para los negocios
-  const [optionsBusinesses, setOptionsBusinesses] = useState([]);
-  const [businesses, setBusinesses] = useState([]);
-  const [loadingPermissions, setLoadingPermissions] = useState(true);
-  const [showAlertPermissions, setShowAlertPermissions] = useState(false);
+  // Variables para las secciones
+  const [optionsSections, setOptionsSection] = useState([]);
+  const [sections, setSections] = useState([]);
+  const [loadingSections, setLoadingSections] = useState(true);
+  const [showAlertSections, setShowAlertSections] = useState(false);
 
-  // Cargar negocios
+  // Variables para los modulos
+  const [optionsModulos, setOptionsModulos] = useState([]);
+  const [modulos, setModulos] = useState([]);
+  const [loadingModulos, setLoadingModulos] = useState(true);
+  const [showAlertModulos, setShowAlertModulos] = useState(false);
+
+  // Cargar secciones
   useEffect(() => {
-    getBusinessesData()
+    getSectionsData()
       .then((data) => {
-        if (data.data) setBusinesses(data.data);
-        else setShowAlertPermissions(true);
+        if (data.data) setSections(data.data);
+        else setShowAlertSections(true);
       })
       .catch((error) => {
-        setShowAlertPermissions(true);
-        console.error("Error fetching businesses:", error);
+        setShowAlertSections(true);
+        console.error("Error fetching sections:", error);
       })
-      .finally(() => setLoadingPermissions(false));
+      .finally(() => setLoadingSections(false));
   }, []);
 
-  // Mapear los negocios para el formato del select
+  // Mapear las secciones se para el formato del select
   useEffect(() => {
-    if (businesses.length > 0) {
-      const mapped = businesses.map((item) => {
-        return { value: item.ID, text: item.Nombre };
+    if (sections.length > 0) {
+      const mapped = sections.map((item) => {
+        return { value: item.id, text: item.Nombre };
       });
-      setOptionsBusinesses(mapped);
+      setOptionsSection(mapped);
     }
-  }, [business]);
+  }, [sections]);
+
+  // Cargar módulos
+  useEffect(() => {
+    getModulesData()
+      .then((data) => {
+        if (data.data) setModulos(data.data.filter((item) => item.Mostrar === 1));
+        else setShowAlertModulos(true);
+      })
+      .catch((error) => {
+        setShowAlertModulos(true);
+        console.error("Error fetching modules:", error);
+      })
+      .finally(() => setLoadingModulos(false));
+  }, []);
+
+  // Mapear los modulos se para el formato del select
+  useEffect(() => {
+    if (modulos.length > 0) {
+      const mapped = modulos.map((item) => {
+        return { value: item.id, text: item.Nombre };
+      });
+      setOptionsModulos(mapped);
+    }
+  }, [modulos]);
 
   useEffect(() => {
-    getSectionByUUID(id)
+    getSectionModulesByUUID(id)
       .then((data) => {
         if (data.data) {
-          setBusiness(data.data.business_id);
-          setName(data.data.name);
+          setSection(data.data.section_id);
+          setModule(data.data.module_id);
           setPosition(data.data.position);
         } else {
           setShowAlert(true);
-          setTitleAlert("Error al obtener el negocio");
+          setTitleAlert("Error al obtener la asignacion de módulo");
           setMessageAlert1(data.message ?? 'Algo fallo');
           setMessageAlert2(data.error?.details ? data.error.details : "");
         }
       })
       .catch((error) => {
         setShowAlert(true);
-        setTitleAlert("Error al obtener el negocio");
+        setTitleAlert("Error al obtener la asignacion de módulo");
         setMessageAlert1(error.message ?? 'Algo fallo');
         setMessageAlert2(error.details ? error.details : "");
       })
       .finally(() => setLoading(false));
-  }, [optionsBusinesses]);
+  }, []);
 
   const handleEdit = async (e) => {
     e.preventDefault();
@@ -97,19 +130,18 @@ export default function EditSection() {
 
       const formData = new FormData();
 
-      formData.append("business_id", business);
-      formData.append("name", name);
+      formData.append("section_id", section);
+      formData.append("module_id", module);
       formData.append("position", position);
       formData.append("updated_by_id", user.id);
-    
 
-      const response = await updatetSection(id, formData);
+      const response = await updatetSectionModule(id, formData);
 
       if (!response.ok) {
         const errorMsg = response.message ?? "Error inesperado";
         setShowAlertSubmit(false);
         setShowAlert(true);
-        setTitleAlert("Error al editar la persona");
+        setTitleAlert("Error al editar la asignacion de módulo");
         setMessageAlert1(errorMsg);
         setMessageAlert2(response?.error?.details ?? "");
         console.error("Error adding person:", errorMsg);
@@ -119,14 +151,14 @@ export default function EditSection() {
       setUpdateOk(true);
       setShowAlertSubmit(false);
       setShowAlert(true);
-      setTitleAlert("Sección editado");
+      setTitleAlert("Asignación de Modulo editado");
       setIconComponentModalAlert(<Info className="text-green-600" size={24} />);
-      setMessageAlert1("La sección ha sido editado correctamente");
+      setMessageAlert1("la asignacion de módulo ha sido editado correctamente");
 
     } catch (error) {
       setShowAlertSubmit(false);
       setShowAlert(true);
-      setTitleAlert("Error al editar la seccipon");
+      setTitleAlert("Error al editar la asignacion de módulo");
       setMessageAlert1(error.message ?? "Error inesperado");
       setMessageAlert2(error.details ? error.details : "");
     }
@@ -137,7 +169,7 @@ export default function EditSection() {
   return (
     <div className="sm:max-w-3xl mx-auto">
       <Link
-        to="/admin/sections"
+        to="/admin/section_modules"
         className="relative inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mb-4"
       >
         <CircleChevronLeft size={16} />
@@ -145,32 +177,34 @@ export default function EditSection() {
       </Link>
 
       <div className="relative w-full sm:max-w-3xl mx-auto bg-white shadow-md rounded-lg p-4 sm:p-6">
-        <h2 className="text-gray-900 text-2xl font-bold mb-4">Editar Sección</h2>
+        <h2 className="text-gray-900 text-2xl font-bold mb-4">Editar Asignación de Módulo</h2>
 
         <form onSubmit={handleEdit} className="flex flex-wrap -mx-2 items-end">
 
           <Select
             widthPercent="33"
-            textLabel="Negocio"
+            textLabel="Secciones"
             isRequired={true}
-            value={business}
-            onChange={setBusiness}
-            name="businesses"
-            textFirstOption="Seleccione el negocio"
-            options={optionsBusinesses}
-            louding={loadingPermissions}
-            showAlert={showAlertPermissions}
+            value={section}
+            onChange={setSection}
+            name="rol"
+            textFirstOption="Seleccione la sección"
+            options={optionsSections}
+            louding={loadingSections}
+            showAlert={showAlertSections}
           />
 
-          <Input
+          <Select
             widthPercent="33"
-            textLabel="Nombre sección"
+            textLabel="Módulos"
             isRequired={true}
-            type="text"
-            placeholder="Nombre sección"
-            value={name}
-            onChange={setName}
-            name="name"
+            value={module}
+            onChange={setModule}
+            name="permission"
+            textFirstOption="Seleccione el módulo"
+            options={optionsModulos}
+            louding={loadingModulos}
+            showAlert={showAlertModulos}
           />
 
           <Input
@@ -202,7 +236,7 @@ export default function EditSection() {
             textButton="Cerrar"
             iconComponent={iconComponentModalAlert}
             onClick={() => {
-              updateOk && navigate(`/admin/sections`);
+              updateOk && navigate(`/admin/section_modules`);
               setShowAlert(false);
             }}
           />
