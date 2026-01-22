@@ -8,7 +8,7 @@ import ModalAlert from "../../components/modals/ModalAlert";
 import ModalConfirmDelete from "../../components/modals/ModalConfirmDelete";
 import ModalSpinner from "../../components/modals/ModelSpinner";
 import SpinnerLouder from "../../components/SpinnerLouder";
-import { getsectionModules } from "../../adapters/sectionModules.adapter";
+import { deleteSectionModule, getsectionModules } from "../../adapters/sectionModules.adapter";
 
 
 export default function SectionModules() {
@@ -69,19 +69,19 @@ export default function SectionModules() {
   const handleConfirmDelete = (row) => {
     setItemToDelete(row.original.uuid);
     setShowConfirm(true);
-    setNameItemToDelete(row.original.Nombre);
+    setNameItemToDelete(`${row.original.Seccion} - ${row.original.Modulo}`);
   }
 
   const handleDelete = async () => {
     setShowAlertSpinner(true);
 
     try {
-      const response = await deleteItem(itemToDelete);
+      const response = await deleteSectionModule(itemToDelete);
 
       if (!response.ok) {
         setShowAlertSpinner(false);
         setShowAlert(true);
-        setTitleAlert("Error al eliminar el módulo.");
+        setTitleAlert("Error al eliminar la asignación del modulo.");
         setMessageAlert1(response.message ?? "Algo falló");
         setMessageAlert2(response.error?.details || "");
         return;
@@ -93,9 +93,9 @@ export default function SectionModules() {
       loadData();
     } catch (error) {
       setShowAlertSpinner(false);
-      setTitleAlert("Error al eliminar el Modulo.");
+      setTitleAlert("Error al eliminar la asignación del modulo.");
       setMessageAlert1('Algo fallo');
-      console.error("Error deleting person:", error);
+      console.error("Error deleting sectionModules:", error);
     }
   }
 
@@ -147,9 +147,9 @@ export default function SectionModules() {
 
         {showConfirm && (
           <ModalConfirmDelete
-            titleConfirm="¿Eliminar Permiso?"
+            titleConfirm="¿Eliminar Asignación de Módulo?"
             messageConfirm1="Esta acción no se puede deshacer."
-            messageConfirm2="Debe ingresar excatamente el nombre del permiso"
+            messageConfirm2="Debe ingresar excatamente el nombre de la sección y el módulo"
             name={nameItemToDelete}
             onClickConfirm={() => {
               handleDelete();

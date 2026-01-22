@@ -43,3 +43,12 @@ export const updatetSectionModule = async (id, formData) => {
     return error.response?.data ?? { ok: false, message: "Error en la petición" };
   }
 };
+
+export const deleteSectionModule = async (id) => {
+  try {
+    const { data } = await api.delete(`/section_modules/delete/${id}`);
+    return data;
+  } catch (error) {
+    return error.response?.data ?? { ok: false, message: "Error en la petición" };
+  }
+};
