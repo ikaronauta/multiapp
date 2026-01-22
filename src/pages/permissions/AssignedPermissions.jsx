@@ -61,7 +61,7 @@ export default function AssignedPermissions() {
 
     const handleEdit = (row) => {
         console.log(row.original);
-        navigate(`/admin/businesses/edit/${row.original.uuid}`);
+        navigate(`/admin/assigned_permissions/edit/${row.original.uuid}`);
     }
 
     const handleConfirmDelete = (row) => {

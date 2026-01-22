@@ -23,3 +23,23 @@ export const assignPermission = async (formData) => {
     return error.response?.data ?? { ok: false, message: "Error en la petición" };
   }
 };
+
+export const getAssignedPermissionByUUID = async (id) => {
+  try {
+    const { data } = await api.get(`/assigned_permissions/${id}`);
+    return data;
+  } catch (error) {
+    return error.response?.data ?? { ok: false, message: "Error en la petición" };
+  }
+};
+
+export const updatetAssignedPermission = async (id, formData) => {
+  try {
+    const { data } = await api.put(`/assigned_permissions/edit/${id}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return data;
+  } catch (error) {
+    return error.response?.data ?? { ok: false, message: "Error en la petición" };
+  }
+};
