@@ -43,3 +43,12 @@ export const updatetAssignedPermission = async (id, formData) => {
     return error.response?.data ?? { ok: false, message: "Error en la petición" };
   }
 };
+
+export const deleteAssignedPermission = async (id) => {
+  try {
+    const { data } = await api.delete(`/assigned_permissions/delete/${id}`);
+    return data;
+  } catch (error) {
+    return error.response?.data ?? { ok: false, message: "Error en la petición" };
+  }
+};

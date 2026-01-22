@@ -6,7 +6,7 @@ import ModalAlert from "../../components/modals/ModalAlert";
 import ModalConfirmDelete from "../../components/modals/ModalConfirmDelete";
 import ModalSpinner from "../../components/modals/ModelSpinner";
 import SpinnerLouder from "../../components/SpinnerLouder";
-import { getAssignedPermissions } from "../../adapters/assignedPermissions.adapter";
+import { deleteAssignedPermission, getAssignedPermissions } from "../../adapters/assignedPermissions.adapter";
 
 
 export default function AssignedPermissions() {
@@ -67,19 +67,19 @@ export default function AssignedPermissions() {
     const handleConfirmDelete = (row) => {
         setItemToDelete(row.original.uuid);
         setShowConfirm(true);
-        setNameItemToDelete(row.original.Nombre);
+        setNameItemToDelete(`${row.original.Rol} - ${row.original.Permiso}`);
     }
 
     const handleDelete = async () => {
         setShowAlertSpinner(true);
 
         try {
-            const response = await deleteItem(itemToDelete);
+            const response = await deleteAssignedPermission(itemToDelete);
 
             if (!response.ok) {
                 setShowAlertSpinner(false);
                 setShowAlert(true);
-                setTitleAlert("Error al eliminar el módulo.");
+                setTitleAlert("Error al eliminar la asignación del permiso.");
                 setMessageAlert1(response.message ?? "Algo falló");
                 setMessageAlert2(response.error?.details || "");
                 return;
@@ -91,9 +91,9 @@ export default function AssignedPermissions() {
             loadData();
         } catch (error) {
             setShowAlertSpinner(false);
-            setTitleAlert("Error al eliminar el Modulo.");
+            setTitleAlert("Error al eliminar la asignación del permiso.");
             setMessageAlert1('Algo fallo');
-            console.error("Error deleting person:", error);
+            console.error("Error deleting assigned permission:", error);
         }
     }
 
@@ -145,9 +145,9 @@ export default function AssignedPermissions() {
 
                 {showConfirm && (
                     <ModalConfirmDelete
-                        titleConfirm="¿Eliminar Permiso?"
+                        titleConfirm="¿Eliminar Asignación de Permiso?"
                         messageConfirm1="Esta acción no se puede deshacer."
-                        messageConfirm2="Debe ingresar excatamente el nombre del permiso"
+                        messageConfirm2="Debe ingresar excatamente el nombre del rol y el nombre del permiso"
                         name={nameItemToDelete}
                         onClickConfirm={() => {
                             handleDelete();
