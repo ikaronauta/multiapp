@@ -1,3 +1,5 @@
+// src/pages/businesses/AssignedPermissions.jsx
+
 import { Link, useNavigate } from "react-router-dom";
 import { CircleChevronLeft, Info, PlusCircle, ShieldPlus, TriangleAlert } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -11,152 +13,152 @@ import { deleteAssignedPermission, getAssignedPermissions } from "../../adapters
 
 export default function AssignedPermissions() {
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const [data, setData] = useState({ data: [], columns: [] });
-    const [showDataTable, setShowDataTable] = useState(false);
+  const [data, setData] = useState({ data: [], columns: [] });
+  const [showDataTable, setShowDataTable] = useState(false);
 
-    const [loading, setLoading] = useState(true);
-    const [showAlert, setShowAlert] = useState(false);
-    const [showAlertSpinner, setShowAlertSpinner] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [showAlert, setShowAlert] = useState(false);
+  const [showAlertSpinner, setShowAlertSpinner] = useState(false);
 
-    const [titleAlert, setTitleAlert] = useState("Atención.");
-    const [messageAlert1, setMessageAlert1] = useState("");
-    const [messageAlert2, setMessageAlert2] = useState("");
-    const [iconComponent, setIconComponent] = useState(<TriangleAlert className="text-red-600" size={24} />);
+  const [titleAlert, setTitleAlert] = useState("Atención.");
+  const [messageAlert1, setMessageAlert1] = useState("");
+  const [messageAlert2, setMessageAlert2] = useState("");
+  const [iconComponent, setIconComponent] = useState(<TriangleAlert className="text-red-600" size={24} />);
 
-    const [itemToDelete, setItemToDelete] = useState(null);
-    const [showConfirm, setShowConfirm] = useState(false);
-    const [nameItemToDelete, setNameItemToDelete] = useState("");
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [nameItemToDelete, setNameItemToDelete] = useState("");
 
-    const loadData = () => {
-        setLoading(false);
+  const loadData = () => {
+    setLoading(false);
 
-        getAssignedPermissions()
-          .then((data) => {
-            if (data.data) {
-              setData({
-                data: data.data,
-                columns: data.data.length > 0 ? Object.keys(data.data[0]) : [],
-              });
-              setShowDataTable(true);
-            } else {
-              setShowAlert(true);
-              setTitleAlert("Error al obtener los permisos asignados");
-              setMessageAlert1(data.message ?? "Algo falló");
-              setShowDataTable(false);
-            }
-          })
-          .catch((err) => {
-            setShowAlert(true);
-            setTitleAlert("Error al obtener los permisos asignados");
-            setMessageAlert1(err.message ?? "Algo falló");
-          })
-          .finally(() => setLoading(false));
-    }
-
-    useEffect(() => {
-        loadData();
-    }, []);
-
-    const handleEdit = (row) => {
-        console.log(row.original);
-        navigate(`/admin/assigned_permissions/edit/${row.original.uuid}`);
-    }
-
-    const handleConfirmDelete = (row) => {
-        setItemToDelete(row.original.uuid);
-        setShowConfirm(true);
-        setNameItemToDelete(`${row.original.Rol} - ${row.original.Permiso}`);
-    }
-
-    const handleDelete = async () => {
-        setShowAlertSpinner(true);
-
-        try {
-            const response = await deleteAssignedPermission(itemToDelete);
-
-            if (!response.ok) {
-                setShowAlertSpinner(false);
-                setShowAlert(true);
-                setTitleAlert("Error al eliminar la asignación del permiso.");
-                setMessageAlert1(response.message ?? "Algo falló");
-                setMessageAlert2(response.error?.details || "");
-                return;
-            }
-
-            setItemToDelete(null);
-            setShowAlertSpinner(false);
-
-            loadData();
-        } catch (error) {
-            setShowAlertSpinner(false);
-            setTitleAlert("Error al eliminar la asignación del permiso.");
-            setMessageAlert1('Algo fallo');
-            console.error("Error deleting assigned permission:", error);
+    getAssignedPermissions()
+      .then((data) => {
+        if (data.data) {
+          setData({
+            data: data.data,
+            columns: data.data.length > 0 ? Object.keys(data.data[0]) : [],
+          });
+          setShowDataTable(true);
+        } else {
+          setShowAlert(true);
+          setTitleAlert("Error al obtener los permisos asignados");
+          setMessageAlert1(data.message ?? "Algo falló");
+          setShowDataTable(false);
         }
+      })
+      .catch((err) => {
+        setShowAlert(true);
+        setTitleAlert("Error al obtener los permisos asignados");
+        setMessageAlert1(err.message ?? "Algo falló");
+      })
+      .finally(() => setLoading(false));
+  }
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const handleEdit = (row) => {
+    console.log(row.original);
+    navigate(`/admin/assigned_permissions/edit/${row.original.uuid}`);
+  }
+
+  const handleConfirmDelete = (row) => {
+    setItemToDelete(row.original.uuid);
+    setShowConfirm(true);
+    setNameItemToDelete(`${row.original.Rol} - ${row.original.Permiso}`);
+  }
+
+  const handleDelete = async () => {
+    setShowAlertSpinner(true);
+
+    try {
+      const response = await deleteAssignedPermission(itemToDelete);
+
+      if (!response.ok) {
+        setShowAlertSpinner(false);
+        setShowAlert(true);
+        setTitleAlert("Error al eliminar la asignación del permiso.");
+        setMessageAlert1(response.message ?? "Algo falló");
+        setMessageAlert2(response.error?.details || "");
+        return;
+      }
+
+      setItemToDelete(null);
+      setShowAlertSpinner(false);
+
+      loadData();
+    } catch (error) {
+      setShowAlertSpinner(false);
+      setTitleAlert("Error al eliminar la asignación del permiso.");
+      setMessageAlert1('Algo fallo');
+      console.error("Error deleting assigned permission:", error);
     }
+  }
 
-    if (loading) return <SpinnerLouder height="h-full" />;
+  if (loading) return <SpinnerLouder height="h-full" />;
 
-    return (
-        <>
-            <Link
-                to="/admin/assigned_permissions/create"
-                className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mb-4"
-            >
-                <ShieldPlus size={16} />
-                <span>Asignar Permiso</span>
-            </Link>
+  return (
+    <>
+      <Link
+        to="/admin/assigned_permissions/create"
+        className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mb-4"
+      >
+        <ShieldPlus size={16} />
+        <span>Asignar Permiso</span>
+      </Link>
 
-            <Link
-                to="/admin/permissions"
-                className="relative inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mb-4 ml-1"
-            >
-                <CircleChevronLeft size={16} />
-                <span>Regresar</span>
-            </Link>
+      <Link
+        to="/admin/permissions"
+        className="relative inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mb-4 ml-1"
+      >
+        <CircleChevronLeft size={16} />
+        <span>Regresar</span>
+      </Link>
 
-            {/* Tabla */}
-            {showDataTable && (
-                <DataTable objData={data} onClickEdit={handleEdit} onClickDelete={handleConfirmDelete} />
-            )}
+      {/* Tabla */}
+      {showDataTable && (
+        <DataTable objData={data} onClickEdit={handleEdit} onClickDelete={handleConfirmDelete} />
+      )}
 
-            {/* Modales */}
-            <>
-                {showAlert && (
-                    <ModalAlert
-                        titleAlert={titleAlert}
-                        messageAlert1={messageAlert1}
-                        messageAlert2={messageAlert2}
-                        textButton="Cerrar"
-                        iconComponent={iconComponent}
-                        onClick={() => setShowAlert(false)}
-                    />
-                )}
+      {/* Modales */}
+      <>
+        {showAlert && (
+          <ModalAlert
+            titleAlert={titleAlert}
+            messageAlert1={messageAlert1}
+            messageAlert2={messageAlert2}
+            textButton="Cerrar"
+            iconComponent={iconComponent}
+            onClick={() => setShowAlert(false)}
+          />
+        )}
 
-                {showAlertSpinner && (
-                    <ModalSpinner
-                        titleModal="Procesando..."
-                        messageModal=""
-                        iconComponent={<Info className="text-red-600" size={24} />}
-                    />
-                )}
+        {showAlertSpinner && (
+          <ModalSpinner
+            titleModal="Procesando..."
+            messageModal=""
+            iconComponent={<Info className="text-red-600" size={24} />}
+          />
+        )}
 
-                {showConfirm && (
-                    <ModalConfirmDelete
-                        titleConfirm="¿Eliminar Asignación de Permiso?"
-                        messageConfirm1="Esta acción no se puede deshacer."
-                        messageConfirm2="Debe ingresar excatamente el nombre del rol y el nombre del permiso"
-                        name={nameItemToDelete}
-                        onClickConfirm={() => {
-                            handleDelete();
-                            setShowConfirm(false);
-                        }}
-                        onClickCancel={() => setShowConfirm(false)}
-                    />
-                )}
-            </>
-        </>
-    );
+        {showConfirm && (
+          <ModalConfirmDelete
+            titleConfirm="¿Eliminar Asignación de Permiso?"
+            messageConfirm1="Esta acción no se puede deshacer."
+            messageConfirm2="Debe ingresar excatamente el nombre del rol y el nombre del permiso"
+            name={nameItemToDelete}
+            onClickConfirm={() => {
+              handleDelete();
+              setShowConfirm(false);
+            }}
+            onClickCancel={() => setShowConfirm(false)}
+          />
+        )}
+      </>
+    </>
+  );
 }

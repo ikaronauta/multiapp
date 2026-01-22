@@ -1,3 +1,5 @@
+// src/pages/businesses/CreateAssignedPermissions.jsx
+
 import { CircleChevronLeft, Info, TriangleAlert } from "lucide-react";
 import { getUserFromToken } from "../../utils/auth";
 import { Link } from "react-router-dom";

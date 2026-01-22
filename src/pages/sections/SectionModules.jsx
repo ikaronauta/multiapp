@@ -1,17 +1,17 @@
-// src/pages/sections/Sections.jsx
+// src/pages/businesses/SectionModules.jsx
 
 import { Link, useNavigate } from "react-router-dom";
-import { Info, Layers, Lock, PlusCircle, TriangleAlert } from "lucide-react";
+import { CircleChevronLeft, Info, Link2, PlusCircle, Puzzle, TriangleAlert } from "lucide-react";
 import { useEffect, useState } from "react";
 import DataTable from "../../components/DataTable";
 import ModalAlert from "../../components/modals/ModalAlert";
 import ModalConfirmDelete from "../../components/modals/ModalConfirmDelete";
 import ModalSpinner from "../../components/modals/ModelSpinner";
 import SpinnerLouder from "../../components/SpinnerLouder";
-import { deleteSection, getSectionsData } from "../../adapters/sections.adapter";
+import { getsectionModules } from "../../adapters/sectionModules.adapter";
 
 
-export default function Sections() {
+export default function SectionModules() {
 
   const navigate = useNavigate();
 
@@ -34,7 +34,7 @@ export default function Sections() {
   const loadData = () => {
     setLoading(true);
 
-    getSectionsData()
+    getsectionModules()
       .then((data) => {
         if (data.data) {
           setData({
@@ -44,14 +44,14 @@ export default function Sections() {
           setShowDataTable(true);
         } else {
           setShowAlert(true);
-          setTitleAlert("Error al obtener las secciones");
+          setTitleAlert("Error al obtener los modulos por sección");
           setMessageAlert1(data.message ?? "Algo falló");
           setShowDataTable(false);
         }
       })
       .catch((err) => {
         setShowAlert(true);
-        setTitleAlert("Error al obtener.....");
+        setTitleAlert("Error al obtener los modulos por sección");
         setMessageAlert1(err.message ?? "Algo falló");
       })
       .finally(() => setLoading(false));
@@ -63,7 +63,7 @@ export default function Sections() {
 
   const handleEdit = (row) => {
     console.log(row.original);
-    navigate(`/admin/sections/edit/${row.original.uuid}`);
+    navigate(`/admin/section_modules/edit/${row.original.uuid}`);
   }
 
   const handleConfirmDelete = (row) => {
@@ -76,12 +76,12 @@ export default function Sections() {
     setShowAlertSpinner(true);
 
     try {
-      const response = await deleteSection(itemToDelete);
+      const response = await deleteItem(itemToDelete);
 
       if (!response.ok) {
         setShowAlertSpinner(false);
         setShowAlert(true);
-        setTitleAlert("Error al eliminar la sección.");
+        setTitleAlert("Error al eliminar el módulo.");
         setMessageAlert1(response.message ?? "Algo falló");
         setMessageAlert2(response.error?.details || "");
         return;
@@ -93,9 +93,9 @@ export default function Sections() {
       loadData();
     } catch (error) {
       setShowAlertSpinner(false);
-      setTitleAlert("Error al eliminar la sección.");
+      setTitleAlert("Error al eliminar el Modulo.");
       setMessageAlert1('Algo fallo');
-      console.error("Error deleting section:", error);
+      console.error("Error deleting person:", error);
     }
   }
 
@@ -104,19 +104,19 @@ export default function Sections() {
   return (
     <>
       <Link
-        to="/admin/sections/create"
+        to="/admin/persons/create"
         className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mb-4"
       >
-        <PlusCircle size={16} />
-        <span>Nueva sección</span>
+        <Puzzle size={16} />
+        <span>Asignar Modulo</span>
       </Link>
 
       <Link
-        to="/admin/section_modules"
-        className="inline-flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 mb-4 ml-1"
+        to="/admin/sections"
+        className="relative inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mb-4 ml-1"
       >
-        <Layers size={16} />
-        <span>Modulos por sección</span>
+        <CircleChevronLeft size={16} />
+        <span>Regresar</span>
       </Link>
 
       {/* Tabla */}
@@ -147,9 +147,9 @@ export default function Sections() {
 
         {showConfirm && (
           <ModalConfirmDelete
-            titleConfirm="¿Eliminar Sección?"
+            titleConfirm="¿Eliminar Permiso?"
             messageConfirm1="Esta acción no se puede deshacer."
-            messageConfirm2="Debe ingresar excatamente el nombre de la sección"
+            messageConfirm2="Debe ingresar excatamente el nombre del permiso"
             name={nameItemToDelete}
             onClickConfirm={() => {
               handleDelete();

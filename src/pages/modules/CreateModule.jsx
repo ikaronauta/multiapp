@@ -39,10 +39,11 @@ export default function CreateModule() {
   const [loadingPermissions, setLoadingPermissions] = useState(true);
   const [showAlertPermissions, setShowAlertPermissions] = useState(false);
 
+  // Mapear los permisos para el formato del select
   useEffect(() => {
     if (permissions.length > 0) {
       const mapped = permissions.map((permission) => {
-        return { value: permission.id, text: permission.name };
+        return { value: permission.id, text: permission.Nombre };
       });
       setOptionsPermissions(mapped);
     }
