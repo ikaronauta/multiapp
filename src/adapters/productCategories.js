@@ -43,3 +43,12 @@ export const updateProductCategories = async (id, formData) => {
     return error.response?.data ?? { ok: false, message: "Error en la petición" };
   }
 };
+
+export const deleteProductCategories = async (id) => {
+  try {
+    const { data } = await api.delete(`/product_categories/delete/${id}`);
+    return data;
+  } catch (error) {
+    return error.response?.data ?? { ok: false, message: "Error en la petición" };
+  }
+};

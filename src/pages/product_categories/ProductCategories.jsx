@@ -8,7 +8,7 @@ import ModalAlert from "../../components/modals/ModalAlert";
 import ModalConfirmDelete from "../../components/modals/ModalConfirmDelete";
 import ModalSpinner from "../../components/modals/ModelSpinner";
 import SpinnerLouder from "../../components/SpinnerLouder";
-import { getProductCategoriesData } from "../../adapters/productCategories";
+import { deleteProductCategories, getProductCategoriesData } from "../../adapters/productCategories";
 
 
 export default function ProductCategories() {
@@ -69,14 +69,14 @@ export default function ProductCategories() {
   const handleConfirmDelete = (row) => {
     setItemToDelete(row.original.uuid);
     setShowConfirm(true);
-    setNameItemToDelete(row.original.Nombre);
+    setNameItemToDelete(row.original.Categoria);
   }
 
   const handleDelete = async () => {
     setShowAlertSpinner(true);
 
     try {
-      const response = await deleteItem(itemToDelete);
+      const response = await deleteProductCategories(itemToDelete);
 
       if (!response.ok) {
         setShowAlertSpinner(false);
@@ -95,7 +95,7 @@ export default function ProductCategories() {
       setShowAlertSpinner(false);
       setTitleAlert("Error al eliminar la categoría.");
       setMessageAlert1('Algo fallo');
-      console.error("Error deleting person:", error);
+      console.error("Error deleting categorie:", error);
     }
   }
 
