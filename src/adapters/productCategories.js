@@ -23,3 +23,23 @@ export const newProductCategorie = async (formData) => {
     return error.response?.data ?? { ok: false, message: "Error en la petición" };
   }
 };
+
+export const getProductCategoriesByUUID = async (id) => {
+  try {
+    const { data } = await api.get(`/product_categories/${id}`);
+    return data;
+  } catch (error) {
+    return error.response?.data ?? { ok: false, message: "Error en la petición" };
+  }
+};
+
+export const updateProductCategories = async (id, formData) => {
+  try {
+    const { data } = await api.put(`/product_categories/edit/${id}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return data;
+  } catch (error) {
+    return error.response?.data ?? { ok: false, message: "Error en la petición" };
+  }
+};
