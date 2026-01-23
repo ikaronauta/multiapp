@@ -28,6 +28,7 @@ import SectionModules from "../pages/sections/SectionModules";
 import CreateSectionModules from "../pages/sections/CreateSectionModules";
 import EditSectionModules from "../pages/sections/EditSectionModules";
 import ProductCategories from "../pages/product_categories/ProductCategories";
+import CreateProductCategories from "../pages/product_categories/CreateProductCategories";
 
 export const componentMap = {
   Businesses,
@@ -58,4 +59,5 @@ export const componentMap = {
   CreateSectionModules,
   EditSectionModules,
   ProductCategories,
+  CreateProductCategories,
 };
