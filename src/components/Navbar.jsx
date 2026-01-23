@@ -17,7 +17,7 @@ export default function Navbar({ onLinkClick }) {
   const [messageAlert1, setMessageAlert1] = useState("");
   const [messageAlert2, setMessageAlert2] = useState("");
   const [sections, setSections] = useState([]);
-  const [selectedBusiness, setSelectedBusiness] = useState(1);
+  const [selectedBusiness, setSelectedBusiness] = useState("");
   const [showAlert, setShowAlert] = useState(false);
   const [titleAlert, setTitleAlert] = useState("Atención.");
   const [iconComponentModalAlert, setIconComponentModalAlert] = useState(
@@ -36,11 +36,13 @@ export default function Navbar({ onLinkClick }) {
   }, []);
 
   useEffect(() => {
-    const loadMenu = async () => {
-      const data = await getMenuData(selectedBusiness);
-      setSections(data.data || data);
-    };
-    loadMenu();
+    if (selectedBusiness) {
+      const loadMenu = async () => {
+        const data = await getMenuData(selectedBusiness);
+        setSections(data.data || data);
+      };
+      loadMenu();
+    }
   }, [selectedBusiness]);
 
   useEffect(() => {
@@ -73,7 +75,7 @@ export default function Navbar({ onLinkClick }) {
       {
         title: "Dashboard",
         route: "/",
-        icon: <House size={24} />, // pasamos el icono aquí
+        icon: <House size={24} />,
         show: 1,
       }
     ],

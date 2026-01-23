@@ -63,7 +63,7 @@ export default function CreateSectionModules() {
   useEffect(() => {
     if (sections.length > 0) {
       const mapped = sections.map((item) => {
-        return { value: item.id, text: item.Nombre };
+        return { value: item.id, text: `${item.Nombre} - ${item.Negocio}` };
       });
       setOptionsSection(mapped);
     }

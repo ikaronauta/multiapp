@@ -10,9 +10,7 @@ export default function SectionNavbar({ objDataSection, onLinkClick }) {
 
   if (!user) return null;
 
-  // if (!canAccess(objDataSection, user)) return null;
-
-  if (!canAccessSection(objDataSection, user)) return null;
+  if (objDataSection.items.length === 0) return null;
 
   return (
     <section className="border border-gray-700 rounded-md p-3 space-y-2">

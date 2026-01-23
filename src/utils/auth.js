@@ -52,10 +52,7 @@ export const canAccessSection = (section, user) => {
   if (!user) return false;
   
   const countAccessibleItems = section.items.reduce((count, item) => {
-    if (canAccess(item, user)) {
-      return count + 1;
-    }
-    return count;
+    return count + 1;
   }, 0);
 
   return countAccessibleItems > 0;
