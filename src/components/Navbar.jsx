@@ -1,26 +1,25 @@
 // src/components/Navbar.jsx
 
-import { useEffect, useState } from "react";
-import SectionNavbar from "./SectionNavbar";
-import { getMenuData } from "../adapters/menu.adapter";
-import { House, TriangleAlert } from "lucide-react";
 import { getBusinessesData } from "../adapters/business.adapter";
-import SpinnerLouder from "./SpinnerLouder";
-import ModalAlert from "./modals/ModalAlert";
+import { getMenuData } from "../adapters/menu.adapter";
 import { getUserFromToken } from "../utils/auth";
+import { House, TriangleAlert } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ModalAlert from "./modals/ModalAlert";
+import SectionNavbar from "./SectionNavbar";
+import SpinnerLouder from "./SpinnerLouder";
 
 export default function Navbar({ onLinkClick }) {
-  const [sections, setSections] = useState([]);
   const [businesses, setBusinesses] = useState([]);
-  const [showAlert, setShowAlert] = useState(false);
-  const [titleAlert, setTitleAlert] = useState("Atención.");
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const [loadingUser, setLoadingUser] = useState(true);
   const [messageAlert1, setMessageAlert1] = useState("");
   const [messageAlert2, setMessageAlert2] = useState("");
-  const [loadingUser, setLoadingUser] = useState(true);
+  const [sections, setSections] = useState([]);
   const [selectedBusiness, setSelectedBusiness] = useState(1);
-  const [businessMenu, setBusinessMenu] = useState("");
-  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  const [titleAlert, setTitleAlert] = useState("Atención.");
   const [iconComponentModalAlert, setIconComponentModalAlert] = useState(
     <TriangleAlert className="text-red-600" size={24} />
   );

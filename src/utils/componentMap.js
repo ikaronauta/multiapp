@@ -27,6 +27,7 @@ import EditAssignedPermissions from "../pages/permissions/EditAssignedPermission
 import SectionModules from "../pages/sections/SectionModules";
 import CreateSectionModules from "../pages/sections/CreateSectionModules";
 import EditSectionModules from "../pages/sections/EditSectionModules";
+import ProductCategories from "../pages/product_categories/ProductCategories";
 
 export const componentMap = {
   Businesses,
@@ -56,4 +57,5 @@ export const componentMap = {
   SectionModules,
   CreateSectionModules,
   EditSectionModules,
+  ProductCategories,
 };
