@@ -106,7 +106,7 @@ export default function Businesses() {
         className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mb-4"
       >
         <PlusCircle size={16} />
-        <span>Nuevo negocio</span>
+        <span>Nuevo Negocio</span>
       </Link>
 
       {showDataTable && (

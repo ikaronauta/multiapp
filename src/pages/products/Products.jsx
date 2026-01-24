@@ -1,23 +1,26 @@
-// src/pages/modules/Modules.jsx
+
+
+// src/pages/modules/Products.jsx
 
 import { Link, useNavigate } from "react-router-dom";
 import { Info, PlusCircle, TriangleAlert } from "lucide-react";
 import { useEffect, useState } from "react";
 import DataTable from "../../components/DataTable";
-import SpinnerLouder from "../../components/SpinnerLouder";
-import { deleteModule, getModulesData } from "../../adapters/modules.adapter";
+import ModalAlert from "../../components/modals/ModalAlert";
 import ModalConfirmDelete from "../../components/modals/ModalConfirmDelete";
 import ModalSpinner from "../../components/modals/ModelSpinner";
-import ModalAlert from "../../components/modals/ModalAlert";
+import SpinnerLouder from "../../components/SpinnerLouder";
+import { getProductsData } from "../../adapters/products.adapter";
 
-export default function Modules() {
+
+export default function Products() {
 
   const navigate = useNavigate();
 
   const [data, setData] = useState({ data: [], columns: [] });
   const [showDataTable, setShowDataTable] = useState(false);
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [showAlert, setShowAlert] = useState(false);
   const [showAlertSpinner, setShowAlertSpinner] = useState(false);
 
@@ -26,14 +29,14 @@ export default function Modules() {
   const [messageAlert2, setMessageAlert2] = useState("");
   const [iconComponent, setIconComponent] = useState(<TriangleAlert className="text-red-600" size={24} />);
 
-  const [moduleToDelete, setModuleToDelete] = useState(null);
+  const [itemToDelete, setItemToDelete] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [nameModuleToDelete, setNameModuleToDelete] = useState("");
+  const [nameItemToDelete, setNameItemToDelete] = useState("");
 
   const loadData = () => {
     setLoading(true);
 
-    getModulesData()
+    getProductsData()
       .then((data) => {
         if (data.data) {
           setData({
@@ -43,14 +46,14 @@ export default function Modules() {
           setShowDataTable(true);
         } else {
           setShowAlert(true);
-          setTitleAlert("Error al obtener....");
+          setTitleAlert("Error al obtener los productos");
           setMessageAlert1(data.message ?? "Algo falló");
           setShowDataTable(false);
         }
       })
       .catch((err) => {
         setShowAlert(true);
-        setTitleAlert("Error al obtener.....");
+        setTitleAlert("Error al obtener los productos");
         setMessageAlert1(err.message ?? "Algo falló");
       })
       .finally(() => setLoading(false));
@@ -62,39 +65,39 @@ export default function Modules() {
 
   const handleEdit = (row) => {
     console.log(row.original);
-    navigate(`/admin/modules/edit/${row.original.uuid}`);
+    navigate(`/admin/products/edit/${row.original.uuid}`);
   }
 
   const handleConfirmDelete = (row) => {
-    setModuleToDelete(row.original.uuid);
+    setItemToDelete(row.original.uuid);
     setShowConfirm(true);
-    setNameModuleToDelete(row.original.Nombre);
+    setNameItemToDelete(row.original.Nombre);
   }
 
   const handleDelete = async () => {
     setShowAlertSpinner(true);
 
     try {
-      const response = await deleteModule(moduleToDelete);
+      //const response = await deleteItem(itemToDelete);
 
       if (!response.ok) {
         setShowAlertSpinner(false);
         setShowAlert(true);
-        setTitleAlert("Error al eliminar el módulo.");
+        setTitleAlert("Error al eliminar el producto.");
         setMessageAlert1(response.message ?? "Algo falló");
         setMessageAlert2(response.error?.details || "");
         return;
       }
 
-      setModuleToDelete(null);
+      setItemToDelete(null);
       setShowAlertSpinner(false);
 
       loadData();
     } catch (error) {
       setShowAlertSpinner(false);
-      setTitleAlert("Error al eliminar el Modulo.");
+      setTitleAlert("Error al eliminar el producto.");
       setMessageAlert1('Algo fallo');
-      console.error("Error deleting person:", error);
+      console.error("Error deleting product:", error);
     }
   }
 
@@ -103,11 +106,11 @@ export default function Modules() {
   return (
     <>
       <Link
-        to="/admin/modules/create"
+        to="/admin/persons/create"
         className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mb-4"
       >
         <PlusCircle size={16} />
-        <span>Nuevo Módulo</span>
+        <span>Nuevo Producto</span>
       </Link>
 
       {/* Tabla */}
@@ -138,10 +141,10 @@ export default function Modules() {
 
         {showConfirm && (
           <ModalConfirmDelete
-            titleConfirm="¿Eliminar Persona?"
+            titleConfirm="¿Eliminar Producto?"
             messageConfirm1="Esta acción no se puede deshacer."
-            messageConfirm2="Debe ingresar excatamente el nombre de la persona"
-            name={nameModuleToDelete}
+            messageConfirm2="Debe ingresar excatamente el nombre del producto"
+            name={nameItemToDelete}
             onClickConfirm={() => {
               handleDelete();
               setShowConfirm(false);

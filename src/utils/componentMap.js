@@ -30,6 +30,7 @@ import EditSectionModules from "../pages/sections/EditSectionModules";
 import ProductCategories from "../pages/product_categories/ProductCategories";
 import CreateProductCategories from "../pages/product_categories/CreateProductCategories";
 import EditProductCategories from "../pages/product_categories/EditProductCategories";
+import Products from "../pages/products/Products";
 
 export const componentMap = {
   Businesses,
@@ -62,4 +63,5 @@ export const componentMap = {
   ProductCategories,
   CreateProductCategories,
   EditProductCategories,
+  Products,
 };

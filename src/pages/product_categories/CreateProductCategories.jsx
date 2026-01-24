@@ -85,15 +85,6 @@ export default function CreateProductCategories() {
 
       const response = await newProductCategorie(formData);
 
-
-      /*
-      2. Enviar los datos por medio de adaptador
-
-      Ejemplo:
-    
-      const response = await newUser(formData);
-      */
-
       if (!response.ok) {
         const errorMsg = response.message ?? "Error inesperado";
         setShowAlertSubmit(false);
@@ -129,7 +120,7 @@ export default function CreateProductCategories() {
   return (
     <div className="sm:max-w-3xl mx-auto">
       <Link
-        to="/admin/persons"
+        to="/admin/product_categories"
         className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mb-4"
       >
         <CircleChevronLeft size={16} />

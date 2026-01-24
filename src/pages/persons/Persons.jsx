@@ -1,3 +1,5 @@
+// src/pages/modules/Persons.jsx
+
 import { useEffect, useState } from "react";
 import DataTable from "../../components/DataTable";
 import { Link, useNavigate } from "react-router-dom";
@@ -106,7 +108,7 @@ export default function Persons() {
         className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mb-4"
       >
         <PlusCircle size={16} />
-        <span>Nueva persona</span>
+        <span>Nueva Persona</span>
       </Link>
 
       {/* Tabla */}

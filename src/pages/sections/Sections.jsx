@@ -108,7 +108,7 @@ export default function Sections() {
         className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mb-4"
       >
         <PlusCircle size={16} />
-        <span>Nueva sección</span>
+        <span>Nueva Sección</span>
       </Link>
 
       <Link
@@ -116,7 +116,7 @@ export default function Sections() {
         className="inline-flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 mb-4 ml-1"
       >
         <Layers size={16} />
-        <span>Modulos por sección</span>
+        <span>Modulos por Sección</span>
       </Link>
 
       {/* Tabla */}
