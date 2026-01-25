@@ -1,17 +1,16 @@
 // src/pages/permissions/CreateSectionModules.jsx
 
 import { CircleChevronLeft, Info, TriangleAlert } from "lucide-react";
+import { getModulesData } from "../../adapters/modules.adapter";
+import { getSectionsData } from "../../adapters/sections.adapter";
 import { getUserFromToken } from "../../utils/auth";
 import { Link } from "react-router-dom";
+import { newSectionModules } from "../../adapters/sectionModules.adapter";
 import { useEffect, useState } from "react";
+import Input from "../../components/form/Input";
 import ModalAlert from "../../components/modals/ModalAlert";
 import ModalSpinner from "../../components/modals/ModelSpinner";
 import Select from "../../components/form/Select";
-import { getSectionsData } from "../../adapters/sections.adapter";
-import { getModulesData } from "../../adapters/modules.adapter";
-import { getBusinessesData } from "../../adapters/business.adapter";
-import Input from "../../components/form/Input";
-import { newSectionModules } from "../../adapters/sectionModules.adapter";
 
 
 export default function CreateSectionModules() {
@@ -19,9 +18,9 @@ export default function CreateSectionModules() {
   const [user, setUser] = useState(() => getUserFromToken());
 
   // Campos Formulario
-  const [position, setPosition] = useState("");
   const [section, setSection] = useState("");
   const [module, setModule] = useState("");
+  const [position, setPosition] = useState("");
 
   // Variables para Modales
   const [showAlert, setShowAlert] = useState(false);
@@ -126,14 +125,10 @@ export default function CreateSectionModules() {
       setMessageAlert1("El modulo ha sido asignado correctamente");
 
       // Limpieza de inputs
+      setSection("");
+      setModule("");
+      setPosition("");
 
-      /*
-      2. Limpiar inputs
-
-      Ejemplo:
-    
-      setUserName("");
-      */
 
     } catch (error) {
       setShowAlertSubmit(false);
