@@ -13,7 +13,9 @@ import { getUserFromToken } from "../../utils/auth";
 export default function CreatePerson() {
 
   const [user] = useState(() => getUserFromToken());
+
   const fileInputRef = useRef(null);
+  const [resetImage, setResetImage] = useState(false);
 
   // Campos Formulario
   const [documentType, setDocumentType] = useState("CC");
@@ -80,6 +82,7 @@ export default function CreatePerson() {
       setLastName("");
       setPhone("");
       setEmail("");
+      setResetImage(true);
       
     } catch (error) {
       setShowAlertSubmit(false);
@@ -183,6 +186,8 @@ export default function CreatePerson() {
             isRequired={false}
             name="imagenPerson"
             fileInputRef={fileInputRef}
+            reset={resetImage}
+            onResetDone={() => setResetImage(false)}
           />
 
           <div className="px-2 w-full sm:w-full mb-2 mt-2">

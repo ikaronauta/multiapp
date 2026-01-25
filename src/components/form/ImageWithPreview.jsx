@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { widthClasses } from "../../utils/common";
 
 
-export default function ImageWithPreview({fileInputRef, widthPercent, textLabel, isRequired,  name, prev = null, setImageRemoved}) {
+export default function ImageWithPreview({ fileInputRef, widthPercent, textLabel, isRequired,
+  name, prev = null, setImageRemoved, reset, onResetDone }) {
 
   const [preview, setPreview] = useState(prev);
   const [fileName, setFileName] = useState("");
@@ -10,6 +11,19 @@ export default function ImageWithPreview({fileInputRef, widthPercent, textLabel,
   useEffect(() => {
     setPreview(prev);
   }, [prev]);
+
+  useEffect(() => {
+    if (reset) {
+      setPreview(null);
+      setFileName("");
+
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+
+      onResetDone?.();
+    }
+  }, [reset]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -29,8 +43,8 @@ export default function ImageWithPreview({fileInputRef, widthPercent, textLabel,
   const removeLogo = () => {
     setFileName("");
     setPreview(null);
-    
-    if(setImageRemoved) 
+
+    if (setImageRemoved)
       setImageRemoved(true);
 
     if (fileInputRef.current) {
@@ -57,7 +71,7 @@ export default function ImageWithPreview({fileInputRef, widthPercent, textLabel,
           file:rounded-md file:mr-3 file:hover:bg-green-700
           cursor-pointer text-gray-700
           "
-          rname={name}
+          name={name}
           required={isRequired}
           ref={fileInputRef}
         />

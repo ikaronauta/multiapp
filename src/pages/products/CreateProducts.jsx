@@ -21,7 +21,9 @@ export default function CreateProducts({ businessSelected }) {
 
   const [user, setUser] = useState(() => getUserFromToken());
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+
   const fileInputRef = useRef(null);
+  const [resetImage, setResetImage] = useState(false);
 
   // Campos Formulario
 
@@ -32,7 +34,7 @@ export default function CreateProducts({ businessSelected }) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
-  const [cost, setCost] = useState("");
+  const [stockMin, setStockMin] = useState("");
   const [date, setDate] = useState("");
   const [status, setStatus] = useState("activo");
 
@@ -93,7 +95,7 @@ export default function CreateProducts({ businessSelected }) {
       formData.append("name", name);
       formData.append("description", description);
       formData.append("price", price);
-      formData.append("cost", cost);
+      formData.append("stock_min", stockMin);
       formData.append("product_unit_id", unit);
       formData.append("expiration_date", date);
       formData.append("status", status);
@@ -130,16 +132,17 @@ export default function CreateProducts({ businessSelected }) {
       setName("");
       setDescription("");
       setPrice("");
-      setCost("");
+      setStockMin("");
       setDate("");
       setStatus("");
+      setResetImage(true);
 
     } catch (error) {
       setShowAlertSubmit(false);
       setShowAlert(true);
       setTitleAlert("Error al agregar producto.");
       setMessageAlert1(error.message ?? "Error inesperado");
-      setMessageAlert2(response?.error?.details ?? "");
+      setMessageAlert2(error?.details ?? "");
       console.error("Error adding product:", error);
     }
   }
@@ -233,14 +236,14 @@ export default function CreateProducts({ businessSelected }) {
 
           <Input
             widthPercent="50"
-            textLabel="Costo"
+            textLabel="Stock Minimo"
             isRequired={true}
-            type="text"
-            placeholder="Costo"
-            value={cost}
-            onChange={setCost}
-            name="cost"
-            isFormatCOP={true}
+            type="number"
+            placeholder="Stock Minimo"
+            value={stockMin}
+            onChange={setStockMin}
+            name="stock_min"
+            isFormatCOP={false}
           />
 
           <Select
@@ -264,7 +267,7 @@ export default function CreateProducts({ businessSelected }) {
             placeholder=""
             value={date}
             onChange={setDate}
-            name="cost"
+            name="expiration_date"
             isFormatCOP={false}
           />
 
@@ -290,6 +293,8 @@ export default function CreateProducts({ businessSelected }) {
             isRequired={false}
             name="imageProduct"
             fileInputRef={fileInputRef}
+            reset={resetImage}
+            onResetDone={() => setResetImage(false)}
           />
 
 

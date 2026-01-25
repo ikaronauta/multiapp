@@ -49,7 +49,7 @@ export default function EditProducts({ businessSelected }) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
-  const [cost, setCost] = useState("");
+  const [stockMin, setStockMin] = useState("");
   const [date, setDate] = useState("");
   const [status, setStatus] = useState("activo");
   const [preview, setPreview] = useState(null);
@@ -96,7 +96,7 @@ export default function EditProducts({ businessSelected }) {
           setName(data.data.name);
           setDescription(data.data.description);
           setPrice(data.data.price);
-          setCost(data.data.cost);
+          setStockMin(data.data.stock_min);
           setDate(data.data.expiration_date && data.data.expiration_date.length > 10 
             ? data.data.expiration_date.slice(0, 10)
             : "");
@@ -134,7 +134,7 @@ export default function EditProducts({ businessSelected }) {
       formData.append("name", name);
       formData.append("description", description);
       formData.append("price", price);
-      formData.append("cost", cost);
+      formData.append("stock_min", stockMin);
       formData.append("product_unit_id", unit);
       formData.append("expiration_date", date);
       formData.append("status", status);
@@ -264,13 +264,13 @@ export default function EditProducts({ businessSelected }) {
 
           <Input
             widthPercent="50"
-            textLabel="Costo"
+            textLabel="Stock Minimo"
             isRequired={true}
-            type="text"
-            placeholder="Costo"
-            value={cost ?? ""}
-            onChange={setCost}
-            name="cost"
+            type="number"
+            placeholder="Stock Minimo"
+            value={stockMin ?? ""}
+            onChange={setStockMin}
+            name="stock_min"
             isFormatCOP={true}
           />
 
@@ -295,7 +295,7 @@ export default function EditProducts({ businessSelected }) {
             placeholder=""
             value={date ?? ""}
             onChange={setDate}
-            name="cost"
+            name="expiration_date"
             isFormatCOP={false}
           />
 
