@@ -2,7 +2,7 @@
 
 import './App.css';
 import { componentMap } from "./utils/componentMap";
-import { isTokenValid } from "./utils/auth";
+import { getUserFromToken, isTokenValid } from "./utils/auth";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useEffect, useState } from 'react';
 import Dashboard from "./layouts/Dashboard";
@@ -17,10 +17,13 @@ export default function App() {
 
   const [routes, setRoutes] = useState([]);
   const [loadRoutes, setLoadRoutes] = useState(false);
-  const [businessSelected, setBusinesssSelected] = useState("");
+  const [businessSelected, setBusinesssSelected] = useState(() => {
+    const user = getUserFromToken();
+    return user.businessId;
+  });
 
   useEffect(() => {
-    if(businessSelected !== "") console.log(businessSelected);
+    if(businessSelected !== "") console.log(`Businness Selected: ${businessSelected}`);
   }, [businessSelected]);
 
   return (

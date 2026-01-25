@@ -32,3 +32,23 @@ export const newProduct = async (formData) => {
     return error.response?.data ?? { ok: false, message: "Error en la petición" };
   }
 };
+
+export const getProductByUUID = async (id) => {
+  try {
+    const { data } = await api.get(`/products/${id}`);
+    return data;
+  } catch (error) {
+    return error.response?.data ?? { ok: false, message: "Error en la petición" };
+  }
+};
+
+export const updateProduct = async (id, formData) => {
+  try {
+    const { data } = await api.put(`/products/edit/${id}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return data;
+  } catch (error) {
+    return error.response?.data ?? { ok: false, message: "Error en la petición" };
+  }
+};

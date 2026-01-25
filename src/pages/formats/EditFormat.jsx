@@ -41,7 +41,7 @@ export default function EditPerson() {
           setShowAlert(true);
           setTitleAlert("Error al obtener el negocio");
           setMessageAlert1(data.message ?? 'Algo fallo');
-          setMessageAlert2(data.error.details ? data.error.details : "");
+          setMessageAlert2(data.error?.details ? data.error.details : "");
         }
       })
       .catch((error) => {

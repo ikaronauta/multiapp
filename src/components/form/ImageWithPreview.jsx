@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { widthClasses } from "../../utils/common";
 
 
@@ -6,6 +6,10 @@ export default function ImageWithPreview({fileInputRef, widthPercent, textLabel,
 
   const [preview, setPreview] = useState(prev);
   const [fileName, setFileName] = useState("");
+
+  useEffect(() => {
+    setPreview(prev);
+  }, [prev]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];

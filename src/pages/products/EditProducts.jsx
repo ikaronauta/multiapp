@@ -1,30 +1,47 @@
-// src/pages/modules/CreateProducts.jsx
+// src/pages/sections/EditProducts.jsx
 
 import { CircleChevronLeft, Info, TriangleAlert } from "lucide-react";
-import { getBusinessesData } from "../../adapters/business.adapter";
-import { getProductUnits } from "../../adapters/utils.adapter";
 import { getUserFromToken } from "../../utils/auth";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useSelectOptions } from "../../hooks/useSelectOptions";
-import ImageWithPreview from "../../components/form/ImageWithPreview";
-import Input from "../../components/form/Input";
 import ModalAlert from "../../components/modals/ModalAlert";
 import ModalSpinner from "../../components/modals/ModelSpinner";
-import Select from "../../components/form/Select";
-import Textarea from "../../components/form/Textarea";
+import SpinnerLouder from "../../components/SpinnerLouder";
+import { useSelectOptions } from "../../hooks/useSelectOptions";
 import { getProductCategoriesByBusinessIdData, getProductCategoriesData } from "../../adapters/productCategories";
-import { newProduct } from "../../adapters/products.adapter";
+import { getBusinessesData } from "../../adapters/business.adapter";
+import { getProductUnits } from "../../adapters/utils.adapter";
+import Select from "../../components/form/Select";
+import Input from "../../components/form/Input";
+import Textarea from "../../components/form/Textarea";
+import ImageWithPreview from "../../components/form/ImageWithPreview";
+import { getProductByUUID, updateProduct } from "../../adapters/products.adapter";
 
 
-export default function CreateProducts({ businessSelected }) {
+export default function EditProducts({ businessSelected }) {
 
-  const [user, setUser] = useState(() => getUserFromToken());
-  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
-  // Campos Formulario
+  const [user] = useState(() => getUserFromToken());
+  const { id } = useParams();
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const [loading, setLoading] = useState(false);
 
+  const [showAlert, setShowAlert] = useState(false);
+  const [showAlertSubmit, setShowAlertSubmit] = useState(false);
+
+  const [titleAlert, setTitleAlert] = useState("Atención.");
+  const [messageAlert1, setMessageAlert1] = useState("");
+  const [messageAlert2, setMessageAlert2] = useState("");
+  const [iconComponentModalAlert, setIconComponentModalAlert] = useState(
+    <TriangleAlert className="text-red-600" size={24} />
+  );
+
+  const [updateOk, setUpdateOk] = useState(false);
+  const [imageRemoved, setImageRemoved] = useState(false);
+
+  // Campos Formulario
   const [business, setBusiness] = useState("");
   const [categorie, setCategorie] = useState("");
   const [unit, setUnit] = useState("");
@@ -35,16 +52,7 @@ export default function CreateProducts({ businessSelected }) {
   const [cost, setCost] = useState("");
   const [date, setDate] = useState("");
   const [status, setStatus] = useState("activo");
-
-  // Variables para Modales
-  const [showAlert, setShowAlert] = useState(false);
-  const [showAlertSubmit, setShowAlertSubmit] = useState(false);
-  const [titleAlert, setTitleAlert] = useState("Atención.");
-  const [messageAlert1, setMessageAlert1] = useState("");
-  const [messageAlert2, setMessageAlert2] = useState("");
-  const [iconComponentModalAlert, setIconComponentModalAlert] = useState(
-    <TriangleAlert className="text-red-600" size={24} />
-  );
+  const [preview, setPreview] = useState(null);
 
   const {
     options: optionsBusinesses,
@@ -77,7 +85,38 @@ export default function CreateProducts({ businessSelected }) {
     }
   }, [businessSelected]);
 
-  const handleAdd = async (e) => {
+  useEffect(() => {
+    getProductByUUID(id)
+      .then((data) => {
+        if (data.data) {
+          setBusiness(data.data.business_id);
+          setCategorie(data.data.category_id);
+          setUnit(data.data.product_unit_id);
+          setSku(data.data.sku);
+          setName(data.data.name);
+          setDescription(data.data.description);
+          setPrice(data.data.price);
+          setCost(data.data.cost);
+          setDate(data.data.expiration_data ?? "");
+          setStatus(data.data.status);
+          setPreview(data.data.image);
+        } else {
+          setShowAlert(true);
+          setTitleAlert("Error al obtener el producto");
+          setMessageAlert1(data.message ?? 'Algo fallo');
+          setMessageAlert2(data.error?.details ? data.error.details : "");
+        }
+      })
+      .catch((error) => {
+        setShowAlert(true);
+        setTitleAlert("Error al obtener el producto");
+        setMessageAlert1(error.message ?? 'Algo fallo');
+        setMessageAlert2(error.details ? error.details : "");
+      })
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  const handleEdit = async (e) => {
     e.preventDefault();
     setShowAlertSubmit(true);
 
@@ -88,7 +127,7 @@ export default function CreateProducts({ businessSelected }) {
       const formData = new FormData();
 
       formData.append("business_id", business);
-      formData.append("categorie_id", categorie);
+      formData.append("category_id", categorie);
       formData.append("sku", sku);
       formData.append("name", name);
       formData.append("description", description);
@@ -97,75 +136,65 @@ export default function CreateProducts({ businessSelected }) {
       formData.append("product_unit_id", unit);
       formData.append("expiration_date", date);
       formData.append("status", status);
-      formData.append("created_by_id", user.id);
+      formData.append("updated_by_id", user.id);
+      formData.append("imageRemoved", imageRemoved);
 
       if (productFile) {
         formData.append("image", productFile);
       }
 
-      const response = await newProduct(formData);
+      const response = await updateProduct(id, formData);
 
       if (!response.ok) {
         const errorMsg = response.message ?? "Error inesperado";
         setShowAlertSubmit(false);
         setShowAlert(true);
-        setTitleAlert("Error al agregar producto");
+        setTitleAlert("Error al editar la persona");
         setMessageAlert1(errorMsg);
         setMessageAlert2(response?.error?.details ?? "");
-        console.error("Error adding producto:", errorMsg);
+        console.error("Error adding person:", errorMsg);
         return;
       }
 
+      setUpdateOk(true);
       setShowAlertSubmit(false);
       setShowAlert(true);
-      setTitleAlert("Producto agregado");
+      setTitleAlert("Persona editado");
       setIconComponentModalAlert(<Info className="text-green-600" size={24} />);
-      setMessageAlert1("El producto ha sido agregado correctamente");
-
-      // Limpieza de inputs
-      setBusiness("");
-      setCategorie("");
-      setUnit("");
-      setSku("");
-      setName("");
-      setDescription("");
-      setPrice("");
-      setCost("");
-      setDate("");
-      setStatus("");
+      setMessageAlert1("La persona ha sido editado correctamente");
 
     } catch (error) {
       setShowAlertSubmit(false);
       setShowAlert(true);
-      setTitleAlert("Error al agregar producto.");
+      setTitleAlert("Error al editar la persona");
       setMessageAlert1(error.message ?? "Error inesperado");
-      setMessageAlert2(response?.error?.details ?? "");
-      console.error("Error adding product:", error);
+      setMessageAlert2(error.details ? error.details : "");
     }
   }
+
+  if (loading) return <SpinnerLouder height="h-full" />;
 
   return (
     <div className="sm:max-w-3xl mx-auto">
       <Link
-        to="/admin/products"
-        className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mb-4"
+        to="/admin/persons"
+        className="relative inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mb-4"
       >
         <CircleChevronLeft size={16} />
         <span>Regresar</span>
       </Link>
 
-      {/* Formulario */}
       <div className="relative w-full sm:max-w-3xl mx-auto bg-white shadow-md rounded-lg p-4 sm:p-6">
-        <h2 className="text-gray-900 text-2xl font-bold mb-4">Crear Producto</h2>
+        <h2 className="text-gray-900 text-2xl font-bold mb-4">Editar Producto</h2>
 
-        <form onSubmit={handleAdd} className="flex flex-wrap -mx-2 items-end">
+        <form onSubmit={handleEdit} className="flex flex-wrap -mx-2 items-end">
 
           {isSuperAdmin && (
             <Select
               widthPercent="50"
               textLabel="Negocio"
               isRequired={true}
-              value={business}
+              value={business ?? ""}
               onChange={setBusiness}
               name="businesses"
               textFirstOption="Seleccione el negocio"
@@ -179,7 +208,7 @@ export default function CreateProducts({ businessSelected }) {
             widthPercent={isSuperAdmin ? "50" : "33"}
             textLabel="Categoría"
             isRequired={true}
-            value={categorie}
+            value={categorie ?? ""}
             onChange={setCategorie}
             name="categorie"
             textFirstOption="Seleccione la categoría"
@@ -194,7 +223,7 @@ export default function CreateProducts({ businessSelected }) {
             isRequired={false}
             type="text"
             placeholder="SKU"
-            value={sku}
+            value={sku ?? ""}
             onChange={setSku}
             name="sku"
           />
@@ -205,7 +234,7 @@ export default function CreateProducts({ businessSelected }) {
             isRequired={true}
             type="text"
             placeholder="Nombre Producto"
-            value={name}
+            value={name ?? ""}
             onChange={setName}
             name="name"
           />
@@ -214,7 +243,7 @@ export default function CreateProducts({ businessSelected }) {
             widthPercent="100"
             textLabel="Descripción"
             isRequired={false}
-            value={description}
+            value={description ?? ""}
             onChange={setDescription}
             name="description"
           />
@@ -225,7 +254,7 @@ export default function CreateProducts({ businessSelected }) {
             isRequired={true}
             type="text"
             placeholder="Precio"
-            value={price}
+            value={price ?? ""}
             onChange={setPrice}
             name="price"
             isFormatCOP={true}
@@ -237,7 +266,7 @@ export default function CreateProducts({ businessSelected }) {
             isRequired={true}
             type="text"
             placeholder="Costo"
-            value={cost}
+            value={cost ?? ""}
             onChange={setCost}
             name="cost"
             isFormatCOP={true}
@@ -247,7 +276,7 @@ export default function CreateProducts({ businessSelected }) {
             widthPercent="33"
             textLabel="Unidad de Medida"
             isRequired={true}
-            value={unit}
+            value={unit ?? ""}
             onChange={setUnit}
             name="unit"
             textFirstOption="Seleccione la únida de medida"
@@ -262,7 +291,7 @@ export default function CreateProducts({ businessSelected }) {
             isRequired={false}
             type="date"
             placeholder=""
-            value={date}
+            value={date ?? ""}
             onChange={setDate}
             name="cost"
             isFormatCOP={false}
@@ -272,7 +301,7 @@ export default function CreateProducts({ businessSelected }) {
             widthPercent="33"
             textLabel="Estado"
             isRequired={true}
-            value={status}
+            value={status ?? ""}
             onChange={setStatus}
             name="status"
             textFirstOption="Seleccione un estado"
@@ -290,12 +319,13 @@ export default function CreateProducts({ businessSelected }) {
             isRequired={false}
             name="imageProduct"
             fileInputRef={fileInputRef}
+            prev={preview}
+            setImageRemoved={setImageRemoved}
           />
-
 
           <div className="px-2 w-full sm:w-full mb-2 mt-2">
             <button type="submit" className="bg-green-600 text-white px-3 py-2 h-10 rounded-md w-full hover:bg-green-700">
-              Agregar
+              Editar
             </button>
           </div>
         </form>
@@ -310,16 +340,15 @@ export default function CreateProducts({ businessSelected }) {
             messageAlert2={messageAlert2}
             textButton="Cerrar"
             iconComponent={iconComponentModalAlert}
-            onClick={() => setShowAlert(false)}
+            onClick={() => {
+              updateOk && navigate(`/admin/businesses`);
+              setShowAlert(false);
+            }}
           />
         )}
 
         {showAlertSubmit && (
-          <ModalSpinner
-            titleModal="Procesando..."
-            messageModal=""
-            iconComponent={<Info className="text-red-600" size={24} />}
-          />
+          <ModalSpinner titleModal="Procesando..." messageModal="" iconComponent={<Info className="text-red-600" size={24} />} />
         )}
       </>
     </div>
