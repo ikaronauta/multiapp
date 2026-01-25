@@ -12,7 +12,7 @@ import Input from "../../components/form/Input";
 import { newProductCategorie } from "../../adapters/productCategories";
 
 
-export default function CreateProductCategories() {
+export default function CreateProductCategories({businessSelected}) {
 
   const [user, setUser] = useState(() => getUserFromToken());
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
@@ -39,10 +39,12 @@ export default function CreateProductCategories() {
   const [showAlertPermissions, setShowAlertPermissions] = useState(false);
 
   useEffect(() => {
-    if (user?.businessId === 1 && user?.roleId === 1) {
+    setBusiness(businessSelected);
+
+    if (businessSelected == 1 && user?.roleId === 1) {
       setIsSuperAdmin(true);
     }
-  }, []);
+  }, [businessSelected]);
 
   // Cargar negocios
   useEffect(() => {

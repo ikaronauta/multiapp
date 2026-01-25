@@ -4,7 +4,7 @@ import './App.css';
 import { componentMap } from "./utils/componentMap";
 import { isTokenValid } from "./utils/auth";
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Dashboard from "./layouts/Dashboard";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -17,6 +17,11 @@ export default function App() {
 
   const [routes, setRoutes] = useState([]);
   const [loadRoutes, setLoadRoutes] = useState(false);
+  const [businessSelected, setBusinesssSelected] = useState("");
+
+  useEffect(() => {
+    if(businessSelected !== "") console.log(businessSelected);
+  }, [businessSelected]);
 
   return (
     <>
@@ -30,7 +35,7 @@ export default function App() {
         )}
 
         {/* 🔵 Rutas protegidas dentro del dashboard */}
-        <Route element={<Dashboard setRoutes={setRoutes} setLoadRoutes={setLoadRoutes} />}>
+        <Route element={<Dashboard setRoutes={setRoutes} setLoadRoutes={setLoadRoutes} setBusinesssSelected={setBusinesssSelected} />}>
 
           {/* Home por defecto */}
           <Route index element={<Home />} />
@@ -44,7 +49,7 @@ export default function App() {
                 <Route
                   key={i}
                   path={route.route}
-                  element={<Component />}
+                  element={<Component businessSelected={businessSelected} />}
                 />
               );
             })

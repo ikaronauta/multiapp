@@ -10,7 +10,7 @@ import ModalAlert from "./modals/ModalAlert";
 import SectionNavbar from "./SectionNavbar";
 import SpinnerLouder from "./SpinnerLouder";
 
-export default function Navbar({ onLinkClick }) {
+export default function Navbar({ onLinkClick, setBusinesssSelected }) {
   const [businesses, setBusinesses] = useState([]);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [loadingUser, setLoadingUser] = useState(true);
@@ -41,6 +41,7 @@ export default function Navbar({ onLinkClick }) {
         const data = await getMenuData(selectedBusiness);
         setSections(data.data || data);
       };
+      setBusinesssSelected(selectedBusiness);
       loadMenu();
     }
   }, [selectedBusiness]);

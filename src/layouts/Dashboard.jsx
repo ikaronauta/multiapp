@@ -9,7 +9,7 @@ import { useRoutesFromDB } from "../hooks/useRoutesFromDB";
 import SpinnerLouder from "../components/SpinnerLouder";
 import ModalAlert from "../components/modals/ModalAlert";
 
-export default function Dashboard({ setRoutes, setLoadRoutes }) {
+export default function Dashboard({ setRoutes, setLoadRoutes, setBusinesssSelected }) {
 
   const { routes, loadingRoutes, error } = useRoutesFromDB();
   
@@ -53,7 +53,7 @@ export default function Dashboard({ setRoutes, setLoadRoutes }) {
         </button>
 
         {/* Sidebar */}
-        <Sidebar open={open} setOpen={setOpen} />
+        <Sidebar open={open} setOpen={setOpen} setBusinesssSelected={setBusinesssSelected} />
 
         {/* Contenido principal */}
         <main className="flex-1 p-8 pt-16 h-screen overflow-y-auto relative max-w-full overflow-x-hidden">

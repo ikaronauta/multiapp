@@ -6,7 +6,7 @@ import FooterNavbar from "./FooterNavbar";
 import Logo from '../assets/images/logo-multiApp.png';
 import Navbar from "./Navbar";
 
-export default function Sidebar({ open, setOpen }) {
+export default function Sidebar({ open, setOpen, setBusinesssSelected }) {
 
   return (
     <>
@@ -44,7 +44,7 @@ export default function Sidebar({ open, setOpen }) {
           
           <img src={Logo} alt="MultiApp" className="mb-4 mx-auto w-16 sm:w-20 lg:w-24" />          
 
-          <Navbar onLinkClick={() => setOpen(false)} />
+          <Navbar onLinkClick={() => setOpen(false)} setBusinesssSelected={setBusinesssSelected} />
         </div>
 
         <FooterNavbar />

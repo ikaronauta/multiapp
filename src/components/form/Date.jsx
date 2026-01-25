@@ -1,16 +1,9 @@
-// src/components/formInputs/Input.jsx
+// src/components/formInputs/Date.jsx
 
 import { widthClasses } from "../../utils/common";
 
-export default function Input({ widthPercent, textLabel, isRequired, type, placeholder,
-  value, onChange, name, isFormatCOP = false }) {
-
-  const formatoCOP = (numero) =>
-    new Intl.NumberFormat("es-CO", {
-      style: "currency",
-      currency: "COP",
-      minimumFractionDigits: 0,
-    }).format(numero);
+export default function Date({ widthPercent, textLabel, isRequired,
+  value, onChange, name }) {
 
   const handleChange = (e) => {
     let val = e.target.value;
@@ -32,10 +25,9 @@ export default function Input({ widthPercent, textLabel, isRequired, type, place
         )}
       </label>
       <input
-        type={type}
-        placeholder={placeholder}
-        value={isFormatCOP && value ? formatoCOP(value) : value}
-        onChange={handleChange}
+        type="date"
+        value={value}
+        onChange={onChange}
         className="border border-gray-300 rounded-md px-3 py-2 h-10 w-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
         name={name}
         required={isRequired}

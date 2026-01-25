@@ -19,3 +19,12 @@ export const getCitiesByIdDepto = async (idDepto) => {
     return error.response?.data ?? { ok: false, message: "Error en la petición" };
   }
 }
+
+export const getProductUnits = async () => {
+  try {
+    const { data } = await api.get("/utils/product_units");
+    return data;
+  } catch (error) {
+    return error.response?.data ?? { ok: false, message: "Error en la petición" };
+  }
+}

@@ -10,10 +10,10 @@ import ModalAlert from "../../components/modals/ModalAlert";
 import ModalConfirmDelete from "../../components/modals/ModalConfirmDelete";
 import ModalSpinner from "../../components/modals/ModelSpinner";
 import SpinnerLouder from "../../components/SpinnerLouder";
-import { getProductsData } from "../../adapters/products.adapter";
+import { getProductsByBusinessIdData, getProductsData } from "../../adapters/products.adapter";
 
 
-export default function Products() {
+export default function Products({ businessSelected }) {
 
   const navigate = useNavigate();
 
@@ -36,27 +36,51 @@ export default function Products() {
   const loadData = () => {
     setLoading(true);
 
-    getProductsData()
-      .then((data) => {
-        if (data.data) {
-          setData({
-            data: data.data,
-            columns: data.data.length > 0 ? Object.keys(data.data[0]) : [],
-          });
-          setShowDataTable(true);
-        } else {
+    if (businessSelected == 1) {
+      getProductsData()
+        .then((data) => {
+          if (data.data) {
+            setData({
+              data: data.data,
+              columns: data.data.length > 0 ? Object.keys(data.data[0]) : [],
+            });
+            setShowDataTable(true);
+          } else {
+            setShowAlert(true);
+            setTitleAlert("Error al obtener los productos");
+            setMessageAlert1(data.message ?? "Algo falló");
+            setShowDataTable(false);
+          }
+        })
+        .catch((err) => {
           setShowAlert(true);
           setTitleAlert("Error al obtener los productos");
-          setMessageAlert1(data.message ?? "Algo falló");
-          setShowDataTable(false);
-        }
-      })
-      .catch((err) => {
-        setShowAlert(true);
-        setTitleAlert("Error al obtener los productos");
-        setMessageAlert1(err.message ?? "Algo falló");
-      })
-      .finally(() => setLoading(false));
+          setMessageAlert1(err.message ?? "Algo falló");
+        })
+        .finally(() => setLoading(false));
+    } else if (businessSelected != "" && businessSelected != 1) {
+      getProductsByBusinessIdData(businessSelected)
+        .then((data) => {
+          if (data.data) {
+            setData({
+              data: data.data,
+              columns: data.data.length > 0 ? Object.keys(data.data[0]) : [],
+            });
+            setShowDataTable(true);
+          } else {
+            setShowAlert(true);
+            setTitleAlert("Error al obtener los productos");
+            setMessageAlert1(data.message ?? "Algo falló");
+            setShowDataTable(false);
+          }
+        })
+        .catch((err) => {
+          setShowAlert(true);
+          setTitleAlert("Error al obtener los productos");
+          setMessageAlert1(err.message ?? "Algo falló");
+        })
+        .finally(() => setLoading(false));
+    }
   }
 
   useEffect(() => {
@@ -106,7 +130,7 @@ export default function Products() {
   return (
     <>
       <Link
-        to="/admin/persons/create"
+        to="/admin/products/create"
         className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mb-4"
       >
         <PlusCircle size={16} />

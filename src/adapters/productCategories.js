@@ -2,6 +2,15 @@
 
 import { api } from "../services/api";
 
+export const getProductCategoriesByBusinessIdData = async (businessUUID) => {
+  try {
+    const { data } = await api.get(`/product_categories/business/${businessUUID}`);
+    return data;
+  } catch (error) {
+    return error.response?.data ?? { ok: false, message: "Error en la petición" };
+  }
+};
+
 export const getProductCategoriesData = async () => {
   try {
     const { data } = await api.get("/product_categories");

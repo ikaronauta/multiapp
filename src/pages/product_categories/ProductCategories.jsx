@@ -8,10 +8,10 @@ import ModalAlert from "../../components/modals/ModalAlert";
 import ModalConfirmDelete from "../../components/modals/ModalConfirmDelete";
 import ModalSpinner from "../../components/modals/ModelSpinner";
 import SpinnerLouder from "../../components/SpinnerLouder";
-import { deleteProductCategories, getProductCategoriesData } from "../../adapters/productCategories";
+import { deleteProductCategories, getProductCategoriesByBusinessIdData, getProductCategoriesData } from "../../adapters/productCategories";
 
 
-export default function ProductCategories() {
+export default function ProductCategories({ businessSelected }) {
 
   const navigate = useNavigate();
 
@@ -31,30 +31,68 @@ export default function ProductCategories() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [nameItemToDelete, setNameItemToDelete] = useState("");
 
+  // useEffect(() => {
+  //   getBusinessById(user.businessId)
+  //     .then((data) => {
+  //       if(data.data) setBusinessUUID(data.data.uuid)
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //     });
+  // }, []);
+
+  // useEffect(() => {
+  //   alert(`${businessSelected} - desde el component`)
+  // }, [businessSelected]);
+
   const loadData = () => {
     setLoading(true);
 
-    getProductCategoriesData()
-      .then((data) => {
-        if (data.data) {
-          setData({
-            data: data.data,
-            columns: data.data.length > 0 ? Object.keys(data.data[0]) : [],
-          });
-          setShowDataTable(true);
-        } else {
+    if (businessSelected == 1) {
+      getProductCategoriesData()
+        .then((data) => {
+          if (data.data) {
+            setData({
+              data: data.data,
+              columns: data.data.length > 0 ? Object.keys(data.data[0]) : [],
+            });
+            setShowDataTable(true);
+          } else {
+            setShowAlert(true);
+            setTitleAlert("Error al obtener las categorías");
+            setMessageAlert1(data.message ?? "Algo falló");
+            setShowDataTable(false);
+          }
+        })
+        .catch((err) => {
           setShowAlert(true);
-          setTitleAlert("Error al obtener....");
-          setMessageAlert1(data.message ?? "Algo falló");
-          setShowDataTable(false);
-        }
-      })
-      .catch((err) => {
-        setShowAlert(true);
-        setTitleAlert("Error al obtener.....");
-        setMessageAlert1(err.message ?? "Algo falló");
-      })
-      .finally(() => setLoading(false));
+          setTitleAlert("Error al obtener las categorías");
+          setMessageAlert1(err.message ?? "Algo falló");
+        })
+        .finally(() => setLoading(false));
+    } else if (businessSelected != "" && businessSelected != 1) {
+      getProductCategoriesByBusinessIdData(businessSelected)
+        .then((data) => {
+          if (data.data) {
+            setData({
+              data: data.data,
+              columns: data.data.length > 0 ? Object.keys(data.data[0]) : [],
+            });
+            setShowDataTable(true);
+          } else {
+            setShowAlert(true);
+            setTitleAlert("Error al obtener las categorías");
+            setMessageAlert1(data.message ?? "Algo falló");
+            setShowDataTable(false);
+          }
+        })
+        .catch((err) => {
+          setShowAlert(true);
+          setTitleAlert("Error al obtener las categorías");
+          setMessageAlert1(err.message ?? "Algo falló");
+        })
+        .finally(() => setLoading(false));
+    }
   }
 
   useEffect(() => {
