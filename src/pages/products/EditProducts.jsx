@@ -97,7 +97,9 @@ export default function EditProducts({ businessSelected }) {
           setDescription(data.data.description);
           setPrice(data.data.price);
           setCost(data.data.cost);
-          setDate(data.data.expiration_data ?? "");
+          setDate(data.data.expiration_date && data.data.expiration_date.length > 10 
+            ? data.data.expiration_date.slice(0, 10)
+            : "");
           setStatus(data.data.status);
           setPreview(data.data.image);
         } else {
@@ -149,24 +151,24 @@ export default function EditProducts({ businessSelected }) {
         const errorMsg = response.message ?? "Error inesperado";
         setShowAlertSubmit(false);
         setShowAlert(true);
-        setTitleAlert("Error al editar la persona");
+        setTitleAlert("Error al editar el producto");
         setMessageAlert1(errorMsg);
         setMessageAlert2(response?.error?.details ?? "");
-        console.error("Error adding person:", errorMsg);
+        console.error("Error adding product:", errorMsg);
         return;
       }
 
       setUpdateOk(true);
       setShowAlertSubmit(false);
       setShowAlert(true);
-      setTitleAlert("Persona editado");
+      setTitleAlert("Producto editado");
       setIconComponentModalAlert(<Info className="text-green-600" size={24} />);
-      setMessageAlert1("La persona ha sido editado correctamente");
+      setMessageAlert1("El producto ha sido editado correctamente");
 
     } catch (error) {
       setShowAlertSubmit(false);
       setShowAlert(true);
-      setTitleAlert("Error al editar la persona");
+      setTitleAlert("Error al editar el producto");
       setMessageAlert1(error.message ?? "Error inesperado");
       setMessageAlert2(error.details ? error.details : "");
     }
@@ -177,7 +179,7 @@ export default function EditProducts({ businessSelected }) {
   return (
     <div className="sm:max-w-3xl mx-auto">
       <Link
-        to="/admin/persons"
+        to="/admin/products"
         className="relative inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mb-4"
       >
         <CircleChevronLeft size={16} />
@@ -341,7 +343,7 @@ export default function EditProducts({ businessSelected }) {
             textButton="Cerrar"
             iconComponent={iconComponentModalAlert}
             onClick={() => {
-              updateOk && navigate(`/admin/businesses`);
+              updateOk && navigate(`/admin/products`);
               setShowAlert(false);
             }}
           />

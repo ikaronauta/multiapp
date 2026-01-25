@@ -19,7 +19,9 @@ export default function App() {
   const [loadRoutes, setLoadRoutes] = useState(false);
   const [businessSelected, setBusinesssSelected] = useState(() => {
     const user = getUserFromToken();
-    return user.businessId;
+
+    if (user) return user.businessId
+    else return "";
   });
 
   useEffect(() => {

@@ -10,7 +10,7 @@ import ModalAlert from "../../components/modals/ModalAlert";
 import ModalConfirmDelete from "../../components/modals/ModalConfirmDelete";
 import ModalSpinner from "../../components/modals/ModelSpinner";
 import SpinnerLouder from "../../components/SpinnerLouder";
-import { getProductsByBusinessIdData, getProductsData } from "../../adapters/products.adapter";
+import { deleteProduct, getProductsByBusinessIdData, getProductsData } from "../../adapters/products.adapter";
 
 
 export default function Products({ businessSelected }) {
@@ -102,7 +102,7 @@ export default function Products({ businessSelected }) {
     setShowAlertSpinner(true);
 
     try {
-      //const response = await deleteItem(itemToDelete);
+      const response = await deleteProduct(itemToDelete);
 
       if (!response.ok) {
         setShowAlertSpinner(false);
