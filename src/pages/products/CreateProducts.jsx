@@ -13,11 +13,11 @@ import ModalAlert from "../../components/modals/ModalAlert";
 import ModalSpinner from "../../components/modals/ModelSpinner";
 import Select from "../../components/form/Select";
 import Textarea from "../../components/form/Textarea";
-import { getProductCategoriesData } from "../../adapters/productCategories";
+import { getProductCategoriesByBusinessIdData, getProductCategoriesData } from "../../adapters/productCategories";
 import { newProduct } from "../../adapters/products.adapter";
 
 
-export default function CreateProducts({businessSelected}) {
+export default function CreateProducts({ businessSelected }) {
 
   const [user, setUser] = useState(() => getUserFromToken());
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
@@ -60,7 +60,9 @@ export default function CreateProducts({businessSelected}) {
     options: optionsCategories,
     loadingHook: loadingCategories,
     showAlertHook: showAlertCategories,
-  } = useSelectOptions(getProductCategoriesData, "id", "Categoria");
+  } = useSelectOptions(businessSelected == 1
+    ? getProductCategoriesData
+    : () => getProductCategoriesByBusinessIdData(businessSelected), "id", "Categoria");
 
   const {
     // value: unit,
@@ -87,7 +89,7 @@ export default function CreateProducts({businessSelected}) {
       const productFile = fileInputRef.current?.files[0];
 
       const formData = new FormData();
-      
+
       formData.append("business_id", business);
       formData.append("categorie_id", categorie);
       formData.append("sku", sku);
