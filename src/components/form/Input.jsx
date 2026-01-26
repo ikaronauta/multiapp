@@ -3,7 +3,7 @@
 import { widthClasses } from "../../utils/common";
 
 export default function Input({ widthPercent, textLabel, isRequired, type, placeholder,
-  value, onChange, name, isFormatCOP = false }) {
+  value, onChange, name, disabled = false, isFormatCOP = false }) {
 
   const formatoCOP = (numero) =>
     new Intl.NumberFormat("es-CO", {
@@ -39,6 +39,7 @@ export default function Input({ widthPercent, textLabel, isRequired, type, place
         className="border border-gray-300 rounded-md px-3 py-2 h-10 w-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
         name={name}
         required={isRequired}
+        disabled={disabled}
       />
     </div>
   );

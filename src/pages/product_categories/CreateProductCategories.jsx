@@ -10,6 +10,7 @@ import { getBusinessesData } from "../../adapters/business.adapter";
 import Select from "../../components/form/Select";
 import Input from "../../components/form/Input";
 import { newProductCategorie } from "../../adapters/productCategories";
+import { slugify } from "../../utils/common";
 
 
 export default function CreateProductCategories({businessSelected}) {
@@ -20,6 +21,7 @@ export default function CreateProductCategories({businessSelected}) {
   // Campos Formulario
   const [business, setBusiness] = useState("");
   const [nameCategorie, setNameCategorie] = useState("");
+  const [code, setCode] = useState("");
   const [position, setPosition] = useState("");
 
   // Variables para Modales
@@ -72,6 +74,11 @@ export default function CreateProductCategories({businessSelected}) {
     }
   }, [businesses]);
 
+  const handleNameChange = (value) => {
+    setNameCategorie(value);
+    setCode(slugify(value));
+  };
+
   const handleAdd = async (e) => {
     e.preventDefault();
     setShowAlertSubmit(true);
@@ -82,6 +89,7 @@ export default function CreateProductCategories({businessSelected}) {
 
       formData.append("business_id", business);
       formData.append("name", nameCategorie);
+      formData.append("code", code);
       formData.append("position", position);
       formData.append("created_by_id", user.id);
 
@@ -107,6 +115,7 @@ export default function CreateProductCategories({businessSelected}) {
       // Limpieza de inputs
       setBusiness("");
       setNameCategorie("");
+      setCode("");
       setPosition("");
 
     } catch (error) {
@@ -137,7 +146,7 @@ export default function CreateProductCategories({businessSelected}) {
 
           {isSuperAdmin && (
             <Select
-              widthPercent="33"
+              widthPercent="50"
               textLabel="Negocio"
               isRequired={true}
               value={business}
@@ -151,18 +160,29 @@ export default function CreateProductCategories({businessSelected}) {
           )}
 
           <Input
-            widthPercent={isSuperAdmin ? 33 : 50}
+            widthPercent={isSuperAdmin ? 50 : 33}
             textLabel="Nombre categoría"
             isRequired={true}
             type="text"
             placeholder="Nombre categoría"
             value={nameCategorie}
-            onChange={setNameCategorie}
+            onChange={handleNameChange}
             name="categorie"
           />
 
           <Input
-            widthPercent={isSuperAdmin ? 33 : 50}
+            widthPercent={isSuperAdmin ? 50 : 33}
+            textLabel="Código categoría"
+            isRequired={true}
+            type="text"
+            placeholder="Código categoría"
+            value={code}
+            name="code"
+            disabled={true}
+          />
+
+          <Input
+            widthPercent={isSuperAdmin ? 50 : 33}
             textLabel="Posición"
             isRequired={true}
             type="number"

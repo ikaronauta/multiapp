@@ -28,3 +28,12 @@ export const getProductUnits = async () => {
     return error.response?.data ?? { ok: false, message: "Error en la petición" };
   }
 }
+
+export const generateSKU = async (categoryId, name) => {
+  try {
+    const { data } = await api.get(`/utils/generate_sku?categoryCode=${categoryId}&name=${name}`);
+    return data;
+  } catch (error) {
+    return error.response?.data ?? { ok: false, message: "Error en la petición" };
+  }
+}

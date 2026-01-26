@@ -1,8 +1,8 @@
 // src/pages/modules/CreateProducts.jsx
 
-import { CircleChevronLeft, Info, TriangleAlert } from "lucide-react";
+import { AlertCircle, CircleChevronLeft, Info, TriangleAlert } from "lucide-react";
 import { getBusinessesData } from "../../adapters/business.adapter";
-import { getProductUnits } from "../../adapters/utils.adapter";
+import { generateSKU, getProductUnits } from "../../adapters/utils.adapter";
 import { getUserFromToken } from "../../utils/auth";
 import { Link } from "react-router-dom";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -24,6 +24,10 @@ export default function CreateProducts({ businessSelected }) {
 
   const fileInputRef = useRef(null);
   const [resetImage, setResetImage] = useState(false);
+
+  const [loudingSku, setLoudingSku] = useState(false);
+  const [showAlertSku, setShowAlertSku] = useState(false);
+  const [textButton, setTextButton] = useState("Generar SKU automáticamente");
 
   // Campos Formulario
 
@@ -78,6 +82,28 @@ export default function CreateProducts({ businessSelected }) {
       setIsSuperAdmin(true);
     }
   }, [businessSelected]);
+
+  const handleButtonSKU = () => {
+   if (categorie === "" || name === "") return setTextButton(`Debe ${categorie === "" ? "seleccionar la categoria" : ""} 
+    ${(categorie === "" && name === "") ? "e ingresar el nombre del producto" : "ingresar el nombre del producto"} y dar clic aquí nuevamente`);
+
+      setLoudingSku(true);
+
+      generateSKU(categorie, name)
+        .then((data) => {
+          if (data.data){
+            setSku(data.data);
+            setShowAlertSku(false);
+          } else {
+            setShowAlertSku(true);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          setShowAlertSku(true);
+        })
+        .finally(() => setLoudingSku(false));
+  }
 
   const handleAdd = async (e) => {
     e.preventDefault();
@@ -179,7 +205,7 @@ export default function CreateProducts({ businessSelected }) {
           )}
 
           <Select
-            widthPercent={isSuperAdmin ? "50" : "33"}
+            widthPercent="50"
             textLabel="Categoría"
             isRequired={true}
             value={categorie}
@@ -192,7 +218,18 @@ export default function CreateProducts({ businessSelected }) {
           />
 
           <Input
-            widthPercent={isSuperAdmin ? "50" : "33"}
+            widthPercent={isSuperAdmin ? "50" : "100"}
+            textLabel="Nombre Producto"
+            isRequired={true}
+            type="text"
+            placeholder="Nombre Producto"
+            value={name}
+            onChange={setName}
+            name="name"
+          />
+
+          <Input
+            widthPercent="25"
             textLabel="SKU"
             isRequired={false}
             type="text"
@@ -202,16 +239,26 @@ export default function CreateProducts({ businessSelected }) {
             name="sku"
           />
 
-          <Input
-            widthPercent={isSuperAdmin ? "50" : "33"}
-            textLabel="Nombre Producto"
-            isRequired={true}
-            type="text"
-            placeholder="Nombre Producto"
-            value={name}
-            onChange={setName}
-            name="name"
-          />
+          <div className="px-2 w-full sm:w-1/4 mb-2 mt-2">
+            <button
+              type="button"
+              onClick={handleButtonSKU}
+              className="bg-green-600 text-white px-3 py-2 rounded-md w-full hover:bg-green-700 text-xs"
+            >
+              {loudingSku &&
+                <div className="inline-block ml-2 w-5 h-5 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>}
+              
+              {!loudingSku && !showAlertSku && textButton}
+              
+              {showAlertSku && (
+                <span className="ml-2 top-0 right-6 inline-flex items-center gap-1 text-xs text-orange-950">
+                  <AlertCircle className="w-3 h-3" />
+                  <span>Ocurrió un problema</span>
+                </span>
+              )}
+
+            </button>
+          </div>
 
           <Textarea
             widthPercent="100"

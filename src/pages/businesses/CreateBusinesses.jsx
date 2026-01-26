@@ -7,7 +7,7 @@ import { getBusinessesTypes, newBusiness } from "../../adapters/business.adapter
 import ModalAlert from "../../components/modals/ModalAlert";
 import SpinnerLouder from "../../components/SpinnerLouder";
 import { getCitiesByIdDepto, getDeptos } from "../../adapters/utils.adapter";
-import { toTitleCaseSafeES } from "../../utils/common";
+import { slugify, toTitleCaseSafeES } from "../../utils/common";
 
 export default function CreateBusinesses() {
   const [user] = useState(() => getUserFromToken());
@@ -45,18 +45,6 @@ export default function CreateBusinesses() {
   const [iconComponentModalAlert, setIconComponentModalAlert] = useState(
     <TriangleAlert className="text-red-600" size={24} />
   );
-
-  const slugify = (text) => {
-    return text
-      .toString()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9\s-]/g, "")
-      .replace(/[\s_-]+/g, "-")
-      .replace(/^-+|-+$/g, "");
-  };
 
   const handleNameChange = (e) => {
     const value = e.target.value;
