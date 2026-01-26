@@ -20,7 +20,7 @@ import { newProduct } from "../../adapters/products.adapter";
 export default function CreateProducts({ businessSelected }) {
 
   const [user, setUser] = useState(() => getUserFromToken());
-  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const [sizeTextButton, setSizeTextButton] = useState("");
 
   const fileInputRef = useRef(null);
   const [resetImage, setResetImage] = useState(false);
@@ -31,7 +31,6 @@ export default function CreateProducts({ businessSelected }) {
 
   // Campos Formulario
 
-  const [business, setBusiness] = useState("");
   const [categorie, setCategorie] = useState("");
   const [unit, setUnit] = useState("");
   const [sku, setSku] = useState("");
@@ -52,12 +51,6 @@ export default function CreateProducts({ businessSelected }) {
     <TriangleAlert className="text-red-600" size={24} />
   );
 
-  const {
-    options: optionsBusinesses,
-    loadingHook: loadingBusinesses,
-    showAlertHook: showAlertBussineses,
-  } = useSelectOptions(getBusinessesData, "ID", "Nombre");
-
   const fetchCategories = useCallback(() => {
     if (!businessSelected) return Promise.resolve({ data: [] });
     return getProductCategoriesByBusinessIdData(businessSelected);
@@ -75,34 +68,41 @@ export default function CreateProducts({ businessSelected }) {
     showAlertHook: showAlertUnits,
   } = useSelectOptions(getProductUnits, "id", "name");
 
-  useEffect(() => {
-    setBusiness(businessSelected);
-
-    if (businessSelected == 1 && user?.roleId === 1) {
-      setIsSuperAdmin(true);
-    }
-  }, [businessSelected]);
-
   const handleButtonSKU = () => {
-   if (categorie === "" || name === "") return setTextButton(`Debe ${categorie === "" ? "seleccionar la categoria" : ""} 
-    ${(categorie === "" && name === "") ? "e ingresar el nombre del producto" : "ingresar el nombre del producto"} y dar clic aquí nuevamente`);
+    if (categorie === "" || name === "") {
 
-      setLoudingSku(true);
+      setSizeTextButton("text-xs");
 
-      generateSKU(categorie, name)
-        .then((data) => {
-          if (data.data){
-            setSku(data.data);
-            setShowAlertSku(false);
-          } else {
-            setShowAlertSku(true);
-          }
-        })
-        .catch((error) => {
-          console.log(error);
+      if(categorie === "" && name === "") {
+        setTextButton("Debe seleccionar la categoría e ingresar un nombre de producto");
+      } else if (categorie === "" && name !== ""){
+        setTextButton("Debe seleccionar la categoría");
+        setSizeTextButton("");
+      } else if (categorie !== "" && name === ""){
+        setTextButton("Debe ingresar un nombre de producto");
+        setSizeTextButton("");
+      } 
+      
+      return;
+    }
+    setSizeTextButton("");
+    setLoudingSku(true);
+
+    generateSKU(categorie, name)
+      .then((data) => {
+        if (data.data) {
+          setSku(data.data);
+          setShowAlertSku(false);
+          setTextButton("SKU generado exitosamente");
+        } else {
           setShowAlertSku(true);
-        })
-        .finally(() => setLoudingSku(false));
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        setShowAlertSku(true);
+      })
+      .finally(() => setLoudingSku(false));
   }
 
   const handleAdd = async (e) => {
@@ -115,7 +115,6 @@ export default function CreateProducts({ businessSelected }) {
 
       const formData = new FormData();
 
-      formData.append("business_id", business);
       formData.append("categorie_id", categorie);
       formData.append("sku", sku);
       formData.append("name", name);
@@ -139,7 +138,7 @@ export default function CreateProducts({ businessSelected }) {
         setShowAlert(true);
         setTitleAlert("Error al agregar producto");
         setMessageAlert1(errorMsg);
-        setMessageAlert2(response?.error?.details ?? "");
+        setMessageAlert2(typeof response?.error?.details === "string" ? response?.error?.details : "Error inesperado");
         console.error("Error adding producto:", errorMsg);
         return;
       }
@@ -151,7 +150,6 @@ export default function CreateProducts({ businessSelected }) {
       setMessageAlert1("El producto ha sido agregado correctamente");
 
       // Limpieza de inputs
-      setBusiness("");
       setCategorie("");
       setUnit("");
       setSku("");
@@ -161,6 +159,7 @@ export default function CreateProducts({ businessSelected }) {
       setStockMin("");
       setDate("");
       setStatus("");
+      setTextButton("Generar SKU automáticamente");
       setResetImage(true);
 
     } catch (error) {
@@ -189,21 +188,6 @@ export default function CreateProducts({ businessSelected }) {
 
         <form onSubmit={handleAdd} className="flex flex-wrap -mx-2 items-end">
 
-          {isSuperAdmin && (
-            <Select
-              widthPercent="50"
-              textLabel="Negocio"
-              isRequired={true}
-              value={business}
-              onChange={setBusiness}
-              name="businesses"
-              textFirstOption="Seleccione el negocio"
-              options={optionsBusinesses}
-              louding={loadingBusinesses}
-              showAlert={showAlertBussineses}
-            />
-          )}
-
           <Select
             widthPercent="50"
             textLabel="Categoría"
@@ -218,7 +202,7 @@ export default function CreateProducts({ businessSelected }) {
           />
 
           <Input
-            widthPercent={isSuperAdmin ? "50" : "100"}
+            widthPercent="50"
             textLabel="Nombre Producto"
             isRequired={true}
             type="text"
@@ -229,7 +213,7 @@ export default function CreateProducts({ businessSelected }) {
           />
 
           <Input
-            widthPercent="25"
+            widthPercent="50"
             textLabel="SKU"
             isRequired={false}
             type="text"
@@ -239,17 +223,17 @@ export default function CreateProducts({ businessSelected }) {
             name="sku"
           />
 
-          <div className="px-2 w-full sm:w-1/4 mb-2 mt-2">
+          <div className="px-2 w-full sm:w-1/2 mb-2 mt-2">
             <button
               type="button"
               onClick={handleButtonSKU}
-              className="bg-green-600 text-white px-3 py-2 rounded-md w-full hover:bg-green-700 text-xs"
+              className={`bg-green-600 text-white px-3 py-2 rounded-md w-full hover:bg-green-700 ${sizeTextButton}`}
             >
               {loudingSku &&
                 <div className="inline-block ml-2 w-5 h-5 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>}
-              
+
               {!loudingSku && !showAlertSku && textButton}
-              
+
               {showAlertSku && (
                 <span className="ml-2 top-0 right-6 inline-flex items-center gap-1 text-xs text-orange-950">
                   <AlertCircle className="w-3 h-3" />

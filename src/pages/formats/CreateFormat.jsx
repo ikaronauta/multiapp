@@ -53,7 +53,7 @@ export default function CreateFormat() {
         setShowAlert(true);
         setTitleAlert("Error al agregar.....");
         setMessageAlert1(errorMsg);
-        setMessageAlert2(response?.error?.details ?? "");
+        setMessageAlert2(typeof response?.error?.details === "string" ? response?.error?.details : "Error inesperado");
         console.error("Error adding...:", errorMsg);
         return;
       }

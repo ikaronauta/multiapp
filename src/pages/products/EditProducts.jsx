@@ -1,21 +1,20 @@
 // src/pages/sections/EditProducts.jsx
 
 import { CircleChevronLeft, Info, TriangleAlert } from "lucide-react";
+import { getProductByUUID, updateProduct } from "../../adapters/products.adapter";
+import { getProductCategoriesByBusinessIdData, getProductCategoriesData } from "../../adapters/productCategories";
+import { getProductUnits } from "../../adapters/utils.adapter";
 import { getUserFromToken } from "../../utils/auth";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useSelectOptions } from "../../hooks/useSelectOptions";
+import ImageWithPreview from "../../components/form/ImageWithPreview";
+import Input from "../../components/form/Input";
 import ModalAlert from "../../components/modals/ModalAlert";
 import ModalSpinner from "../../components/modals/ModelSpinner";
-import SpinnerLouder from "../../components/SpinnerLouder";
-import { useSelectOptions } from "../../hooks/useSelectOptions";
-import { getProductCategoriesByBusinessIdData, getProductCategoriesData } from "../../adapters/productCategories";
-import { getBusinessesData } from "../../adapters/business.adapter";
-import { getProductUnits } from "../../adapters/utils.adapter";
 import Select from "../../components/form/Select";
-import Input from "../../components/form/Input";
+import SpinnerLouder from "../../components/SpinnerLouder";
 import Textarea from "../../components/form/Textarea";
-import ImageWithPreview from "../../components/form/ImageWithPreview";
-import { getProductByUUID, updateProduct } from "../../adapters/products.adapter";
 
 
 export default function EditProducts({ businessSelected }) {
@@ -42,7 +41,6 @@ export default function EditProducts({ businessSelected }) {
   const [imageRemoved, setImageRemoved] = useState(false);
 
   // Campos Formulario
-  const [business, setBusiness] = useState("");
   const [categorie, setCategorie] = useState("");
   const [unit, setUnit] = useState("");
   const [sku, setSku] = useState("");
@@ -54,11 +52,6 @@ export default function EditProducts({ businessSelected }) {
   const [status, setStatus] = useState("activo");
   const [preview, setPreview] = useState(null);
 
-  const {
-    options: optionsBusinesses,
-    loadingHook: loadingBusinesses,
-    showAlertHook: showAlertBussineses,
-  } = useSelectOptions(getBusinessesData, "ID", "Nombre");
 
   const fetchCategories = useCallback(() => {
     if (!businessSelected) return Promise.resolve({ data: [] });
@@ -78,8 +71,6 @@ export default function EditProducts({ businessSelected }) {
   } = useSelectOptions(getProductUnits, "id", "name");
 
   useEffect(() => {
-    setBusiness(businessSelected);
-
     if (businessSelected == 1 && user?.roleId === 1) {
       setIsSuperAdmin(true);
     }
@@ -89,7 +80,6 @@ export default function EditProducts({ businessSelected }) {
     getProductByUUID(id)
       .then((data) => {
         if (data.data) {
-          setBusiness(data.data.business_id);
           setCategorie(data.data.category_id);
           setUnit(data.data.product_unit_id);
           setSku(data.data.sku);
@@ -128,7 +118,6 @@ export default function EditProducts({ businessSelected }) {
 
       const formData = new FormData();
 
-      formData.append("business_id", business);
       formData.append("category_id", categorie);
       formData.append("sku", sku);
       formData.append("name", name);
@@ -153,8 +142,8 @@ export default function EditProducts({ businessSelected }) {
         setShowAlert(true);
         setTitleAlert("Error al editar el producto");
         setMessageAlert1(errorMsg);
-        setMessageAlert2(response?.error?.details ?? "");
-        console.error("Error adding product:", errorMsg);
+        setMessageAlert2(typeof response?.error?.details === "string" ? response?.error?.details : "Error inesperado");
+        console.error("Error editing product:", errorMsg);
         return;
       }
 
@@ -190,21 +179,6 @@ export default function EditProducts({ businessSelected }) {
         <h2 className="text-gray-900 text-2xl font-bold mb-4">Editar Producto</h2>
 
         <form onSubmit={handleEdit} className="flex flex-wrap -mx-2 items-end">
-
-          {isSuperAdmin && (
-            <Select
-              widthPercent="50"
-              textLabel="Negocio"
-              isRequired={true}
-              value={business ?? ""}
-              onChange={setBusiness}
-              name="businesses"
-              textFirstOption="Seleccione el negocio"
-              options={optionsBusinesses}
-              louding={loadingBusinesses}
-              showAlert={showAlertBussineses}
-            />
-          )}
 
           <Select
             widthPercent={isSuperAdmin ? "50" : "33"}
@@ -271,7 +245,6 @@ export default function EditProducts({ businessSelected }) {
             value={stockMin ?? ""}
             onChange={setStockMin}
             name="stock_min"
-            isFormatCOP={true}
           />
 
           <Select
