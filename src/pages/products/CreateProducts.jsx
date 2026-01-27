@@ -38,7 +38,6 @@ export default function CreateProducts({ businessSelected }) {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [stockMin, setStockMin] = useState("");
-  const [date, setDate] = useState("");
   const [status, setStatus] = useState("activo");
 
   // Variables para Modales
@@ -122,7 +121,6 @@ export default function CreateProducts({ businessSelected }) {
       formData.append("price", price);
       formData.append("stock_min", stockMin);
       formData.append("product_unit_id", unit);
-      formData.append("expiration_date", date);
       formData.append("status", status);
       formData.append("created_by_id", user.id);
 
@@ -157,7 +155,6 @@ export default function CreateProducts({ businessSelected }) {
       setDescription("");
       setPrice("");
       setStockMin("");
-      setDate("");
       setStatus("");
       setTextButton("Generar SKU automáticamente");
       setResetImage(true);
@@ -278,7 +275,7 @@ export default function CreateProducts({ businessSelected }) {
           />
 
           <Select
-            widthPercent="33"
+            widthPercent="50"
             textLabel="Unidad de Medida"
             isRequired={true}
             value={unit}
@@ -290,20 +287,8 @@ export default function CreateProducts({ businessSelected }) {
             showAlert={showAlertUnits}
           />
 
-          <Input
-            widthPercent="33"
-            textLabel="Fecha de Expiración"
-            isRequired={false}
-            type="date"
-            placeholder=""
-            value={date}
-            onChange={setDate}
-            name="expiration_date"
-            isFormatCOP={false}
-          />
-
           <Select
-            widthPercent="33"
+            widthPercent="50"
             textLabel="Estado"
             isRequired={true}
             value={status}

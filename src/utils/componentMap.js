@@ -33,6 +33,7 @@ import EditProductCategories from "../pages/product_categories/EditProductCatego
 import Products from "../pages/products/Products";
 import CreateProducts from "../pages/products/CreateProducts";
 import EditProducts from "../pages/products/EditProducts";
+import Inventory from "../pages/inventory/inventory";
 
 export const componentMap = {
   Businesses,
@@ -68,4 +69,5 @@ export const componentMap = {
   Products,
   CreateProducts,
   EditProducts,
+  Inventory,
 };

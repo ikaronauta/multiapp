@@ -24,7 +24,6 @@ export default function EditProducts({ businessSelected }) {
 
   const [user] = useState(() => getUserFromToken());
   const { id } = useParams();
-  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const [showAlert, setShowAlert] = useState(false);
@@ -48,7 +47,6 @@ export default function EditProducts({ businessSelected }) {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [stockMin, setStockMin] = useState("");
-  const [date, setDate] = useState("");
   const [status, setStatus] = useState("activo");
   const [preview, setPreview] = useState(null);
 
@@ -71,12 +69,6 @@ export default function EditProducts({ businessSelected }) {
   } = useSelectOptions(getProductUnits, "id", "name");
 
   useEffect(() => {
-    if (businessSelected == 1 && user?.roleId === 1) {
-      setIsSuperAdmin(true);
-    }
-  }, [businessSelected]);
-
-  useEffect(() => {
     getProductByUUID(id)
       .then((data) => {
         if (data.data) {
@@ -87,9 +79,6 @@ export default function EditProducts({ businessSelected }) {
           setDescription(data.data.description);
           setPrice(data.data.price);
           setStockMin(data.data.stock_min);
-          setDate(data.data.expiration_date && data.data.expiration_date.length > 10 
-            ? data.data.expiration_date.slice(0, 10)
-            : "");
           setStatus(data.data.status);
           setPreview(data.data.image);
         } else {
@@ -125,7 +114,6 @@ export default function EditProducts({ businessSelected }) {
       formData.append("price", price);
       formData.append("stock_min", stockMin);
       formData.append("product_unit_id", unit);
-      formData.append("expiration_date", date);
       formData.append("status", status);
       formData.append("updated_by_id", user.id);
       formData.append("imageRemoved", imageRemoved);
@@ -181,7 +169,7 @@ export default function EditProducts({ businessSelected }) {
         <form onSubmit={handleEdit} className="flex flex-wrap -mx-2 items-end">
 
           <Select
-            widthPercent={isSuperAdmin ? "50" : "33"}
+            widthPercent="33"
             textLabel="Categoría"
             isRequired={true}
             value={categorie ?? ""}
@@ -194,7 +182,7 @@ export default function EditProducts({ businessSelected }) {
           />
 
           <Input
-            widthPercent={isSuperAdmin ? "50" : "33"}
+            widthPercent="33"
             textLabel="SKU"
             isRequired={false}
             type="text"
@@ -205,7 +193,7 @@ export default function EditProducts({ businessSelected }) {
           />
 
           <Input
-            widthPercent={isSuperAdmin ? "50" : "33"}
+            widthPercent="33"
             textLabel="Nombre Producto"
             isRequired={true}
             type="text"
@@ -248,7 +236,7 @@ export default function EditProducts({ businessSelected }) {
           />
 
           <Select
-            widthPercent="33"
+            widthPercent="50"
             textLabel="Unidad de Medida"
             isRequired={true}
             value={unit ?? ""}
@@ -260,20 +248,8 @@ export default function EditProducts({ businessSelected }) {
             showAlert={showAlertUnits}
           />
 
-          <Input
-            widthPercent="33"
-            textLabel="Fecha de Expiración"
-            isRequired={false}
-            type="date"
-            placeholder=""
-            value={date ?? ""}
-            onChange={setDate}
-            name="expiration_date"
-            isFormatCOP={false}
-          />
-
           <Select
-            widthPercent="33"
+            widthPercent="50"
             textLabel="Estado"
             isRequired={true}
             value={status ?? ""}
