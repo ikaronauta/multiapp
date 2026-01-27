@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Info, PlusCircle, TriangleAlert } from "lucide-react";
+import { Info, PackageMinus, PackagePlus, PlusCircle, TriangleAlert } from "lucide-react";
 import { useEffect, useState } from "react";
 import DataTable from "../../components/DataTable";
 import ModalAlert from "../../components/modals/ModalAlert";
@@ -7,6 +7,8 @@ import ModalConfirmDelete from "../../components/modals/ModalConfirmDelete";
 import ModalSpinner from "../../components/modals/ModelSpinner";
 import SpinnerLouder from "../../components/SpinnerLouder";
 import { getInventoryData } from "../../adapters/inventory.adapter";
+import ModalEditRol from "../../components/modals/ModalEditRol";
+import ModalInventoryIn from "../../components/modals/ModalInventoryIn";
 
 
 export default function Inventory({ businessSelected }) {
@@ -15,6 +17,7 @@ export default function Inventory({ businessSelected }) {
 
   const [data, setData] = useState({ data: [], columns: [] });
   const [showDataTable, setShowDataTable] = useState(false);
+  const [showModalIn, setShowModalIn] = useState(false);
 
   const [loading, setLoading] = useState(true);
   const [showAlert, setShowAlert] = useState(false);
@@ -97,17 +100,34 @@ export default function Inventory({ businessSelected }) {
     }
   }
 
+  const handleInventoryIn = () => {
+   setShowModalIn(true);
+  };
+
+  const handleInventoryOut = () => {
+    alert("out");
+  };
+
   if (loading) return <SpinnerLouder height="h-full" />;
 
   return (
     <>
-      <Link
-        to="/admin/persons/create"
+      <button
+        onClick={handleInventoryIn}
         className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mb-4"
       >
-        <PlusCircle size={16} />
-        <span>Movimiento</span>
-      </Link>
+        <PackagePlus size={16} />
+        <span>Entrada</span>
+      </button>
+
+      <button 
+        type="submit"
+        onClick={handleInventoryOut}
+        className="inline-flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 mb-4 ml-1"
+      >
+        <PackageMinus size={16} />
+        <span>Salida</span>
+      </button>
 
       {/* Tabla */}
       {showDataTable && (
@@ -146,6 +166,16 @@ export default function Inventory({ businessSelected }) {
               setShowConfirm(false);
             }}
             onClickCancel={() => setShowConfirm(false)}
+          />
+        )}
+
+        {showModalIn && (
+          <ModalInventoryIn 
+            businesId={businessSelected}
+            onCancel={() => {
+              setShowModalIn(false);
+              loadData();
+            }}
           />
         )}
       </>
