@@ -9,6 +9,7 @@ import Dashboard from "./layouts/Dashboard";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import SpinnerLouder from './components/SpinnerLouder';
+import ProtectedRoute from './components/ProtectedRoute';
 
 
 export default function App() {
@@ -25,7 +26,7 @@ export default function App() {
   });
 
   useEffect(() => {
-    if(businessSelected !== "") console.log(`Businness Selected: ${businessSelected}`);
+    if (businessSelected !== "") console.log(`Businness Selected: ${businessSelected}`);
   }, [businessSelected]);
 
   return (
@@ -35,12 +36,16 @@ export default function App() {
         <Route path="/login" element={<Login />} />
 
         {/* Si NO hay token, fuerza login */}
-        {!tokenOK && (
+        {/* {!tokenOK && (
           <Route path="*" element={<Navigate to="/login" replace />} />
-        )}
+        )} */}
 
         {/* 🔵 Rutas protegidas dentro del dashboard */}
-        <Route element={<Dashboard setRoutes={setRoutes} setLoadRoutes={setLoadRoutes} setBusinesssSelected={setBusinesssSelected} />}>
+        <Route element={
+          <ProtectedRoute>
+            <Dashboard setRoutes={setRoutes} setLoadRoutes={setLoadRoutes} setBusinesssSelected={setBusinesssSelected} />
+          </ProtectedRoute>
+        }>
 
           {/* Home por defecto */}
           <Route index element={<Home />} />
@@ -61,7 +66,7 @@ export default function App() {
             : <Route path="*" element={<SpinnerLouder height="h-screen" />} />
           }
 
-          {/* Si la ruta no existe, al login */}
+          {/* Si la ruta no existe dentro del dashboard, al home */}
           <Route path="*" element={<Navigate to="/" replace />} />
 
         </Route>

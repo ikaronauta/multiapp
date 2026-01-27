@@ -1,17 +1,14 @@
 // src/components/ProtectedRoute.jsx
 import { Navigate } from "react-router-dom";
+import { isTokenValid } from "../utils/auth";
 
-import { getUserFromToken, isRoleAllowed } from "../utils/auth";
 
-export default function ProtectedRoute({ children, allowedRoles = null }) {
-  const user = getUserFromToken();
 
-  if (!user) return <Navigate to="/login" replace />;
+export default function ProtectedRoute({ children }) {
 
-  if (!isRoleAllowed(allowedRoles, user.roleId)) {
-    // Usuario con token pero sin rol permitido
-    return <Navigate to="/" replace />; // o a página "No autorizado"
+  if (!isTokenValid()) {
+    // Redirige al login si no hay token
+    return <Navigate to="/login" replace />;
   }
-
   return children;
 }
