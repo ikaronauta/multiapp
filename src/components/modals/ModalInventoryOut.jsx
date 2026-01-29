@@ -143,12 +143,13 @@ export default function ModalInventoryOut({ businesId, onCancel, loadData }) {
 
       const transformedItems = items.map(item => ({
         productId: item.productId,
-        sale: item.stock
+        out: item.stock
       }));
 
       const data = {
         userId: user.id,
-        transformedItems,
+        referenceType,
+        items: transformedItems,
         obs,
       }
 
