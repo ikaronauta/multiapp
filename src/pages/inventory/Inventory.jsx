@@ -16,6 +16,7 @@ export default function Inventory({ businessSelected }) {
   const navigate = useNavigate();
 
   const [data, setData] = useState({ data: [], columns: [] });
+  const [stock, setStock] = useState("");
   const [showDataTable, setShowDataTable] = useState(false);
   const [showModalIn, setShowModalIn] = useState(false);
   const [showModalOut, setShowModalOut] = useState(false);
@@ -107,6 +108,7 @@ export default function Inventory({ businessSelected }) {
 
   const handleInventoryOut = () => {
     setShowModalOut(true);
+    setStock(data.data.find(r => r.id === businessSelected).Stock || 0);
   };
 
   if (loading) return <SpinnerLouder height="h-full" />;
@@ -187,6 +189,7 @@ export default function Inventory({ businessSelected }) {
               setShowModalOut(false);
               loadData();
             }}
+            stockActual={stock}
           />
         )}
       </>

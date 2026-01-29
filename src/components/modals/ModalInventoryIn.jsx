@@ -12,7 +12,7 @@ import { getUserFromToken } from "../../utils/auth";
 import Select from "../form/Select";
 import Textarea from "../form/Textarea";
 
-export default function ModalInventoryIn({ businesId, onCancel, loadData }) {
+export default function ModalInventoryIn({ businesId, onCancel }) {
 
   const [user] = useState(() => getUserFromToken());
   const [products, setProducts] = useState([]);
@@ -276,10 +276,7 @@ export default function ModalInventoryIn({ businesId, onCancel, loadData }) {
             <div className="px-2 w-full sm:w-[50%] mb-2 mt-2">
               <button
                 type="button"
-                onClick={() => {
-                  onCancel(false);
-                  insertOk ? loadData() : "";
-                }}
+                onClick={onCancel}
                 className="bg-gray-300 text-gray-800 px-3 py-2 h-10 rounded-md w-full hover:bg-gray-400"
               >
                 Cancelar

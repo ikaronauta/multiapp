@@ -12,7 +12,7 @@ import Select from "../form/Select";
 import SpinnerLouder from "../SpinnerLouder";
 import Textarea from "../form/Textarea";
 
-export default function ModalInventoryOut({ businesId, onCancel, loadData }) {
+export default function ModalInventoryOut({ businesId, onCancel, stockActual }) {
 
   const [user] = useState(() => getUserFromToken());
   const [products, setProducts] = useState([]);
@@ -40,7 +40,7 @@ export default function ModalInventoryOut({ businesId, onCancel, loadData }) {
   const [messageAlert2, setMessageAlert2] = useState("");
   const [iconComponentModalAlert, setIconComponentModalAlert] = useState(
     <TriangleAlert className="text-red-600" size={24} />
-  ); 
+  );
 
 
   useEffect(() => {
@@ -69,36 +69,45 @@ export default function ModalInventoryOut({ businesId, onCancel, loadData }) {
 
   const handlerAddProduct = () => {
 
-    if(productId !== 0 && stock !== "") {
-      
+    if (productId !== 0 && stock !== "") {
+
       setItems(prev => {
-      const product = products.find(p => p.id === productId);
-      const exists = prev.find(p => p.productId === productId);
 
-      if (exists) {
-        return prev.map(p =>
-          p.productId === productId
-            ? { ...p, stock: p.stock + Number(stock) }
-            : p
-        );
-      }
+        const product = products.find(p => p.id === productId);
 
-      return [
-        ...prev,
-        {
-          productId,
-          name,
-          stock: Number(stock),
-          price: product.Precio
+        if (Number(stock) > stockActual) {
+          setErrorMsg(`La cantidad ingresada para ${product.Nombre} supera el stock disponible (${stockActual} ${product["Unidad de Medida"]})`);
+          return [...prev]
         }
-      ];
-    });
 
-    setProductId("");
-    setName("");
-    setStock("");
-    setReferenceType("");
-    setObs("");
+        setErrorMsg("");
+
+        const exists = prev.find(p => p.productId === productId);
+
+        if (exists) {
+          return prev.map(p =>
+            p.productId === productId
+              ? { ...p, stock: p.stock + Number(stock) }
+              : p
+          );
+        }
+
+        return [
+          ...prev,
+          {
+            productId,
+            name,
+            stock: Number(stock),
+            price: product.Precio
+          }
+        ];
+      });
+
+      setProductId("");
+      setName("");
+      setStock("");
+      setReferenceType("");
+      setObs("");
     }
   }
 
@@ -124,21 +133,37 @@ export default function ModalInventoryOut({ businesId, onCancel, loadData }) {
     }
   };
 
-  const handleChangeStock = (accion, item) => {
-    setItems(prev => {
-      return prev.map(p => 
-        p.productId === item.productId
-          ? accion === "sumar" ? { ...p, stock: Number(p.stock) + 1} : { ...p, stock: Number(p.stock) + 1}
-          : p
-      )
-    });
-  }
+const handleChangeStock = (accion, item) => {
+  setItems(prev => {
+    return prev
+      .map(p => {
+        if (p.productId !== item.productId) return p;
+
+        if (accion === "sumar") {
+          if (Number(p.stock) >= stockActual) 
+            return { ...p, stock: Number(p.stock) };
+          else
+            return { ...p, stock: Number(p.stock) + 1 };
+        } else {
+          const newStock = Number(p.stock) - 1;
+
+          if (newStock > 0) {
+            return { ...p, stock: newStock }
+          } else {
+            setTotal(0);
+            return null;
+          }
+        }
+      })
+      .filter(p => p !== null);
+  });
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setShowAlertSubmit(true);
 
-    
+
     try {
 
       const transformedItems = items.map(item => ({
@@ -267,15 +292,15 @@ export default function ModalInventoryOut({ businesId, onCancel, loadData }) {
                     />
 
                     <div className="px-2 w-full sm:w-1/2 mb-2 mt-2">
-                    <button
-                      type="button"
-                      onClick={handlerAddProduct}
-                      className="bg-amber-600 text-white px-3 py-2 h-full rounded-md w-full hover:bg-amber-700"
-                      
-                    >
-                      Agregar
-                    </button>
-                  </div>
+                      <button
+                        type="button"
+                        onClick={handlerAddProduct}
+                        className="bg-amber-600 text-white px-3 py-2 h-full rounded-md w-full hover:bg-amber-700"
+
+                      >
+                        Agregar
+                      </button>
+                    </div>
 
                     {showRegistrationfields && (
                       <>
@@ -322,10 +347,7 @@ export default function ModalInventoryOut({ businesId, onCancel, loadData }) {
                   <div className="px-2 w-full sm:w-full mb-2 mt-2">
                     <button
                       type="button"
-                      onClick={() => {
-                        onCancel(false);
-                        insertOk ? loadData() : "";
-                      }}
+                      onClick={onCancel}
                       className="bg-gray-300 text-gray-800 px-3 py-2 h-10 rounded-md w-full hover:bg-gray-400"
                     >
                       Cancelar
@@ -348,7 +370,7 @@ export default function ModalInventoryOut({ businesId, onCancel, loadData }) {
               <div className="flex-1 overflow-y-auto bg-gray-50 rounded-md p-3">
                 <ul className="space-y-2 text-sm">
 
-                  {items.length > 0 && items.map((item, i) => (
+                  {items && items.length > 0 && items.map((item, i) => (
                     <li
                       key={i}
                       className="flex items-start gap-2 border-b pb-2"
