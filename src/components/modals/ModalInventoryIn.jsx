@@ -48,9 +48,13 @@ export default function ModalInventoryIn({ businesId, onCancel, loadData }) {
 
     if (value.length > 2) {
       const filteredData = products.filter((item) => {
-        return item.Nombre.toLowerCase().includes(value.toLowerCase())
-          || item.Descripcion.toLowerCase().includes(value.toLowerCase())
-          || item.Sku.toLowerCase().includes(value.toLowerCase());
+        if (item.Nombre && item.Nombre.toLowerCase().includes(value.toLowerCase())) {
+          return item.Nombre.toLowerCase().includes(value.toLowerCase());
+        } else if (item.Descripcion && item.Descripcion.toLowerCase().includes(value.toLowerCase())) {
+          return item.Descripcion.toLowerCase().includes(value.toLowerCase());
+        } else if (item.Sku && item.Sku.toLowerCase().includes(value.toLowerCase())) {
+          return item.Sku.toLowerCase().includes(value.toLowerCase());
+        }
       });
 
       setFilteredProducts(filteredData);
@@ -186,7 +190,7 @@ export default function ModalInventoryIn({ businesId, onCancel, loadData }) {
                   </div>
                 )}
 
-                <Select 
+                <Select
                   widthPercent="33"
                   textLabel="Tipo de entrada"
                   isRequired={true}
@@ -195,9 +199,10 @@ export default function ModalInventoryIn({ businesId, onCancel, loadData }) {
                   name="reference_type"
                   textFirstOption={"Seleccione el tipo de entrada"}
                   options={[
-                    {value:"compra", text:"Compra"},
-                    {value:"ajuste", text:"Ajuste"},
-                    {value:"devolucion", text:"Devolucion"}
+                    { value: "compra", text: "Compra" },
+                    { value: "ajuste", text: "Ajuste" },
+                    { value: "devolucion", text: "Devolucion" },
+                    { value: "otro", text: "Otro" }
                   ]}
                 />
 
@@ -249,7 +254,7 @@ export default function ModalInventoryIn({ businesId, onCancel, loadData }) {
                   isFormatCOP={false}
                 />
 
-                <Textarea 
+                <Textarea
                   widthPercent="100"
                   textLabel="Observaciones"
                   isRequired={false}
@@ -264,7 +269,7 @@ export default function ModalInventoryIn({ businesId, onCancel, loadData }) {
                 type="submit"
                 className="bg-green-600 text-white px-3 py-2 h-10 rounded-md w-full hover:bg-green-700"
               >
-                Guardar
+                Registrar
               </button>
             </div>
 

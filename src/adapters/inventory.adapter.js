@@ -23,3 +23,16 @@
     return error.response?.data ?? { ok: false, message: "Error en la petición" };
   }
 };
+
+  export const stockOut = async (dataOut) => {
+  try {
+    const { data } = await api.post("/inventory/out", dataOut, {
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+    return data;
+  } catch (error) {
+    return error.response?.data ?? { ok: false, message: "Error en la petición" };
+  }
+};

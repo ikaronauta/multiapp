@@ -1,14 +1,14 @@
-import { Link, useNavigate } from "react-router-dom";
+import { getInventoryData } from "../../adapters/inventory.adapter";
 import { Info, PackageMinus, PackagePlus, PlusCircle, TriangleAlert } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import DataTable from "../../components/DataTable";
 import ModalAlert from "../../components/modals/ModalAlert";
 import ModalConfirmDelete from "../../components/modals/ModalConfirmDelete";
+import ModalInventoryIn from "../../components/modals/ModalInventoryIn";
 import ModalSpinner from "../../components/modals/ModelSpinner";
 import SpinnerLouder from "../../components/SpinnerLouder";
-import { getInventoryData } from "../../adapters/inventory.adapter";
-import ModalEditRol from "../../components/modals/ModalEditRol";
-import ModalInventoryIn from "../../components/modals/ModalInventoryIn";
+import ModalInventoryOut from "../../components/modals/ModalInventoryOut";
 
 
 export default function Inventory({ businessSelected }) {
@@ -18,6 +18,7 @@ export default function Inventory({ businessSelected }) {
   const [data, setData] = useState({ data: [], columns: [] });
   const [showDataTable, setShowDataTable] = useState(false);
   const [showModalIn, setShowModalIn] = useState(false);
+  const [showModalOut, setShowModalOut] = useState(false);
 
   const [loading, setLoading] = useState(true);
   const [showAlert, setShowAlert] = useState(false);
@@ -105,7 +106,7 @@ export default function Inventory({ businessSelected }) {
   };
 
   const handleInventoryOut = () => {
-    alert("out");
+    setShowModalOut(true);
   };
 
   if (loading) return <SpinnerLouder height="h-full" />;
@@ -174,6 +175,16 @@ export default function Inventory({ businessSelected }) {
             businesId={businessSelected}
             onCancel={() => {
               setShowModalIn(false);
+              loadData();
+            }}
+          />
+        )}
+
+        {showModalOut && (
+          <ModalInventoryOut 
+            businesId={businessSelected}
+            onCancel={() => {
+              setShowModalOut(false);
               loadData();
             }}
           />

@@ -3,7 +3,7 @@
 import { widthClasses } from "../../utils/common";
 
 export default function Textarea({ widthPercent, textLabel, isRequired,
-  value, onChange, name }) {
+  value, onChange, name, minHeight = 32 }) {
 
   return (
     <div className={`px-2 w-full ${widthClasses[widthPercent]} mb-2`}>
@@ -19,7 +19,7 @@ export default function Textarea({ widthPercent, textLabel, isRequired,
         value={value}
         onChange={(e) => onChange(e.target.value)}
         required={isRequired}
-        className="border border-gray-300 rounded-md px-3 py-2 min-h-32 w-full resize-y"
+        className={`border border-gray-300 rounded-md px-3 py-2 min-h-${minHeight} w-full resize-y`}
       ></textarea>
     </div>
   );
