@@ -10,6 +10,8 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import SpinnerLouder from './components/SpinnerLouder';
 import ProtectedRoute from './components/ProtectedRoute';
+import Sales from './pages/sales/Sales';
+import POSSeller from './layouts/POSSeller';
 
 
 export default function App() {
@@ -18,6 +20,8 @@ export default function App() {
 
   const [routes, setRoutes] = useState([]);
   const [loadRoutes, setLoadRoutes] = useState(false);
+  const [routesSales, setRoutesSales] = useState([]);
+  const [loadRoutesSales, setLoadRoutesSales] = useState(false);
   const [businessSelected, setBusinesssSelected] = useState(() => {
     const user = getUserFromToken();
 
@@ -43,7 +47,12 @@ export default function App() {
         {/* 🔵 Rutas protegidas dentro del dashboard */}
         <Route element={
           <ProtectedRoute>
-            <Dashboard setRoutes={setRoutes} setLoadRoutes={setLoadRoutes} setBusinesssSelected={setBusinesssSelected} />
+            <Dashboard 
+              setRoutes={setRoutes} 
+              setLoadRoutes={setLoadRoutes} 
+              setRoutesSales={setRoutesSales}
+              setLoadRoutesSales={setLoadRoutesSales}
+              setBusinesssSelected={setBusinesssSelected} />
           </ProtectedRoute>
         }>
 
@@ -71,9 +80,30 @@ export default function App() {
 
         </Route>
 
-        {/* Si la ruta no existe, al login */}
-        {/* <Route path="*" element={<Navigate to="/login" replace />} /> */}
+        <Route path="/sales" element={
+          <ProtectedRoute>
+            <POSSeller />
+          </ProtectedRoute>
+        }>
+          <Route index element={<Sales />} />
+
+          {loadRoutesSales 
+            ? routesSales.map((routeSale, i) => {
+              const Component = componentMap[routeSale.component];
+              if (!Component) return null;
+
+              return (
+                <Route
+                  key={i}
+                  path={routeSale.route}
+                  element={<Component businessSelected={businessSelected} />}
+                />
+              );
+            }) : ""}
+        </Route>
+
       </Routes>
     </>
   );
 }
+  

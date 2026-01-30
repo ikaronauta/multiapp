@@ -76,7 +76,7 @@ export default function ModalInventoryOut({ businesId, onCancel, stockActual }) 
         const product = products.find(p => p.id === productId);
 
         if (Number(stock) > stockActual) {
-          setErrorMsg(`La cantidad ingresada para ${product.Nombre} supera el stock disponible (${stockActual} ${product["Unidad de Medida"]})`);
+          setErrorMsg(`La cantidad ingresada para ${product.Nombre} supera el stock disponible (${stockActual} ${product["Unidad de Medida"] === "Unidad" ? product["Unidad de Medida"] + "es" : ""})`);
           return [...prev]
         }
 
@@ -230,12 +230,6 @@ const handleChangeStock = (accion, item) => {
             <SpinnerLouder height="h-full" />
           )}
 
-          {errorMsg && (
-            <div className="mb-4 p-3 rounded-lg bg-red-500/20 border border-red-400 text-red-300 animate-fadeIn">
-              {errorMsg}
-            </div>
-          )}
-
           {/* Contenedor padre */}
           <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-6">
 
@@ -290,6 +284,12 @@ const handleChangeStock = (accion, item) => {
                       isFormatCOP={false}
                       disabled={showRegistrationfields}
                     />
+
+                    {errorMsg && (
+                      <div className="mb-4 p-3 rounded-lg bg-red-500/20 border border-red-400 text-red-300 animate-fadeIn">
+                        {errorMsg}
+                      </div>
+                    )}
 
                     <div className="px-2 w-full sm:w-1/2 mb-2 mt-2">
                       <button

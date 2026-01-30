@@ -107,8 +107,10 @@ export default function Inventory({ businessSelected }) {
   };
 
   const handleInventoryOut = () => {
-    setShowModalOut(true);
-    setStock(data.data.find(r => r.id === businessSelected).Stock || 0);
+    if(data) {
+      setShowModalOut(true);
+      setStock(data.data.find(r => r.id === Number(businessSelected))?.Stock || 0);
+    }
   };
 
   if (loading) return <SpinnerLouder height="h-full" />;

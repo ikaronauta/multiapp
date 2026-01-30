@@ -12,3 +12,14 @@ export const getRoutesData = async () => {
     return error.response?.data ?? { ok: false, message: "Error en la petición" };
   }
 }
+
+export const getRoutesSalesData = async () => {
+
+  try {
+    const { data } = await api.get(`/routes/sales`);
+    return data;
+  } catch (error) {
+    console.error(error);
+    return error.response?.data ?? { ok: false, message: "Error en la petición" };
+  }
+}

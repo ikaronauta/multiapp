@@ -4,8 +4,8 @@ import { getBusinessesData } from "../adapters/business.adapter";
 import { getMenuData } from "../adapters/menu.adapter";
 import { getUserFromToken } from "../utils/auth";
 import { House, TriangleAlert } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import ModalAlert from "./modals/ModalAlert";
 import SectionNavbar from "./SectionNavbar";
 import SpinnerLouder from "./SpinnerLouder";
@@ -69,19 +69,6 @@ export default function Navbar({ onLinkClick, setBusinesssSelected }) {
     }
   }, [isSuperAdmin]);
 
-  const dataHome = {
-    id: "home",
-    name: "Dashboard",
-    items: [
-      {
-        title: "Dashboard",
-        route: "/",
-        icon: <House size={24} />,
-        show: 1,
-      }
-    ],
-  };
-
   const handleSelectBusiness = (e) => {
     setSelectedBusiness(e.target.value);
     navigate("/");
@@ -90,7 +77,7 @@ export default function Navbar({ onLinkClick, setBusinesssSelected }) {
   if (loadingUser) return <SpinnerLouder height="h-full" />;
 
   return (
-    <nav className="space-y-4">
+    <div className="space-y-2">
 
       {isSuperAdmin &&
         <select
@@ -105,11 +92,16 @@ export default function Navbar({ onLinkClick, setBusinesssSelected }) {
           ))}
         </select>}
 
-
-      <SectionNavbar
-        objDataSection={dataHome}
-        onLinkClick={onLinkClick}
-      />
+      <section className="border border-gray-700 rounded-md p-3 space-y-1">
+        <Link
+          to="/"
+          className="flex items-center gap-2 text-sm hover:text-gray-300"
+          onClick={onLinkClick}
+        >
+          <House size={24} />
+          <span>Dashboard</span>
+        </Link>
+      </section>
 
       {sections.map((section, i) => (
         <SectionNavbar
@@ -129,6 +121,6 @@ export default function Navbar({ onLinkClick, setBusinesssSelected }) {
           onClick={() => setShowAlert(false)}
         />
       )}
-    </nav>
+    </div>
   );
 }

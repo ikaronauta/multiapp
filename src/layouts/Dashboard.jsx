@@ -1,25 +1,29 @@
 // src/layouts/Dashboard.jsx
 
 import { Menu, LogOut, TriangleAlert } from "lucide-react";
+import { motion } from "framer-motion";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-
-import Sidebar from "../components/Sidebar";
 import { useRoutesFromDB } from "../hooks/useRoutesFromDB";
-import SpinnerLouder from "../components/SpinnerLouder";
 import ModalAlert from "../components/modals/ModalAlert";
+import Sidebar from "../components/Sidebar";
+import SpinnerLouder from "../components/SpinnerLouder";
 
-export default function Dashboard({ setRoutes, setLoadRoutes, setBusinesssSelected }) {
+export default function Dashboard({ setRoutes, setLoadRoutes,
+  setRoutesSales, setLoadRoutesSales, setBusinesssSelected }) {
 
-  const { routes, loadingRoutes, error } = useRoutesFromDB();
-  
+  const { routes, loadingRoutes, error,
+    routesSales, loadingRoutesSales, errorSales } = useRoutesFromDB();
+
   const [showAlert, setShowAlert] = useState(false);
   const [open, setOpen] = useState(false);
-  
+
+  const activeError = error || errorSales;
+
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!loadingRoutes) {
+    if (!loadingRoutes && routes.length > 0) {
       setRoutes(routes);
       setLoadRoutes(true);
     }
@@ -31,6 +35,18 @@ export default function Dashboard({ setRoutes, setLoadRoutes, setBusinesssSelect
     }
   }, [error]);
 
+  useEffect(() => {
+    if (!loadingRoutesSales && routesSales.length > 0) {
+      setRoutesSales(routesSales);
+      setLoadRoutesSales(true);
+    }
+  }, [loadingRoutesSales, routesSales]);
+
+  useEffect(() => {
+    if (errorSales) {
+      setShowAlert(true);
+    }
+  }, [errorSales]);
 
   const handleLogout = () => {
     console.log('Logout');
@@ -38,7 +54,9 @@ export default function Dashboard({ setRoutes, setLoadRoutes, setBusinesssSelect
     navigate("/login");
   };
 
-  if (loadingRoutes) return <SpinnerLouder height="h-screen" />;
+  if (loadingRoutes || loadingRoutesSales)
+    return <SpinnerLouder height="h-screen" />;
+
 
   return (
     <>
@@ -68,22 +86,32 @@ export default function Dashboard({ setRoutes, setLoadRoutes, setBusinesssSelect
           </button>
 
           <div className="mx-auto h-full">
-            <Outlet />
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              className="flex-1"
+            >
+              <Outlet />
+            </motion.div>
           </div>
         </main>
 
       </div>
 
-      {showAlert && (
+      {showAlert && activeError && (
         <ModalAlert
-          titleAlert={error.title || "Atención."}
-          messageAlert1={error.message1 || "Algo salió mal."}
-          messageAlert2={error.message2 || ""}
-          textButton="Cerrar" 
+          titleAlert={activeError.title || "Atención"}
+          messageAlert1={activeError.message1 || "Algo salió mal"}
+          messageAlert2={activeError.message2 || ""}
+          textButton="Cerrar"
           iconComponent={<TriangleAlert className="text-red-600" size={24} />}
           onClick={() => setShowAlert(false)}
         />
       )}
+
     </>
   );
 }
